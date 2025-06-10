@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autolabs - Email Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .verification-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .logo-container {
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .status {
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+        
+        .status.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status.error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #e21b1b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #c41818;
+        }
+        
+        .loading {
+            margin: 20px 0;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        @media (max-width: 600px) {
+            .verification-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+    <!-- Add Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="logo-container">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e21b1b">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+            </svg>
+            <div class="logo-text">Autolabs</div>
+        </div>
+        
+        <div class="title">Phone Verification</div>
+        
+        <div class="loading" id="loadingMessage">Verifying your phone number...</div>
+        
+        <div class="status success" id="successMessage" style="display: none;">
+            Your phone number has been verified successfully.
+        </div>
+        
+        <div class="status error" id="errorMessage" style="display: none;">
+            Failed to verify your phone number. The verification code may have expired.
+        </div>
+        
+        <div class="message" id="infoMessage" style="display: none;">
+            You can now login to your account using your phone number and password.
+        </div>
+        
+        <a href="admin-login.html" class="btn" id="loginButton" style="display: none;">Go to Login</a>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Function to parse URL parameters
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Handle verification
+        async function verifyEmail() {
+            try {
+                // Get parameters from URL
+                const access_token = getQueryParam('access_token');
+                const refresh_token = getQueryParam('refresh_token');
+                const type = getQueryParam('type');
+                
+                if (type === 'signup' && access_token) {
+                    // Set session from the URL parameters
+                    const { error } = await supabase.auth.setSession({
+                        access_token,
+                        refresh_token
+                    });
+                    
+                    if (error) throw error;
+                    
+                    // Show success message
+                    document.getElementById('loadingMessage').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('infoMessage').style.display = 'block';
+                    document.getElementById('loginButton').style.display = 'inline-block';
+                } else {
+                    throw new Error('Invalid verification link');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message || 'Failed to verify phone number. The verification code may have expired.';
+            }
+        }
+
+        // Run verification when page loads
+        window.addEventListener('load', verifyEmail);
+    </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autolabs - Staff Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 0;
+            min-height: 100vh;
+        }
+        
+        .register-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .portal-label {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #e21b1b;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background-color: #e21b1b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-register:hover {
+            background-color: #c41818;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #e21b1b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #e21b1b;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        
+        .back-link:hover {
+            color: #e21b1b;
+        }
+        
+        @media (max-width: 600px) {
+            .register-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .back-link {
+                position: static;
+                margin-bottom: 20px;
+                justify-content: center;
+            }
+        }
+    </style>
+    <!-- Add Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <a href="admin-login.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" />
+        </svg>
+        Back to login
+    </a>
+
+    <div class="register-container">
+        <div class="logo-container">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e21b1b">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+            </svg>
+            <div class="logo-text">Autolabs</div>
+        </div>
+        
+        <div class="portal-label">Staff Registration</div>
+        
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                    <div class="error-message" id="firstNameError">Please enter your first name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                    <div class="error-message" id="lastNameError">Please enter your last name</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="emailError">Please enter a valid email</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="staffId">Staff ID</label>
+                <input type="text" id="staffId" name="staffId" required>
+                <div class="error-message" id="staffIdError">Please enter your staff ID</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="+1234567890">
+                <div class="error-message" id="phoneError">Please enter a valid phone number (e.g., +1234567890)</div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-register">Register</button>
+        </form>
+        
+        <div class="login-link">
+            Already have an account? <a href="admin-login.html">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        console.log("Script started - checking Supabase availability");
+        // Check if Supabase is loaded properly
+        if (window.supabase) {
+            console.log("Supabase is available in window object");
+        } else {
+            console.error("Supabase is NOT available in window object");
+        }
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        
+        try {
+            console.log("Initializing Supabase client");
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            console.log("Supabase client initialized successfully:", supabase);
+            
+            // Check if auth is available
+            if (supabase.auth) {
+                console.log("Supabase auth is available");
+            } else {
+                console.error("Supabase auth is NOT available");
+            }
+
+            // Handle form submission
+            document.getElementById('registerForm').addEventListener('submit', async function(e) {
+                console.log("Form submitted - starting registration process");
+                e.preventDefault();
+                
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const email = document.getElementById('email').value;
+                const staffId = document.getElementById('staffId').value;
+                const phone = document.getElementById('phone').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                console.log("Form data collected:", { 
+                    firstName, lastName, email, staffId, 
+                    phone, password: "***", confirmPassword: "***" 
+                });
+                
+                // Reset error messages
+                console.log("Resetting error messages");
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                let isValid = true;
+                
+                // Validation checks
+                console.log("Performing form validation");
+                if (!firstName) {
+                    document.getElementById('firstNameError').style.display = 'block';
+                    isValid = false;
+                    console.log("First name validation failed");
+                }
+                
+                if (!lastName) {
+                    document.getElementById('lastNameError').style.display = 'block';
+                    isValid = false;
+                    console.log("Last name validation failed");
+                }
+                
+                if (!email || !email.includes('@')) {
+                    document.getElementById('emailError').style.display = 'block';
+                    isValid = false;
+                    console.log("Email validation failed");
+                }
+                
+                if (!staffId) {
+                    document.getElementById('staffIdError').style.display = 'block';
+                    isValid = false;
+                    console.log("Staff ID validation failed");
+                }
+                
+                // Phone validation with format check
+                if (!phone) {
+                    document.getElementById('phoneError').textContent = 'Please enter a valid phone number (e.g., +1234567890)';
+                    document.getElementById('phoneError').style.display = 'block';
+                    isValid = false;
+                    console.log("Phone validation failed - empty");
+                } else if (!phone.match(/^\+[1-9]\d{1,14}$/)) {
+                    document.getElementById('phoneError').textContent = 'Phone number must be in international format (e.g., +1234567890)';
+                    document.getElementById('phoneError').style.display = 'block';
+                    isValid = false;
+                    console.log("Phone validation failed - invalid format");
+                }
+                
+                if (!password || password.length < 8) {
+                    document.getElementById('passwordError').style.display = 'block';
+                    isValid = false;
+                    console.log("Password validation failed");
+                }
+                
+                if (password !== confirmPassword) {
+                    document.getElementById('confirmPasswordError').style.display = 'block';
+                    isValid = false;
+                    console.log("Password confirmation validation failed");
+                }
+                
+                console.log("Form validation result:", isValid ? "VALID" : "INVALID");
+                
+                if (isValid) {
+                    console.log("Form is valid - proceeding with registration");
+                    try {
+                        // Check if staff ID already exists
+                        console.log("Checking if staff ID already exists:", staffId);
+                        const { data: existingStaff, error: staffCheckError } = await supabase
+                            .from('staff_members')
+                            .select('staff_id')
+                            .eq('staff_id', staffId)
+                            .single();
+                        
+                        if (staffCheckError) {
+                            console.log("Staff check error (this may be normal if user doesn't exist):", staffCheckError);
+                        }
+                        
+                        if (existingStaff) {
+                            console.log("Staff ID already exists:", existingStaff);
+                            document.getElementById('staffIdError').textContent = 'Staff ID already exists';
+                            document.getElementById('staffIdError').style.display = 'block';
+                            return;
+                        }
+                        
+                        // Create user in Supabase Auth with email (temporary until SMS is configured)
+                        console.log("Creating user in Supabase Auth:", email);
+                        const authResponse = await supabase.auth.signUp({
+                            email: email,
+                            password: password,
+                        });
+                        
+                        console.log("Auth response:", authResponse);
+                        
+                        if (authResponse.error) {
+                            console.error("Auth error:", authResponse.error);
+                            throw authResponse.error;
+                        }
+                        
+                        if (authResponse.data && authResponse.data.user) {
+                            const user = authResponse.data.user;
+                            console.log("User created successfully:", user);
+                            console.log("User ID:", user.id);
+                            
+                            // Add staff details to the database
+                            console.log("Adding staff details to database");
+                            const userData = { 
+                                id: user.id,
+                                staff_id: staffId,
+                                first_name: firstName,
+                                last_name: lastName,
+                                phone: phone,
+                                email: email
+                            };
+                            console.log("Staff data to insert:", userData);
+                            
+                            const insertResponse = await supabase
+                                .from('staff_members')
+                                .insert([userData]);
+                            
+                            console.log("Database insert response:", insertResponse);
+                            
+                            if (insertResponse.error) {
+                                console.error("Database insert error:", insertResponse.error);
+                                throw insertResponse.error;
+                            }
+                            
+                            console.log("Registration successful!");
+                            alert('Registration successful! Your account is ready to use. You can now login with your phone number.');
+                            console.log("Redirecting to login page");
+                            window.location.href = 'admin-login.html';
+                        } else {
+                            console.error("No user data returned from signUp");
+                            throw new Error("No user data returned from signup");
+                        }
+                    } catch (error) {
+                        console.error('Error during registration:', error);
+                        console.error('Error details:', JSON.stringify(error));
+                        alert('Registration failed: ' + (error.message || "Unknown error"));
+                    }
+                }
+            });
+        } catch (initError) {
+            console.error("Error initializing Supabase:", initError);
+            alert("Error initializing Supabase. Please check console for details.");
+        }
+    </script>
+</body>
+</html>

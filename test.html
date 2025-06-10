@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Table with Expandable Rows</title>
+    <style>
+        :root {
+            --primary-color: #52c41a;
+            --secondary-color: #1890ff;
+            --tertiary-color: #fa8c16;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+            --error-color: #f5222d;
+            --info-color: #1890ff;
+            --background-color: #f0f2f5;
+            --text-color: #333;
+            --text-light: #666;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .order-table th {
+            background-color: #f0f0f0;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .order-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e8e8e8;
+            vertical-align: middle;
+        }
+        
+        .order-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .customer-row {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .customer-row:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .customer-row.expanded {
+            background-color: #f6ffed;
+        }
+        
+        .customer-name {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .address-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .expand-button {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: var(--text-color);
+            cursor: pointer;
+            margin-right: 12px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .expanded .expand-button {
+            background-color: var(--primary-color);
+            color: white;
+            transform: rotate(180deg);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-new {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .status-active {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-vip {
+            background-color: #fff2e8;
+            color: #fa541c;
+        }
+        
+        .status-inactive {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+        
+        .action-button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        
+        .action-button.edit {
+            background-color: #f5f5f5;
+            color: #555;
+            border: none;
+        }
+        
+        .action-button.delete {
+            background-color: #fff1f0;
+            color: #f5222d;
+            border: none;
+        }
+        
+        .action-button.edit:hover {
+            background-color: #e5e5e5;
+        }
+        
+        .action-button.delete:hover {
+            background-color: #ffccc7;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+        }
+        
+        /* Customer Detail Section */
+        .customer-detail-section {
+            display: none;
+            padding: 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .customer-detail-section.visible {
+            display: table-row;
+        }
+        
+        .customer-detail-content {
+            padding: 24px;
+            background-color: #f9f9f9;
+        }
+        
+        .order-history-heading {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .inner-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .inner-table th {
+            background-color: #f0f0f0;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .inner-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .inner-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .inner-table .status-badge {
+            margin-right: 0;
+        }
+
+        .product-details-table {
+            margin-left: 20px;
+            width: calc(100% - 20px);
+            border-collapse: collapse;
+        }
+
+        .product-details-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .product-details-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .entity-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            position: relative;
+            z-index: 5;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .entity-link:hover {
+            text-decoration: underline;
+            color: #096dd9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Information</h1>
+        
+        <table class="order-table" id="customer-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"></th>
+                    <th>Customer Name</th>
+                    <th>Contact</th>
+                    <th>Address</th>
+                    <th>Join Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Customer 1 -->
+                <tr class="customer-row" data-customer="CS-2023-001">
+                    <td>
+                        <span class="expand-button">▼</span>
+                    </td>
+                    <td class="customer-name">John Smith</td>
+                    <td>+1 212-555-1234<br>john.smith@example.com</td>
+                    <td class="address-cell">123 Main St, New York, NY 10001</td>
+                    <td>2023-01-15</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="#" class="action-button edit" onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Edit
+                            </a>
+                            <a href="#" class="action-button delete" onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Customer 1's Order History (Expanded Section) -->
+                <tr class="customer-detail-section" id="detail-CS-2023-001">
+                    <td colspan="7">
+                        <div class="customer-detail-content">
+                            <!-- Order History Section -->
+                            <div class="order-history-heading">Order History</div>
+                            <table class="inner-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Code</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a href="#" class="entity-link">ORD-2023-1242</a></td>
+                                        <td>2023-04-15</td>
+                                        <td><span class="status-badge shipped">Shipped</span></td>
+                                        <td>RM450.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <table class="product-details-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a href="#" class="entity-link">PROD-A567</a></td>
+                                                        <td>NinjaShades PLUS <strong>PROTON S70</strong> 2023-2025 [6PCS/SET] Magnetic Car Sunshades PREMIUM Quality</td>
+                                                        <td>2 x RM225.00</td>
+                                                        <td>RM450.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="#" class="entity-link">ORD-2023-1056</a></td>
+                                        <td>2023-03-22</td>
+                                        <td><span class="status-badge delivered">Delivered</span></td>
+                                        <td>RM250.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <table class="product-details-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a href="#" class="entity-link">PROD-B789</a></td>
+                                                        <td><strong>Honda Civic FB</strong> 2012-2015 - 9 inch Casing Android with Power Socket Canbus</td>
+                                                        <td>1 x RM250.00</td>
+                                                        <td>RM250.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Customer 2 -->
+                <tr class="customer-row" data-customer="CS-2023-002">
+                    <td>
+                        <span class="expand-button">▼</span>
+                    </td>
+                    <td class="customer-name">Sarah Johnson</td>
+                    <td>+1 312-555-6789<br>sarah.j@example.com</td>
+                    <td class="address-cell">456 Oak Ave, Chicago, IL 60007</td>
+                    <td>2023-02-10</td>
+                    <td><span class="status-badge status-new">New</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="#" class="action-button edit" onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Edit
+                            </a>
+                            <a href="#" class="action-button delete" onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Customer 2's Order History (Expanded Section) -->
+                <tr class="customer-detail-section" id="detail-CS-2023-002">
+                    <td colspan="7">
+                        <div class="customer-detail-content">
+                            <!-- Order History Section -->
+                            <div class="order-history-heading">Order History</div>
+                            <table class="inner-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Code</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a href="#" class="entity-link">ORD-2023-1241</a></td>
+                                        <td>2023-04-10</td>
+                                        <td><span class="status-badge processing">Processing</span></td>
+                                        <td>RM215.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <table class="product-details-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a href="#" class="entity-link">PROD-B892</a></td>
+                                                        <td>NinjaShades PLUS <strong>HONDA CIVIC FB</strong> 2012-2015 [4PCS/SET] Magnetic Car Sunshades PREMIUM Quality</td>
+                                                        <td>1 x RM125.00</td>
+                                                        <td>RM125.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><a href="#" class="entity-link">PROD-C234</a></td>
+                                                        <td><strong>Honda Civic FB</strong> 2012-2015 - 9 inch Casing Android with Power Socket Canbus</td>
+                                                        <td>1 x RM90.00</td>
+                                                        <td>RM90.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Customer 3 -->
+                <tr class="customer-row" data-customer="CS-2023-003">
+                    <td>
+                        <span class="expand-button">▼</span>
+                    </td>
+                    <td class="customer-name">Wong Xin Jie</td>
+                    <td>+65 9555-8765<br>wong.xj@example.com</td>
+                    <td class="address-cell">789 Supply Chain Rd, #10-04, Singapore 345678</td>
+                    <td>2023-03-05</td>
+                    <td><span class="status-badge status-vip">VIP</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="#" class="action-button edit" onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Edit
+                            </a>
+                            <a href="#" class="action-button delete" onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Customer 3's Order History (Expanded Section) -->
+                <tr class="customer-detail-section" id="detail-CS-2023-003">
+                    <td colspan="7">
+                        <div class="customer-detail-content">
+                            <!-- Order History Section -->
+                            <div class="order-history-heading">Order History</div>
+                            <table class="inner-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Code</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a href="#" class="entity-link">ORD-2023-1240</a></td>
+                                        <td>2023-04-05</td>
+                                        <td><span class="status-badge prepared">Prepared</span></td>
+                                        <td>RM150.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <table class="product-details-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a href="#" class="entity-link">PROD-C321</a></td>
+                                                        <td>All-New <strong>Toyota Vios</strong> 2023-Present- 12.3 inch BBA Casing Android with Socket Canbus</td>
+                                                        <td>1 x RM150.00</td>
+                                                        <td>RM150.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle customer row expansion
+            const customerRows = document.querySelectorAll('.customer-row');
+            
+            customerRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const customerId = this.getAttribute('data-customer');
+                    const detailSection = document.getElementById('detail-' + customerId);
+                    
+                    // Toggle expanded class
+                    this.classList.toggle('expanded');
+                    
+                    // Toggle visibility of the detail section
+                    if (detailSection) {
+                        detailSection.classList.toggle('visible');
+                    }
+                    
+                    // Update the expand button appearance
+                    const expandButton = this.querySelector('.expand-button');
+                    if (this.classList.contains('expanded')) {
+                        expandButton.style.transform = 'rotate(180deg)';
+                        expandButton.style.backgroundColor = 'var(--primary-color)';
+                        expandButton.style.color = 'white';
+                    } else {
+                        expandButton.style.transform = 'rotate(0deg)';
+                        expandButton.style.backgroundColor = '#f0f0f0';
+                        expandButton.style.color = 'var(--text-color)';
+                    }
+                });
+            });
+            
+            // Expand button click handler - to ensure clicking the button specifically works well
+            const expandButtons = document.querySelectorAll('.expand-button');
+            expandButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent row click event from also firing
+                    
+                    const row = this.closest('.customer-row');
+                    row.click(); // Manually trigger the row click event
+                });
+            });
+        });
+    </script>
+</body>
+</html>

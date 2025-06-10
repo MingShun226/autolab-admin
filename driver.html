@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Lorry Driver Portal</title>
+    <style>
+        /* Reuse the same styles from adminpanel.html */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: #1e293b;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Logo Section */
+        .logo-container {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            padding: 16px 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 24px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            gap: 14px;
+            margin: 4px 12px;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: #e11d48;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f5f7fa;
+        }
+        header {
+            background-color: #3a6ea5;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            flex-grow: 1;
+            padding: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .scan-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        h2 {
+            font-size: 1.3rem;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .action-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .action-option {
+            flex: 1;
+            min-width: 120px;
+        }
+        .action-label {
+            display: flex;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .action-input {
+            position: absolute;
+            opacity: 0;
+        }
+        .action-input:checked + .action-label {
+            border-color: #3a6ea5;
+            background-color: rgba(58, 110, 165, 0.1);
+            font-weight: bold;
+        }
+        .action-label:hover {
+            border-color: #3a6ea5;
+        }
+        button {
+            background-color: #3a6ea5;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            max-width: 100%;
+        }
+        button:hover {
+            background-color: #2c5a8c;
+        }
+        .scan-button {
+            background-color: #4caf50;
+            margin-bottom: 1rem;
+        }
+        .scan-button:hover {
+            background-color: #3d8b40;
+        }
+        .confirmation {
+            display: none;
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        footer {
+            background-color: #3a6ea5;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        .recent-scans {
+            margin-top: 1.5rem;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        /* Order details styling */
+        .order-details {
+            display: none;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .order-details h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #3a6ea5;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+        }
+        
+        .order-info {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .order-info-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .order-info-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .order-info-value {
+            display: block;
+        }
+        
+        .product-list {
+            margin-top: 1rem;
+        }
+        
+        .product-list-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .product-item {
+            display: flex;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        
+        .product-item:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .product-icon {
+            width: 36px;
+            height: 36px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #3a6ea5;
+            flex-shrink: 0;
+        }
+        
+        .product-details {
+            flex-grow: 1;
+        }
+        
+        .product-name {
+            font-weight: 500;
+        }
+        
+        .product-id {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .product-quantity {
+            margin-left: 0.75rem;
+            background-color: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-right: 3px;
+            transition: all 0.3s;
+        }
+
+        .status-badge.processing {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-badge.prepared {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .status-badge.delivering {
+            background-color: #f2f0ff;
+            color: #531dab;
+        }
+
+        .status-badge.delivered {
+            background-color: #f9f0ff;
+            color: #722ed1;
+        }
+
+        .status-badge.hold,
+        .status-badge.on {
+            background-color: #fffbe6;
+            color: #d4b106;
+        }
+
+        .status-badge.cancelled {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .status-badge.paid {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-badge.unpaid {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .status-badge.urgent {
+            background-color: #fff2e8;
+            color: #fa541c;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            h2 {
+                font-size: 1.1rem;
+            }
+            .scan-container {
+                padding: 1rem;
+            }
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            .action-option {
+                min-width: 100px;
+                flex: 0 0 calc(50% - 0.25rem);
+            }
+            .action-group {
+                justify-content: space-between;
+            }
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            main {
+                padding: 0.75rem;
+            }
+            table {
+                min-width: 100%;
+            }
+            .order-info-section {
+                min-width: 100%;
+            }
+        }
+
+        /* Login form styles */
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .login-button {
+            background-color: #3a6ea5;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .error-message {
+            color: #e21b1b;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Issue report modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .issue-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginPage">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Driver Login</h2>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Login</button>
+                <div id="loginError" class="error-message">Invalid username or password</div>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainPage" style="display: none; width: 100%;">
+        <header>
+            <h1>Lorry Driver Portal</h1>
+            <div id="driverInfo" style="margin-top: 8px; font-size: 14px;"></div>
+        </header>
+        
+        <main>
+            <div class="scan-container">
+                <h2>Scan Order Barcode</h2>
+                <button id="scanButton" class="scan-button">Search Available Orders</button>
+                
+                <form id="scanForm">
+                    <div class="form-group">
+                        <label for="orderCode">Order Code:</label>
+                        <input type="text" id="orderCode" name="orderCode" required>
+                    </div>
+                    
+                    <div id="orderDetails" class="order-details">
+                        <h3>Order Details</h3>
+                        <div class="order-info">
+                            <div class="order-info-section">
+                                <span class="order-info-label">Customer:</span>
+                                <span id="customerName" class="order-info-value">-</span>
+                            </div>
+                            <div class="order-info-section">
+                                <span class="order-info-label">Status:</span>
+                                <span id="orderStatus" class="order-info-value">-</span>
+                            </div>
+                            <div class="order-info-section">
+                                <span class="order-info-label">Address:</span>
+                                <span id="deliveryAddress" class="order-info-value">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="product-list">
+                            <div class="product-list-header">Products in this Order:</div>
+                            <div id="productsList">
+                                <!-- Products will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="actionGroup">
+                        <label>Action:</label>
+                        <div class="action-group" id="actionOptions">
+                            <!-- Action options will be added dynamically based on order status -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" name="location" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scanDate">Date & Time:</label>
+                        <input type="text" id="scanDate" name="scanDate" readonly>
+                    </div>
+                    
+                    <button type="submit">Submit</button>
+                </form>
+                
+                <div id="confirmation" class="confirmation">
+                    Order status updated successfully!
+                </div>
+            </div>
+            
+            <div class="recent-scans">
+                <h2>Recent Delivery Records</h2>
+                <table id="scansTable">
+                    <thead>
+                        <tr>
+                            <th>Order Code</th>
+                            <th>Status</th>
+                            <th>Customer</th>
+                            <th>Location</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Scan records will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Logistics Management System</p>
+            <button id="logoutButton" style="width: auto; margin-top: 10px; padding: 5px 15px; font-size: 14px;">Logout</button>
+        </footer>
+    </div>
+
+    <!-- Issue Report Modal -->
+    <div id="issueModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Report Issue</h2>
+            <form id="issueForm">
+                <div class="form-group">
+                    <label for="issueDescription">Issue Description:</label>
+                    <textarea id="issueDescription" class="issue-textarea" required></textarea>
+                </div>
+                <button type="submit" class="scan-button">Submit Issue</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Supabase Configuration
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Global variables
+        let currentDriver = null;
+        let currentOrder = null;
+
+        // Driver credentials (in a real app, these would be in the database)
+        const drivers = {
+            'driver1': { password: 'password1', name: 'Driver 1', id: 'driver1' },
+            'driver2': { password: 'password2', name: 'Driver 2', id: 'driver2' }
+        };
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Check if credentials match
+            if (drivers[username] && drivers[username].password === password) {
+                // Save current driver
+                currentDriver = drivers[username];
+                
+                // Show driver info
+                document.getElementById('driverInfo').textContent = `Logged in as: ${currentDriver.name}`;
+                
+                // Hide login page and show main page
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainPage').style.display = 'block';
+                
+                // Load recent scans for this driver
+                loadRecentScans();
+            } else {
+                // Show error message
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        // Handle logout
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            // Reset current driver
+            currentDriver = null;
+            
+            // Show login page and hide main page
+            document.getElementById('loginPage').style.display = 'block';
+            document.getElementById('mainPage').style.display = 'none';
+            
+            // Clear form
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').style.display = 'none';
+        });
+
+        // Set current date and time when page loads
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('scanDate').value = now.toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' });
+        }
+        
+        // Update location based on selected action
+        function updateLocation() {
+            const actionInput = document.querySelector('input[name="action"]:checked');
+            
+            if (!actionInput) return;
+            
+            const action = actionInput.value;
+            const locationField = document.getElementById('location');
+            
+            switch(action) {
+                case 'depart':
+                    locationField.value = 'Main Warehouse, 123 Supply St, Petaling Jaya';
+                    break;
+                case 'arrive':
+                    // Use customer address if available
+                    if (currentOrder && currentOrder.address) {
+                        locationField.value = currentOrder.address;
+                    } else {
+                        locationField.value = 'Customer Location';
+                    }
+                    break;
+                case 'issue':
+                    // Use current location (either warehouse or customer location)
+                    if (currentOrder && currentOrder.status === 'delivering') {
+                        // If en route, use a road location
+                        locationField.value = 'En route to customer location';
+                    } else {
+                        locationField.value = 'Main Warehouse, 123 Supply St, Petaling Jaya';
+                    }
+                    break;
+                default:
+                    locationField.value = '';
+            }
+        }
+        
+        // Display order details when order code is entered
+        async function displayOrderDetails(orderCode) {
+            const orderDetails = document.getElementById('orderDetails');
+            const customerName = document.getElementById('customerName');
+            const orderStatus = document.getElementById('orderStatus');
+            const deliveryAddress = document.getElementById('deliveryAddress');
+            const productsList = document.getElementById('productsList');
+            const actionOptions = document.getElementById('actionOptions');
+            
+            // Clear previous products
+            productsList.innerHTML = '';
+            
+            try {
+                // Fetch order from Supabase
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*, customers(name)')
+                    .eq('order_id', orderCode)
+                    .single();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (!orders) {
+                    alert('Order not found');
+                    orderDetails.style.display = 'none';
+                    return;
+                }
+                
+                currentOrder = orders;
+                
+                // Check if order is assigned to current driver
+                if (orders.driver !== currentDriver.name) {
+                    alert('This order is not assigned to you');
+                    orderDetails.style.display = 'none';
+                    return;
+                }
+                
+                // Check if order is in 'prepared' or 'delivering' status
+                if (orders.status !== 'prepared' && orders.status !== 'delivering') {
+                    alert('This order is not ready for delivery or already delivered');
+                    orderDetails.style.display = 'none';
+                    return;
+                }
+                
+                // Set customer name and status
+                customerName.textContent = orders.customers ? orders.customers.name : 'Unknown Customer';
+                orderStatus.innerHTML = `<span class="status-badge ${orders.status}">${orders.status}</span>`;
+                
+                // Set delivery address
+                deliveryAddress.textContent = orders.address || 'No address provided';
+                
+                // Fetch order products
+                const { data: orderProducts, error: productsError } = await supabase
+                    .from('order_products')
+                    .select('*, products(name)')
+                    .eq('order_id', orders.id);
+                
+                if (productsError) {
+                    throw productsError;
+                }
+                
+                if (orderProducts && orderProducts.length > 0) {
+                    // Create product items
+                    orderProducts.forEach(product => {
+                        const productItem = document.createElement('div');
+                        productItem.className = 'product-item';
+                        
+                        // Create icon with first letter of product name
+                        const productIcon = document.createElement('div');
+                        productIcon.className = 'product-icon';
+                        const productName = product.products ? product.products.name : 'Unknown Product';
+                        productIcon.textContent = productName.charAt(0);
+                        
+                        // Create product details
+                        const productDetails = document.createElement('div');
+                        productDetails.className = 'product-details';
+                        
+                        const productNameElement = document.createElement('div');
+                        productNameElement.className = 'product-name';
+                        productNameElement.textContent = productName;
+                        
+                        const productId = document.createElement('div');
+                        productId.className = 'product-id';
+                        productId.textContent = `Product ID: ${product.product_id}`;
+                        
+                        productDetails.appendChild(productNameElement);
+                        productDetails.appendChild(productId);
+                        
+                        // Create quantity badge
+                        const productQuantity = document.createElement('div');
+                        productQuantity.className = 'product-quantity';
+                        productQuantity.textContent = product.quantity;
+                        
+                        // Assemble product item
+                        productItem.appendChild(productIcon);
+                        productItem.appendChild(productDetails);
+                        productItem.appendChild(productQuantity);
+                        
+                        productsList.appendChild(productItem);
+                    });
+                } else {
+                    productsList.innerHTML = '<p>No products found for this order</p>';
+                }
+                
+                // Set action options based on order status
+                actionOptions.innerHTML = '';
+                
+                if (orders.status === 'prepared') {
+                    // For prepared orders: Depart or Report Issue
+                    actionOptions.innerHTML = `
+                        <div class="action-option">
+                            <input type="radio" id="depart" name="action" value="depart" checked class="action-input">
+                            <label for="depart" class="action-label">Depart</label>
+                        </div>
+                        <div class="action-option">
+                            <input type="radio" id="issue" name="action" value="issue" class="action-input">
+                            <label for="issue" class="action-label">Report Issue</label>
+                        </div>
+                    `;
+                } else if (orders.status === 'delivering') {
+                    // For delivering orders: Arrive or Report Issue
+                    actionOptions.innerHTML = `
+                        <div class="action-option">
+                            <input type="radio" id="arrive" name="action" value="arrive" checked class="action-input">
+                            <label for="arrive" class="action-label">Delivered</label>
+                        </div>
+                        <div class="action-option">
+
+                            <input type="radio" id="issue" name="action" value="issue" class="action-input">
+                            <label for="issue" class="action-label">Report Issue</label>
+                        </div>
+                    `;
+                }
+                
+                // Add listeners to action radio buttons
+                document.querySelectorAll('input[name="action"]').forEach(radio => {
+                    radio.addEventListener('change', updateLocation);
+                });
+                
+                // Update location based on selected action
+                updateLocation();
+                
+                // Show order details
+                orderDetails.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error fetching order:', error);
+                alert('Error fetching order details');
+                orderDetails.style.display = 'none';
+            }
+        }
+        
+        // Load recent scans for current driver
+        async function loadRecentScans() {
+            try {
+                // Fetch recent scans from Supabase where driver matches current driver
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*, customers(name)')
+                    .eq('driver', currentDriver.name)
+                    .or('status.eq.delivering,status.eq.delivered,status.eq.on hold')
+                    .order('order_date', { ascending: false })
+                    .limit(10);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                const tbody = document.querySelector('#scansTable tbody');
+                
+                // Clear existing rows
+                tbody.innerHTML = '';
+                
+                if (!orders || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">No recent delivery records found</td></tr>';
+                    return;
+                }
+                
+                // Add rows for each scan (most recent first)
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    
+                    const codeCell = document.createElement('td');
+                    codeCell.textContent = order.order_id || '';
+                    row.appendChild(codeCell);
+                    
+                    const statusCell = document.createElement('td');
+                    statusCell.innerHTML = `<span class="status-badge ${order.status}">${order.status}</span>`;
+                    row.appendChild(statusCell);
+                    
+                    const customerCell = document.createElement('td');
+                    customerCell.textContent = order.customers ? order.customers.name : 'Unknown';
+                    row.appendChild(customerCell);
+                    
+                    const locationCell = document.createElement('td');
+                    // Show appropriate location based on status
+                    if (order.status === 'delivering') {
+                        locationCell.textContent = 'En route';
+                    } else if (order.status === 'delivered') {
+                        locationCell.textContent = order.address || 'Customer Location';
+                    } else {
+                        locationCell.textContent = 'Warehouse';
+                    }
+                    row.appendChild(locationCell);
+                    
+                    const dateCell = document.createElement('td');
+                    // Show appropriate date based on status
+                    if (order.status === 'delivered' && order.delivered_on) {
+                        dateCell.textContent = new Date(order.delivered_on).toLocaleString('en-MY');
+                    } else if (order.status === 'delivering' && order.depart_on) {
+                        dateCell.textContent = new Date(order.depart_on).toLocaleString('en-MY');
+                    } else {
+                        dateCell.textContent = new Date(order.order_date).toLocaleString('en-MY');
+                    }
+                    row.appendChild(dateCell);
+                    
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading recent scans:', error);
+                const tbody = document.querySelector('#scansTable tbody');
+                tbody.innerHTML = '<tr><td colspan="5">Error loading delivery records</td></tr>';
+            }
+        }
+
+        // Handle scan button click (search for available orders)
+        document.getElementById('scanButton').addEventListener('click', async function() {
+            try {
+                // Change button text to indicate loading
+                this.textContent = 'Searching...';
+                this.disabled = true;
+                
+                // Fetch available orders for this driver
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('order_id')
+                    .eq('driver', currentDriver.name)
+                    .or('status.eq.prepared,status.eq.delivering')
+                    .order('order_date', { ascending: false });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (!orders || orders.length === 0) {
+                    alert('No available orders found for delivery');
+                    this.textContent = 'Search Available Orders';
+                    this.disabled = false;
+                    return;
+                }
+                
+                // Randomly select one of the available orders
+                const randomIndex = Math.floor(Math.random() * orders.length);
+                const selectedOrder = orders[randomIndex];
+                
+                // Set the order code input value
+                document.getElementById('orderCode').value = selectedOrder.order_id;
+                
+                // Display order details
+                await displayOrderDetails(selectedOrder.order_id);
+                
+                this.textContent = 'Search Available Orders';
+                this.disabled = false;
+                
+            } catch (error) {
+                console.error('Error searching for orders:', error);
+                alert('Error searching for available orders');
+                this.textContent = 'Search Available Orders';
+                this.disabled = false;
+            }
+        });
+        
+        // Handle form submission
+        document.getElementById('scanForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Check if order details are displayed
+            if (document.getElementById('orderDetails').style.display !== 'block') {
+                alert('Please scan or enter a valid order first');
+                return;
+            }
+            
+            // Get form data
+            const orderCode = document.getElementById('orderCode').value;
+            const actionInput = document.querySelector('input[name="action"]:checked');
+            
+            if (!actionInput) {
+                alert('Please select an action');
+                return;
+            }
+            
+            const action = actionInput.value;
+            const location = document.getElementById('location').value;
+            const dateTime = document.getElementById('scanDate').value;
+            
+            try {
+                // Handle different actions
+                if (action === 'issue') {
+                    // Show issue report modal
+                    document.getElementById('issueModal').style.display = 'block';
+                    return;
+                }
+                
+                // Update order status based on action
+                let updatedStatus = currentOrder.status;
+                const currentDate = new Date().toISOString();
+                
+                const updateData = {};
+                
+                if (action === 'depart') {
+                    // Set status to delivering and update depart_on date
+                    updatedStatus = 'delivering';
+                    updateData.status = updatedStatus;
+                    updateData.depart_on = currentDate;
+                } else if (action === 'arrive') {
+                    // Set status to delivered and update delivered_on date
+                    updatedStatus = 'delivered';
+                    updateData.status = updatedStatus;
+                    updateData.delivered_on = currentDate;
+                }
+                
+                // Update order in database
+                const { error } = await supabase
+                    .from('orders')
+                    .update(updateData)
+                    .eq('id', currentOrder.id);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Save the action to local history for display
+                saveAction(orderCode, updatedStatus, location, dateTime);
+                
+                // Show confirmation message
+                const confirmation = document.getElementById('confirmation');
+                confirmation.textContent = `Order status updated to ${updatedStatus} successfully!`;
+                confirmation.style.display = 'block';
+                
+                // Hide confirmation after 3 seconds
+                setTimeout(function() {
+                    confirmation.style.display = 'none';
+                }, 3000);
+                
+                // Reset form
+                document.getElementById('orderCode').value = '';
+                document.getElementById('orderDetails').style.display = 'none';
+                
+                // Reload recent scans
+                loadRecentScans();
+                
+            } catch (error) {
+                console.error('Error updating order:', error);
+                alert('Error updating order status');
+            }
+        });
+        
+        // Handle issue form submission
+        document.getElementById('issueForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const issueDescription = document.getElementById('issueDescription').value;
+            
+            try {
+                // Update order status to "on hold" and add issue description
+                const { error } = await supabase
+                    .from('orders')
+                    .update({
+                        status: 'on hold',
+                        issue_description: issueDescription
+                    })
+                    .eq('id', currentOrder.id);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Close the modal
+                document.getElementById('issueModal').style.display = 'none';
+                
+                // Save the action to local history
+                const location = document.getElementById('location').value;
+                const dateTime = document.getElementById('scanDate').value;
+                saveAction(currentOrder.order_id, 'on hold', location, dateTime);
+                
+                // Show confirmation message
+                const confirmation = document.getElementById('confirmation');
+                confirmation.textContent = 'Issue reported successfully! Order status set to "On Hold".';
+                confirmation.style.display = 'block';
+                
+                // Hide confirmation after 3 seconds
+                setTimeout(function() {
+                    confirmation.style.display = 'none';
+                }, 3000);
+                
+                // Reset form
+                document.getElementById('orderCode').value = '';
+                document.getElementById('orderDetails').style.display = 'none';
+                document.getElementById('issueDescription').value = '';
+                
+                // Reload recent scans
+                loadRecentScans();
+                
+            } catch (error) {
+                console.error('Error reporting issue:', error);
+                alert('Error reporting issue');
+            }
+        });
+        
+        // Close issue modal when clicking the close button
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('issueModal').style.display = 'none';
+        });
+        
+        // Close issue modal when clicking outside the modal
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('issueModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Save action to local history and display
+        function saveAction(orderCode, status, location, dateTime) {
+            // Get existing scans from local storage or create empty array
+            const scans = JSON.parse(localStorage.getItem('driverScans-' + currentDriver.id)) || [];
+            
+            // Add new scan
+            scans.push({
+                orderCode,
+                status,
+                location,
+                dateTime
+            });
+            
+            // Save to local storage (limited to current driver)
+            localStorage.setItem('driverScans-' + currentDriver.id, JSON.stringify(scans));
+            
+            // No need to reload scans as we're doing it after every action
+        }
+        
+        // Listen for order code input
+        document.getElementById('orderCode').addEventListener('input', async function() {
+            const orderCode = this.value.trim();
+            
+            if (orderCode) {
+                // Attempt to load order details
+                await displayOrderDetails(orderCode);
+            } else {
+                // Hide order details if input is empty
+                document.getElementById('orderDetails').style.display = 'none';
+            }
+        });
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update date/time
+            updateDateTime();
+            
+            // Update date/time every second
+            setInterval(updateDateTime, 1000);
+            
+            // Check if user was previously logged in
+            const previousDriver = localStorage.getItem('currentDriver');
+            if (previousDriver) {
+                try {
+                    currentDriver = JSON.parse(previousDriver);
+                    
+                    // Show driver info
+                    document.getElementById('driverInfo').textContent = `Logged in as: ${currentDriver.name}`;
+                    
+                    // Hide login page and show main page
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('mainPage').style.display = 'block';
+                    
+                    // Load recent scans for this driver
+                    loadRecentScans();
+                } catch (e) {
+                    // If there's an error parsing the driver, reset it
+                    localStorage.removeItem('currentDriver');
+                }
+            }
+        });
+        
+        // Use the browser's geolocation API to get current location
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    // Success callback
+                    function(position) {
+                        // You could use the coordinates to display a more accurate location
+                        // or to pass to the server when updating order status
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        
+                        console.log(`Current position: ${latitude}, ${longitude}`);
+                        
+                        // Here you could use a reverse geocoding service to get the address
+                        // For simplicity, we'll just use the predefined locations
+                    },
+                    // Error callback
+                    function(error) {
+                        console.error('Error getting location:', error);
+                    }
+                );
+            }
+        }
+    </script>
+</body>
+</html>

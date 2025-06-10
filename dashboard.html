@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autolabs - Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #52c41a;
+            --secondary-color: #1890ff;
+            --tertiary-color: #fa8c16;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+            --error-color: #f5222d;
+            --info-color: #1890ff;
+            --background-color: #f0f2f5;
+            --sidebar-width: 225px;
+            --header-height: 60px;
+            --text-color: #333;
+            --text-light: #666;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #222;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Logo Section */
+        .logo-container {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #333;
+            height: var(--header-height);
+        }
+
+        .logo {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s;
+            gap: 12px;
+        }
+
+        .nav-item:hover {
+            background-color: #333;
+        }
+
+        .nav-item.active {
+            background-color: #e21b1b;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-text {
+            font-size: 14px;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+        }
+
+        /* Header Styles */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+
+
+
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-icon {
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--error-color);
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Content Container */
+        .content {
+            padding: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Button styles */
+        .button {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .button.primary:hover {
+            background-color: #3fa00c;
+        }
+
+        .button.outline {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid #d9d9d9;
+        }
+
+        .button.outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .button .icon {
+            margin-right: 8px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background-color: #e11d48;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #be123c;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-title {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .positive {
+            color: #10b981;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        /* Cards and Panels */
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-content {
+            padding: 24px;
+        }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .category-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            background-color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-name {
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 15px;
+        }
+
+        /* Two Column Layout */
+        .two-column-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Staff List Styles */
+        .staff-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .staff-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            gap: 12px;
+        }
+
+        .staff-avatar {
+            width: 40px;
+            height: 40px;
+            background: #e11d48;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .staff-info {
+            flex: 1;
+        }
+
+        .staff-name {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .staff-role {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .staff-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .staff-status.online {
+            background: #10b981;
+        }
+
+        /* Delivery List Styles */
+        .delivery-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .delivery-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            gap: 12px;
+        }
+
+        .delivery-icon {
+            width: 40px;
+            height: 40px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .delivery-icon.lalamove {
+            background: #fef3c7;
+        }
+
+        .delivery-icon.internal {
+            background: #e0f2fe;
+        }
+
+        .delivery-info {
+            flex: 1;
+        }
+
+        .delivery-order {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .delivery-status {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .delivery-eta {
+            font-size: 12px;
+            font-weight: 500;
+            color: #10b981;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: -60px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 8px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            display: block;
+            color: var(--text-color);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 8px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #e21b1b;
+            cursor: pointer;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: #f8f8f8;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1280px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 16px;
+            }
+
+            .user-section {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 12px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--box-shadow);
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo -->
+            <div class="logo-container">
+                <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                        d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6Z" />
+                </svg>
+                <div class="logo-text">Autolabs</div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-item active">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Admin Dashboard</div>
+                </a>
+
+                <a href="order.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Order Page</div>
+                </a>
+
+                <a href="stock.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Inventory Page</div>
+                </a>
+
+                <a href="customer.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                            </path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Customer Page</div>
+                </a>
+
+                <a href="staff.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Staff Page</div>
+                </a>
+
+                <a href="reports.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Reports Page</div>
+                </a>
+
+                <a href="communication center page.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Communication Center</div>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Settings Page</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        AD
+                    </div>
+                    <div>
+                        <div style="font-weight: 500;" id="userName">Admin User</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Administrator</div>
+                    </div>
+                    
+                    <!-- Add dropdown menu here -->
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-item" id="userFullName">Admin User</div>
+                        <div class="dropdown-item" id="userStaffId">Staff ID: 8888</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item logout" id="logoutButton">Logout</div>
+                    </div>
+                </div>
+                
+                
+            </div>
+
+
+            <div class="content">
+                <!-- Action Buttons -->
+                <div class="page-title">
+                    <span>Admin Dashboard</span>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="button outline">
+                            <span class="icon">📊</span>
+                            <span>Export Report</span>
+                        </button>
+                        <button class="button primary">
+                            <span class="icon">⚙️</span>
+                            <span>System Settings</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Today's Orders</div>
+                        <div class="stat-value">42</div>
+                        <div class="stat-change positive">↑ 12% from yesterday</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Pending Orders</div>
+                        <div class="stat-value">18</div>
+                        <div class="stat-change negative">↑ 5% from yesterday</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Low Stock Items</div>
+                        <div class="stat-value">7</div>
+                        <div class="stat-change negative">↑ 3 more than yesterday</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Active Deliveries</div>
+                        <div class="stat-value">15</div>
+                        <div class="stat-change positive">↓ 2 from yesterday</div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="two-column-layout">
+                    <!-- Main Column -->
+                    <div>
+                        <!-- Product Categories -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Product Categories</h2>
+                                <a href="stock.html" class="btn">View All Products</a>
+                            </div>
+                            <div class="card-content">
+                                <div class="categories-grid">
+                                    <div class="category-card">
+                                        <div class="category-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                        </div>
+                                        <div class="category-name">12.3 inch Android Casings</div>
+                                    </div>
+                                    <div class="category-card">
+                                        <div class="category-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                        </div>
+                                        <div class="category-name">9/10 inch Casings Android</div>
+                                    </div>
+                                    <div class="category-card">
+                                        <div class="category-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="category-name">Safety Security</div>
+                                    </div>
+                                    <div class="category-card">
+                                        <div class="category-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path
+                                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                                                </path>
+                                                <circle cx="12" cy="13" r="4"></circle>
+                                            </svg>
+                                        </div>
+                                        <div class="category-name">Car Camera & Accessories</div>
+                                    </div>
+                                    <div class="category-card">
+                                        <div class="category-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                                                <circle cx="12" cy="12" r="2"></circle>
+                                                <path d="M6 12h.01M18 12h.01"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="category-name">Electronic Parts</div>
+                                    </div>
+                                    <div class="category-card">
+                                        <div class="category-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path
+                                                    d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <div class="category-name">In Car Entertainment</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Trends -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Monthly Performance</h2>
+                                <a href="reports.html" class="btn">View Full Reports</a>
+                            </div>
+                            <div class="card-content">
+                                <div class="chart-container">
+                                    <canvas id="monthlyTrendsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Column -->
+                    <div>
+                        <!-- Staff on Duty -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Staff on Duty Today</h2>
+                                <a href="staff.html" class="btn">View All Staff</a>
+                            </div>
+                            <div class="card-content">
+                                <div class="staff-list">
+                                    <div class="staff-item">
+                                        <div class="staff-avatar">ZW</div>
+                                        <div class="staff-info">
+                                            <div class="staff-name">Zhang Wei</div>
+                                            <div class="staff-role">Senior Technician</div>
+                                        </div>
+                                        <div class="staff-status online"></div>
+                                    </div>
+                                    <div class="staff-item">
+                                        <div class="staff-avatar">LN</div>
+                                        <div class="staff-info">
+                                            <div class="staff-name">Li Na</div>
+                                            <div class="staff-role">Customer Service</div>
+                                        </div>
+                                        <div class="staff-status online"></div>
+                                    </div>
+                                    <div class="staff-item">
+                                        <div class="staff-avatar">WJ</div>
+                                        <div class="staff-info">
+                                            <div class="staff-name">Wang Jun</div>
+                                            <div class="staff-role">Installer</div>
+                                        </div>
+                                        <div class="staff-status online"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Deliveries -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Active Deliveries</h2>
+                                <a href="order.html" class="btn">View All Deliveries</a>
+                            </div>
+                            <div class="card-content">
+                                <div class="delivery-list">
+                                    <div class="delivery-item">
+                                        <div class="delivery-icon lalamove">🛵</div>
+                                        <div class="delivery-info">
+                                            <div class="delivery-order">#ORD-25484</div>
+                                            <div class="delivery-status">En Route via Lalamove</div>
+                                        </div>
+                                        <div class="delivery-eta">ETA: 15min</div>
+                                    </div>
+                                    <div class="delivery-item">
+                                        <div class="delivery-icon internal">🚚</div>
+                                        <div class="delivery-info">
+                                            <div class="delivery-order">#ORD-25483</div>
+                                            <div class="delivery-status">Internal Delivery</div>
+                                        </div>
+                                        <div class="delivery-eta">ETA: 30min</div>
+                                    </div>
+                                    <div class="delivery-item">
+                                        <div class="delivery-icon lalamove">🛵</div>
+                                        <div class="delivery-info">
+                                            <div class="delivery-order">#ORD-25482</div>
+                                            <div class="delivery-status">Preparing for Lalamove</div>
+                                        </div>
+                                        <div class="delivery-eta">Pickup in 5min</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Toggle Button -->
+    <div class="mobile-toggle">☰</div>
+
+    <script>
+        // Monthly Trends Chart
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('monthlyTrendsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [120, 190, 150, 200, 180, 220],
+                        borderColor: '#e11d48',
+                        backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Revenue',
+                        data: [150, 220, 180, 240, 200, 250],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        }
+        // Initialize Supabase client
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Check if user is authenticated
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                // Redirect to login if not authenticated
+                window.location.href = 'admin-login.html';
+                return null;
+            }
+            return user;
+        }
+
+        // Get user details from database
+        async function getUserDetails(userId) {
+            const { data, error } = await supabase
+                .from('staff_members')
+                .select('*')
+                .eq('id', userId)
+                .single();
+
+            if (error) {
+                console.error('Error fetching user details:', error);
+                return null;
+            }
+            return data;
+        }
+
+        // Update user interface with user details
+        function updateUserInterface(userData) {
+            // Update avatar with initials
+            const initials = userData.first_name.charAt(0) + userData.last_name.charAt(0);
+            document.getElementById('userAvatar').textContent = initials;
+
+            // Update user name in header
+            document.getElementById('userName').textContent = `${userData.first_name} ${userData.last_name}`;
+
+            // Update dropdown menu details
+            document.getElementById('userFullName').textContent = `${userData.first_name} ${userData.last_name}`;
+            document.getElementById('userStaffId').textContent = `Staff ID: ${userData.staff_id}`;
+        }
+
+        // Handle logout
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Error signing out:', error);
+                alert('Error signing out. Please try again.');
+            } else {
+                // Clear session storage
+                sessionStorage.removeItem('currentUser');
+
+                // Redirect to login page
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        // Toggle dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Initialize the page
+        async function initializePage() {
+            // Check authentication status
+            const user = await checkAuth();
+            if (!user) return;
+
+            // Get user details from database
+            const userDetails = await getUserDetails(user.id);
+            if (!userDetails) {
+                alert('Unable to load user information. Please try logging in again.');
+                logout();
+                return;
+            }
+
+            // Update UI with user details
+            updateUserInterface(userDetails);
+
+            // Initialize dropdown toggle
+            document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                const dropdown = document.getElementById('userDropdown');
+                const avatar = document.getElementById('userAvatar');
+
+                if (!avatar.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            // Initialize logout button
+            document.getElementById('logoutButton').addEventListener('click', logout);
+        }
+// Dashboard data loading functions
+async function loadDashboardData() {
+    try {
+        // Get authenticated user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            window.location.href = 'admin-login.html';
+            return;
+        }
+
+        // Load stats in parallel for better performance
+        await Promise.all([
+            loadOrderStats(),
+            loadInventoryStats(),
+            loadDeliveryStats(),
+            loadStaffOnDuty(),
+            loadActiveDeliveries()
+        ]);
+
+        // Initialize charts after data is loaded
+        initializeMonthlyTrendsChart();
+
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        alert('Failed to load dashboard data. Please try again.');
+    }
+}
+
+// Load order statistics from Supabase
+async function loadOrderStats() {
+    try {
+        // Get today's date
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        
+        // Get yesterday's date
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+        // Fetch today's orders
+        const { data: todayOrders, error: todayError } = await supabase
+            .from('orders')
+            .select('*')
+            .gte('created_at', todayStr);
+
+        if (todayError) throw todayError;
+
+        // Fetch yesterday's orders
+        const { data: yesterdayOrders, error: yesterdayError } = await supabase
+            .from('orders')
+            .select('*')
+            .gte('created_at', yesterdayStr)
+            .lt('created_at', todayStr);
+
+        if (yesterdayError) throw yesterdayError;
+
+        // Fetch pending orders
+        const { data: pendingOrders, error: pendingError } = await supabase
+            .from('orders')
+            .select('*')
+            .in('status', ['processing', 'prepared']);
+
+        if (pendingError) throw pendingError;
+
+        // Calculate percentage change
+        const todayOrderCount = todayOrders ? todayOrders.length : 0;
+        const yesterdayOrderCount = yesterdayOrders ? yesterdayOrders.length : 0;
+        
+        let percentChange = 0;
+        if (yesterdayOrderCount > 0) {
+            percentChange = ((todayOrderCount - yesterdayOrderCount) / yesterdayOrderCount) * 100;
+        }
+
+        // Update the UI with the real data
+        document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-value').textContent = todayOrderCount;
+        
+        const changeElement = document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-change');
+        changeElement.textContent = `${percentChange >= 0 ? '↑' : '↓'} ${Math.abs(percentChange).toFixed(0)}% from yesterday`;
+        changeElement.className = `stat-change ${percentChange >= 0 ? 'positive' : 'negative'}`;
+
+        // Update pending orders
+        document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value').textContent = pendingOrders.length;
+
+    } catch (error) {
+        console.error('Error loading order stats:', error);
+    }
+}
+
+// Load inventory statistics from Supabase
+async function loadInventoryStats() {
+    try {
+        // Fetch low stock items
+        const { data: lowStockItems, error: lowStockError } = await supabase
+            .from('products')
+            .select('*')
+            .lt('quantity', 10);
+
+        if (lowStockError) throw lowStockError;
+
+        // Update the UI
+        document.querySelector('.stats-grid .stat-card:nth-child(3) .stat-value').textContent = lowStockItems.length;
+
+    } catch (error) {
+        console.error('Error loading inventory stats:', error);
+    }
+}
+
+// Load delivery statistics
+async function loadDeliveryStats() {
+    try {
+        // Fetch active deliveries
+        const { data: activeDeliveries, error: deliveryError } = await supabase
+            .from('orders')
+            .select('*')
+            .in('status', ['shipping', 'delivering']);
+
+        if (deliveryError) throw deliveryError;
+
+        // Update the UI
+        document.querySelector('.stats-grid .stat-card:nth-child(4) .stat-value').textContent = activeDeliveries.length;
+
+    } catch (error) {
+        console.error('Error loading delivery stats:', error);
+    }
+}
+
+// Load staff on duty today
+async function loadStaffOnDuty() {
+    try {
+        const { data: staffMembers, error: staffError } = await supabase
+            .from('staff_members')
+            .select('*')
+            .eq('status', 'active')
+            .limit(3);
+
+        if (staffError) throw staffError;
+
+        if (staffMembers && staffMembers.length > 0) {
+            const staffList = document.querySelector('.staff-list');
+            staffList.innerHTML = ''; // Clear existing staff
+
+            staffMembers.forEach(staff => {
+                const initials = `${staff.first_name.charAt(0)}${staff.last_name.charAt(0)}`;
+                
+                const staffItem = document.createElement('div');
+                staffItem.className = 'staff-item';
+                staffItem.innerHTML = `
+                    <div class="staff-avatar">${initials}</div>
+                    <div class="staff-info">
+                        <div class="staff-name">${staff.first_name} ${staff.last_name}</div>
+                        <div class="staff-role">${staff.role}</div>
+                    </div>
+                    <div class="staff-status ${staff.is_online ? 'online' : ''}"></div>
+                `;
+                
+                staffList.appendChild(staffItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading staff on duty:', error);
+    }
+}
+
+// Load active deliveries
+async function loadActiveDeliveries() {
+    try {
+        const { data: deliveries, error: deliveryError } = await supabase
+            .from('orders')
+            .select('*, customers(*)')
+            .in('status', ['shipping', 'delivering'])
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+        if (deliveryError) throw deliveryError;
+
+        if (deliveries && deliveries.length > 0) {
+            const deliveryList = document.querySelector('.delivery-list');
+            deliveryList.innerHTML = ''; // Clear existing deliveries
+
+            deliveries.forEach(delivery => {
+                const deliveryItem = document.createElement('div');
+                deliveryItem.className = 'delivery-item';
+                
+                // Determine icon based on delivery type
+                const isLalamove = delivery.delivery_method === 'Lalamove';
+                
+                deliveryItem.innerHTML = `
+                    <div class="delivery-icon ${isLalamove ? 'lalamove' : 'internal'}">${isLalamove ? '🛵' : '🚚'}</div>
+                    <div class="delivery-info">
+                        <div class="delivery-order">#${delivery.order_code}</div>
+                        <div class="delivery-status">${isLalamove ? 'En Route via Lalamove' : 'Internal Delivery'}</div>
+                    </div>
+                    <div class="delivery-eta">ETA: ${delivery.estimated_delivery_time || '30min'}</div>
+                `;
+                
+                deliveryList.appendChild(deliveryItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading active deliveries:', error);
+    }
+}
+
+// Initialize the monthly trends chart with real data
+async function initializeMonthlyTrendsChart() {
+    try {
+        // Get the last 6 months of data
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 5); // Get 6 months of data
+
+        const { data: monthlyOrders, error: ordersError } = await supabase
+            .from('orders')
+            .select('created_at, total_amount')
+            .gte('created_at', startDate.toISOString());
+
+        if (ordersError) throw ordersError;
+
+        // Process the data by month
+        const months = [];
+        const orderCounts = [];
+        const revenue = [];
+
+        // Get the last 6 months
+        for (let i = 0; i < 6; i++) {
+            const date = new Date();
+            date.setMonth(date.getMonth() - i);
+            const monthYear = date.toLocaleString('default', { month: 'short' });
+            months.unshift(monthYear);
+            
+            orderCounts.unshift(0);
+            revenue.unshift(0);
+        }
+
+        // Fill in the data
+        if (monthlyOrders) {
+            monthlyOrders.forEach(order => {
+                const orderDate = new Date(order.created_at);
+                const monthIndex = months.indexOf(orderDate.toLocaleString('default', { month: 'short' }));
+                
+                if (monthIndex !== -1) {
+                    orderCounts[monthIndex]++;
+                    revenue[monthIndex] += parseFloat(order.total_amount || 0);
+                }
+            });
+        }
+
+        // Create the chart
+        const ctx = document.getElementById('monthlyTrendsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Orders',
+                    data: orderCounts,
+                    borderColor: '#e11d48',
+                    backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Revenue (RM)',
+                    data: revenue,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error initializing chart:', error);
+    }
+}
+
+// Call this function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the page
+    initializePage();
+    
+    // Load dashboard data from Supabase
+    loadDashboardData();
+});
+    </script>
+</body>
+
+</html>

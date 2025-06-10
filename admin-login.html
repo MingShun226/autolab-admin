@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Autolabs - Staff Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .portal-label {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #e21b1b;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-password {
+            color: #e21b1b;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #e21b1b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #c41818;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .signup-link a {
+            color: #e21b1b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #e21b1b;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #e21b1b;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .back-link {
+                position: static;
+                margin-bottom: 20px;
+                justify-content: center;
+            }
+        }
+    </style>
+    <!-- Add Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <a href="login.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" />
+        </svg>
+        Back to portals
+    </a>
+
+    <div class="login-container">
+        <div class="logo-container">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e21b1b">
+                <path
+                    d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+            </svg>
+            <div class="logo-text">Autolabs</div>
+        </div>
+
+        <div class="portal-label">Staff Portal Login</div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number">
+                <div class="error-message" id="phoneError">Please enter your phone number</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError">Please enter your password</div>
+            </div>
+
+            <div class="remember-forgot">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="resetpassword.html" class="forgot-password" id="forgotPassword">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <div class="signup-link">
+            New staff member? <a href="registration.html">Register here</a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Check if user is already logged in
+        window.addEventListener('load', async function () {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Get staff details from the database
+                const { data: staffData, error: staffError } = await supabase
+                    .from('staff_members')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (staffData) {
+                    // Store staff info in session
+                    sessionStorage.setItem('currentUser', JSON.stringify({
+                        id: user.id,
+                        phone: user.phone,
+                        email: staffData.email,
+                        staffId: staffData.staff_id,
+                        firstName: staffData.first_name,
+                        lastName: staffData.last_name,
+                        type: 'admin'
+                    }));
+
+                    // Redirect to admin panel
+                    window.location.href = '/dashboard.html';
+                }
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            let isValid = true;
+
+            // Phone validation
+            if (!phone) {
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            }
+
+            // Password validation
+            if (!password) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (isValid) {
+                try {
+                    // Sign in with Supabase Auth - find user by phone in database
+                    // First, find the user by phone number in the database
+                    const { data: userData, error: dbError } = await supabase
+                        .from('staff_members')
+                        .select('email')
+                        .eq('phone', phone)
+                        .single();
+                    
+                    if (dbError || !userData) {
+                        throw new Error('Phone number not found');
+                    }
+                    
+                    // Then sign in with email
+                    const { data: { user }, error } = await supabase.auth.signInWithPassword({
+                        email: userData.email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    if (user) {
+                        // Get staff details from the database
+                        const { data: staffData, error: staffError } = await supabase
+                            .from('staff_members')
+                            .select('*')
+                            .eq('id', user.id)
+                            .single();
+
+                        if (staffError) throw staffError;
+
+                        // Store staff info in session
+                        sessionStorage.setItem('currentUser', JSON.stringify({
+                            id: user.id,
+                            phone: user.phone,
+                            email: staffData.email,
+                            staffId: staffData.staff_id,
+                            firstName: staffData.first_name,
+                            lastName: staffData.last_name,
+                            type: 'admin'
+                        }));
+
+                        // Send login event to n8n webhook (optional)
+                        try {
+                            await fetch('https://subapipie.app.n8n.cloud/webhook-test/order-placed', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event: 'staff_login',
+                                    staff_id: staffData.staff_id,
+                                    name: `${staffData.first_name} ${staffData.last_name}`,
+                                    phone: user.phone,
+                                    timestamp: new Date().toISOString()
+                                })
+                            });
+                        } catch (webhookError) {
+                            console.log('Webhook notification failed:', webhookError);
+                            // Don't block login if webhook fails
+                        }
+
+                        // Redirect to admin panel
+                        window.location.href = 'dashboard.html';
+                    }
+                } catch (error) {
+                    console.error('Error signing in:', error);
+                    alert('Invalid phone number or password');
+                }
+            }
+        });
+
+        // Handle forgot password
+        document.getElementById('forgotPassword').addEventListener('click', async function (e) {
+            e.preventDefault();
+
+            const phone = document.getElementById('phone').value;
+
+            if (!phone) {
+                document.getElementById('phoneError').textContent = 'Please enter your phone number to reset password';
+                document.getElementById('phoneError').style.display = 'block';
+                return;
+            }
+
+            try {
+                const { error } = await supabase.auth.resetPasswordForPhone(phone, {
+                    redirectTo: window.location.origin + '/reset-password.html',
+                });
+
+                if (error) throw error;
+
+                alert('Password reset SMS sent. Please check your inbox.');
+            } catch (error) {
+                console.error('Error sending password reset SMS:', error);
+                alert('Failed to send password reset SMS. Please try again.');
+            }
+        });
+    </script>
+</body>
+
+</html>

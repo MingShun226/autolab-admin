@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autolabs - Communication Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #52c41a;
+            --secondary-color: #1890ff;
+            --tertiary-color: #fa8c16;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+            --error-color: #f5222d;
+            --info-color: #1890ff;
+            --background-color: #f0f2f5;
+            --sidebar-width: 225px;
+            --header-height: 60px;
+            --text-color: #333;
+            --text-light: #666;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #222;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+        
+        /* Logo Section */
+        .logo-container {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #333;
+            height: var(--header-height);
+        }
+        
+        .logo {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            flex-grow: 1;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s;
+            gap: 12px;
+        }
+        
+        .nav-item:hover {
+            background-color: #333;
+        }
+        
+        .nav-item.active {
+            background-color: #e21b1b;
+            color: white;
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-text {
+            font-size: 14px;
+        }
+        
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+        }
+        
+        /* Header Styles */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: -60px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 8px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            display: block;
+            color: var(--text-color);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 8px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #e21b1b;
+            cursor: pointer;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: #f8f8f8;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            position: relative;
+            margin-right: 20px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--error-color);
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Content Container */
+        .content {
+            padding: 24px;
+        }
+        
+        /* Page Title */
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Communication Styles */
+        .communication-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .message-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .message-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .message-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e21b1b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .message-text {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .message-input {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .message-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            resize: none;
+            height: 60px;
+        }
+        
+        .message-input button {
+            padding: 10px 20px;
+            background-color: #e21b1b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .message-input button:hover {
+            background-color: #c41818;
+        }
+        
+        /* Emergency Updates */
+        .emergency-updates {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        
+        .emergency-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .emergency-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .emergency-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .emergency-item:last-child {
+            border-bottom: none;
+        }
+        
+        .emergency-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .emergency-description {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .emergency-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* System Notifications */
+        .system-notifications {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .notification-text {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-critical {
+            background-color: #fce8e6;
+            color: #EA4335;
+        }
+        
+        .status-warning {
+            background-color: #fef7e0;
+            color: #FBBC05;
+        }
+        
+        .status-info {
+            background-color: #e6f4ea;
+            color: #34A853;
+        }
+        
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--box-shadow);
+            cursor: pointer;
+            z-index: 999;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .communication-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo -->
+            <div class="logo-container">
+                <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6Z" />
+                </svg>
+                <div class="logo-text">Autolabs</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Admin Dashboard</div>
+                </a>
+                
+                <a href="order.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Order Page</div>
+                </a>
+                
+                <a href="stock.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Inventory Page</div>
+                </a>
+                
+                <a href="customer.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                            </path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Customer Page</div>
+                </a>
+                
+                <a href="staff.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Staff Page</div>
+                </a>
+                
+                <a href="reports.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Reports Page</div>
+                </a>
+                
+                <a href="communication center page.html" class="nav-item active">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Communication Center</div>
+                </a>
+                
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Settings Page</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        AD
+                    </div>
+                    <div>
+                        <div style="font-weight: 500;" id="userName">Admin User</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Administrator</div>
+                    </div>
+                    
+                    <!-- Add dropdown menu here -->
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-item" id="userFullName">Admin User</div>
+                        <div class="dropdown-item" id="userStaffId">Staff ID: 8888</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item logout" id="logoutButton">Logout</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content">
+                <!-- Page Title -->
+                <div class="page-title">
+                    <span>Communication Center</span>
+                </div>
+                
+                <!-- Communication Grid -->
+                <div class="communication-grid">
+                    <!-- Message Container -->
+                    <div class="message-container">
+                        <div class="message-header">
+                            <h2>Internal Communication</h2>
+                            <select class="dropdown">
+                                <option>All Departments</option>
+                                <option>Warehouse</option>
+                                <option>Delivery</option>
+                                <option>Customer Service</option>
+                            </select>
+                        </div>
+                        <div class="message-list">
+                            <div class="message-item">
+                                <div class="message-avatar">WH</div>
+                                <div class="message-content">
+                                    <div class="message-sender">Warehouse Manager</div>
+                                    <div class="message-text">We've received the emergency order update. Processing now.</div>
+                                    <div class="message-time">2 minutes ago</div>
+                                </div>
+                            </div>
+                            <div class="message-item">
+                                <div class="message-avatar">AD</div>
+                                <div class="message-content">
+                                    <div class="message-sender">Admin User</div>
+                                    <div class="message-text">Please prioritize order #ORD-25484. Customer requested urgent delivery.</div>
+                                    <div class="message-time">5 minutes ago</div>
+                                </div>
+                            </div>
+                            <div class="message-item">
+                                <div class="message-avatar">WH</div>
+                                <div class="message-content">
+                                    <div class="message-sender">Warehouse Manager</div>
+                                    <div class="message-text">System sync completed. All inventory levels updated.</div>
+                                    <div class="message-time">15 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-input">
+                            <textarea placeholder="Type your message..."></textarea>
+                            <button>Send</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Emergency Updates -->
+                    <div class="emergency-updates">
+                        <div class="emergency-header">
+                            <h2>Emergency Updates</h2>
+                            <span class="status-badge status-critical">3 Active</span>
+                        </div>
+                        <div class="emergency-list">
+                            <div class="emergency-item">
+                                <div class="emergency-title">Order Modification #ORD-25484</div>
+                                <div class="emergency-description">Customer changed delivery address and requested priority handling</div>
+                                <div class="emergency-time">5 minutes ago</div>
+                            </div>
+                            <div class="emergency-item">
+                                <div class="emergency-title">System Maintenance Alert</div>
+                                <div class="emergency-description">Scheduled maintenance in 30 minutes. Please complete pending tasks.</div>
+                                <div class="emergency-time">15 minutes ago</div>
+                            </div>
+                            <div class="emergency-item">
+                                <div class="emergency-title">Peak Period Alert</div>
+                                <div class="emergency-description">High order volume detected. Additional staff required.</div>
+                                <div class="emergency-time">1 hour ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Notifications -->
+                <div class="system-notifications">
+                    <h2>System Notifications</h2>
+                    <div class="notification-list">
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                    <polyline points="13 2 13 9 20 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">System Sync Progress</div>
+                                <div class="notification-text">Inventory database sync completed (100%)</div>
+                                <div class="notification-time">15 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Peak Period Alert</div>
+                                <div class="notification-text">Current order volume: 120 orders (High)</div>
+                                <div class="notification-time">1 hour ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Maintenance Schedule</div>
+                                <div class="notification-text">System maintenance scheduled for tomorrow at 2:00 AM</div>
+                                <div class="notification-time">2 hours ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Toggle Button -->
+    <div class="mobile-toggle">☰</div>
+    
+    <script>
+        // Mobile menu toggle
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        }
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Check if user is authenticated
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                // Redirect to login if not authenticated
+                window.location.href = 'admin-login.html';
+                return null;
+            }
+            return user;
+        }
+
+        // Get user details from database
+        async function getUserDetails(userId) {
+            const { data, error } = await supabase
+                .from('staff_members')
+                .select('*')
+                .eq('id', userId)
+                .single();
+
+            if (error) {
+                console.error('Error fetching user details:', error);
+                return null;
+            }
+            return data;
+        }
+
+        // Update user interface with user details
+        function updateUserInterface(userData) {
+            // Update avatar with initials
+            const initials = userData.first_name.charAt(0) + userData.last_name.charAt(0);
+            document.getElementById('userAvatar').textContent = initials;
+
+            // Update user name in header
+            document.getElementById('userName').textContent = `${userData.first_name} ${userData.last_name}`;
+
+            // Update dropdown menu details
+            document.getElementById('userFullName').textContent = `${userData.first_name} ${userData.last_name}`;
+            document.getElementById('userStaffId').textContent = `Staff ID: ${userData.staff_id}`;
+        }
+
+        // Handle logout
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Error signing out:', error);
+                alert('Error signing out. Please try again.');
+            } else {
+                // Clear session storage
+                sessionStorage.removeItem('currentUser');
+
+                // Redirect to login page
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        // Toggle dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Initialize the page
+        async function initializePage() {
+            // Check authentication status
+            const user = await checkAuth();
+            if (!user) return;
+
+            // Get user details from database
+            const userDetails = await getUserDetails(user.id);
+            if (!userDetails) {
+                alert('Unable to load user information. Please try logging in again.');
+                logout();
+                return;
+            }
+
+            // Update UI with user details
+            updateUserInterface(userDetails);
+
+            // Initialize dropdown toggle
+            document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                const dropdown = document.getElementById('userDropdown');
+                const avatar = document.getElementById('userAvatar');
+
+                if (!avatar.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            // Initialize logout button
+            document.getElementById('logoutButton').addEventListener('click', logout);
+        }
+
+        // Call initializePage when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize the page
+            initializePage();
+
+            // Your existing chart initialization code...
+        });
+    </script>
+</body>
+</html>
