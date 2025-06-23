@@ -389,17 +389,17 @@
             transition: all 0.3s;
         }
 
-        .status-badge.awaiting-confirmation {
+        .status-badge.awaiting_confirmation {
             background-color: #fff2e8;
             color: #fa541c;
         }
 
-        .status-badge.pending-payment {
+        .status-badge.pending_payment {
             background-color: #e6f7ff;
             color: #1890ff;
         }
 
-        .status-badge.pending-confirmation {
+        .status-badge.pending_confirmation {
             background-color: #f9f0ff;
             color: #722ed1;
         }
@@ -1205,11 +1205,11 @@
                     <div class="tabs" id="statusTabs">
                         <div class="tab active" data-status="all">All Orders <span class="tab-badge"
                                 id="allOrdersCount">-</span></div>
-                        <div class="tab" data-status="awaiting-confirmation">📱 Awaiting Confirmation <span class="tab-badge"
+                        <div class="tab" data-status="awaiting_confirmation">📱 Awaiting Confirmation <span class="tab-badge"
                                 id="awaitingConfirmationOrdersCount">-</span></div>
-                        <div class="tab" data-status="pending-payment">💳 Pending Payment <span class="tab-badge"
+                        <div class="tab" data-status="pending_payment">💳 Pending Payment <span class="tab-badge"
                                 id="pendingPaymentOrdersCount">-</span></div>
-                        <div class="tab" data-status="pending-confirmation">⏳ Pending Admin Approval <span class="tab-badge"
+                        <div class="tab" data-status="pending_confirmation">⏳ Pending Admin Approval <span class="tab-badge"
                                 id="pendingConfirmationOrdersCount">-</span></div>
                         <div class="tab" data-status="processing">⚙️ Processing <span class="tab-badge"
                                 id="processingOrdersCount">-</span></div>
@@ -1240,9 +1240,9 @@
                                 <span class="filter-label">Status:</span>
                                 <select class="filter-select" id="statusFilter">
                                     <option value="all">All Statuses</option>
-                                    <option value="awaiting-confirmation">📱 Awaiting Confirmation</option>
-                                    <option value="pending-payment">💳 Pending Payment</option>
-                                    <option value="pending-confirmation">⏳ Pending Admin Approval</option>
+                                    <option value="awaiting_confirmation">📱 Awaiting Confirmation</option>
+                                    <option value="pending_payment">💳 Pending Payment</option>
+                                    <option value="pending_confirmation">⏳ Pending Admin Approval</option>
                                     <option value="processing">⚙️ Processing</option>
                                     <option value="prepared">📦 Prepared</option>
                                     <option value="delivering">🚚 Delivering</option>
@@ -1318,8 +1318,8 @@
                 <div class="form-group">
                     <label for="editOrderStatus">Order Status</label>
                     <select class="form-control" id="editOrderStatus">
-                        <option value="pending-payment">Pending Payment</option>
-                        <option value="pending-confirmation">Pending Confirmation</option>
+                        <option value="pending_payment">Pending Payment</option>
+                        <option value="pending_confirmation">Pending Confirmation</option>
                         <option value="processing">Processing</option>
                         <option value="prepared">Prepared</option>
                         <option value="delivering">Delivering</option>
@@ -1377,22 +1377,22 @@
         // Single Status Display Function (from paste.txt)
         function getOrderStatusDisplay(order) {
             const statusConfig = {
-                'awaiting-confirmation': { 
-                    class: 'awaiting-confirmation', 
+                'awaiting_confirmation': { 
+                    class: 'awaiting_confirmation', 
                     text: '📱 Awaiting WhatsApp Confirmation', 
                     icon: '📱',
                     color: '#fa8c16',
                     adminVisible: false
                 },
-                'pending-payment': { 
-                    class: 'pending-payment', 
+                'pending_payment': { 
+                    class: 'pending_payment', 
                     text: '💳 Confirmed - Pending Payment', 
                     icon: '💳',
                     color: '#1890ff',
                     adminVisible: true
                 },
-                'pending-confirmation': { 
-                    class: 'pending-confirmation', 
+                'pending_confirmation': { 
+                    class: 'pending_confirmation', 
                     text: '⏳ Paid - Pending Admin Approval', 
                     icon: '⏳',
                     color: '#722ed1',
@@ -1570,9 +1570,9 @@
         function countOrdersByStatus() {
             statusCounts = {
                 'all': 0,
-                'awaiting-confirmation': 0,
-                'pending-payment': 0,
-                'pending-confirmation': 0,
+                'awaiting_confirmation': 0,
+                'pending_payment': 0,
+                'pending_confirmation': 0,
                 'processing': 0,
                 'prepared': 0,
                 'delivering': 0,
@@ -1595,9 +1595,9 @@
 
             // Update tab badges
             document.getElementById('allOrdersCount').textContent = statusCounts['all'];
-            document.getElementById('awaitingConfirmationOrdersCount').textContent = statusCounts['awaiting-confirmation'];
-            document.getElementById('pendingPaymentOrdersCount').textContent = statusCounts['pending-payment'];
-            document.getElementById('pendingConfirmationOrdersCount').textContent = statusCounts['pending-confirmation'];
+            document.getElementById('awaitingConfirmationOrdersCount').textContent = statusCounts['awaiting_confirmation'];
+            document.getElementById('pendingPaymentOrdersCount').textContent = statusCounts['pending_payment'];
+            document.getElementById('pendingConfirmationOrdersCount').textContent = statusCounts['pending_confirmation'];
             document.getElementById('processingOrdersCount').textContent = statusCounts['processing'];
             document.getElementById('preparedOrdersCount').textContent = statusCounts['prepared'];
             document.getElementById('deliveringOrdersCount').textContent = statusCounts['delivering'];
@@ -1809,7 +1809,7 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            ${order.status === 'awaiting-confirmation' ? 
+                            ${order.status === 'awaiting_confirmation' ? 
                                 '<span style="font-size: 12px; color: #fa541c; font-style: italic;">Awaiting Customer Confirmation</span>' : 
                                 '<a href="#" class="action-button edit" data-id="' + order.id + '">' +
                                     '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -2165,10 +2165,10 @@
                 // Set timestamp fields based on status
                 const currentDate = new Date().toISOString();
 
-                if (status === 'pending-payment' && !orderData.confirmed_at) {
+                if (status === 'pending_payment' && !orderData.confirmed_at) {
                     orderData.confirmed_at = currentDate;
                 }
-                if (status === 'pending-confirmation' && !orderData.paid_at) {
+                if (status === 'pending_confirmation' && !orderData.paid_at) {
                     orderData.paid_at = currentDate;
                 }
                 if (status === 'processing' && !orderData.approved_at) {
