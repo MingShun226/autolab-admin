@@ -353,17 +353,17 @@
             transition: all 0.3s;
         }
 
-        .status-badge.awaiting-confirmation {
+        .status-badge.awaiting_confirmation {
             background-color: #fff2e8;
             color: #fa541c;
         }
 
-        .status-badge.pending-payment {
+        .status-badge.pending_payment {
             background-color: #e6f7ff;
             color: #1890ff;
         }
 
-        .status-badge.pending-confirmation {
+        .status-badge.pending_confirmation {
             background-color: #f9f0ff;
             color: #722ed1;
         }
@@ -871,23 +871,23 @@
         let allOrders = [];
         let currentUserDetails = null;
 
-        // Single Status Display Function
+        // Single Status Display Function - FIXED to match database format
         function getOrderStatusDisplay(order) {
             const statusConfig = {
-                'awaiting-confirmation': { 
-                    class: 'awaiting-confirmation', 
+                'awaiting_confirmation': {  // FIXED: underscore instead of hyphen
+                    class: 'awaiting_confirmation', 
                     text: '📱 Awaiting WhatsApp Confirmation', 
                     icon: '📱',
                     color: '#fa8c16'
                 },
-                'pending-payment': { 
-                    class: 'pending-payment', 
+                'pending_payment': {  // FIXED: underscore instead of hyphen
+                    class: 'pending_payment', 
                     text: '💳 Confirmed - Pending Payment', 
                     icon: '💳',
                     color: '#1890ff'
                 },
-                'pending-confirmation': { 
-                    class: 'pending-confirmation', 
+                'pending_confirmation': {  // FIXED: underscore instead of hyphen
+                    class: 'pending_confirmation', 
                     text: '⏳ Paid - Pending Admin Approval', 
                     icon: '⏳',
                     color: '#722ed1'
@@ -1025,7 +1025,7 @@
             window.location.href = 'admin-login.html';
         }
 
-        // Load orders with 'awaiting-confirmation' status
+        // Load orders with 'awaiting_confirmation' status - FIXED
         async function loadAwaitingConfirmationOrders() {
             try {
                 const container = document.getElementById('awaiting-confirmation-container');
@@ -1036,10 +1036,11 @@
                     </div>
                 `;
 
+                // FIXED: Using underscore instead of hyphen
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
-                    .eq('status', 'awaiting-confirmation')
+                    .eq('status', 'awaiting_confirmation')
                     .order('order_date', { ascending: false });
 
                 if (error) {
@@ -1048,7 +1049,7 @@
                         <div class="empty-state">
                             <div class="empty-icon">❌</div>
                             <div class="empty-title">Error Loading Orders</div>
-                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                            <div class="empty-message">There was a problem loading the orders: ${error.message}</div>
                         </div>
                     `;
                     return;
@@ -1068,7 +1069,7 @@
             }
         }
 
-        // Load orders with 'pending-payment' status
+        // Load orders with 'pending_payment' status - FIXED
         async function loadPendingPaymentOrders() {
             try {
                 const container = document.getElementById('pending-payment-container');
@@ -1079,10 +1080,11 @@
                     </div>
                 `;
 
+                // FIXED: Using underscore instead of hyphen
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
-                    .eq('status', 'pending-payment')
+                    .eq('status', 'pending_payment')
                     .order('confirmed_at', { ascending: false });
 
                 if (error) {
@@ -1091,7 +1093,7 @@
                         <div class="empty-state">
                             <div class="empty-icon">❌</div>
                             <div class="empty-title">Error Loading Orders</div>
-                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                            <div class="empty-message">There was a problem loading the orders: ${error.message}</div>
                         </div>
                     `;
                     return;
@@ -1111,7 +1113,7 @@
             }
         }
 
-        // Load orders with 'pending-confirmation' status
+        // Load orders with 'pending_confirmation' status - FIXED
         async function loadPendingApprovalOrders() {
             try {
                 const container = document.getElementById('pending-approval-container');
@@ -1122,10 +1124,11 @@
                     </div>
                 `;
 
+                // FIXED: Using underscore instead of hyphen
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
-                    .eq('status', 'pending-confirmation')
+                    .eq('status', 'pending_confirmation')
                     .order('paid_at', { ascending: false });
 
                 if (error) {
@@ -1134,7 +1137,7 @@
                         <div class="empty-state">
                             <div class="empty-icon">❌</div>
                             <div class="empty-title">Error Loading Orders</div>
-                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                            <div class="empty-message">There was a problem loading the orders: ${error.message}</div>
                         </div>
                     `;
                     return;
@@ -1184,7 +1187,7 @@
                                 <div class="order-date">Placed on ${orderDate}</div>
                             </div>
                             <div class="order-status-container">
-                                <span class="status-badge awaiting-confirmation">📱 Awaiting WhatsApp Confirmation</span>
+                                <span class="status-badge awaiting_confirmation">📱 Awaiting WhatsApp Confirmation</span>
                                 ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
                             </div>
                         </div>
@@ -1243,7 +1246,7 @@
                                 <div class="order-date">Placed on ${orderDate}</div>
                             </div>
                             <div class="order-status-container">
-                                <span class="status-badge pending-payment">💳 Confirmed - Pending Payment</span>
+                                <span class="status-badge pending_payment">💳 Confirmed - Pending Payment</span>
                                 ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
                             </div>
                         </div>
@@ -1302,7 +1305,7 @@
                                 <div class="order-date">Placed on ${orderDate}</div>
                             </div>
                             <div class="order-status-container">
-                                <span class="status-badge pending-confirmation">⏳ Payment Complete - Ready for Approval</span>
+                                <span class="status-badge pending_confirmation">⏳ Payment Complete - Ready for Approval</span>
                                 ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
                                 <span class="status-badge paid">Paid</span>
                             </div>
@@ -1335,7 +1338,7 @@
 
                         <div class="info-box approval">
                             <p style="margin: 0;">
-                                ⏳ Payment has been completed. This order is ready for admin approval to move to ${order.is_urgent ? 'processing' : 'on hold'} status.
+                                ⏳ Payment has been completed. This order is ready for admin approval to move to ${order.is_urgent ? 'processing' : 'processing'} status.
                             </p>
                         </div>
 
@@ -1461,8 +1464,8 @@
         // Approve order function
         async function approveOrder(orderId, isUrgent) {
             try {
-                // Set new status based on urgency
-                const newStatus = isUrgent ? 'processing' : 'processing'; // Both go to processing now
+                // Set new status to processing for both urgent and normal orders
+                const newStatus = 'processing';
 
                 const { error } = await supabase
                     .from('orders')
