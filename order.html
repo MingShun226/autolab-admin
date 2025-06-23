@@ -42,7 +42,7 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Styles - From test.html */
+        /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
             background-color: #222;
@@ -172,33 +172,9 @@
             z-index: 99;
         }
 
-
         .header-right {
             display: flex;
             align-items: center;
-        }
-
-        .notification-icon {
-            font-size: 20px;
-            color: var(--text-light);
-            cursor: pointer;
-            position: relative;
-            margin-right: 20px;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--error-color);
-            color: white;
-            font-size: 10px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         /* Content Container */
@@ -402,20 +378,30 @@
             color: var(--text-light);
         }
 
-        /* Status badges */
-        /* Status badges - optimized for smaller size */
+        /* Updated Status badges using the simplified system */
         .status-badge {
             display: inline-block;
             padding: 2px 6px;
-            /* Reduced from 4px 8px */
             border-radius: 3px;
-            /* Slightly reduced from 4px */
             font-size: 11px;
-            /* Reduced from 12px */
             font-weight: 500;
             margin-right: 3px;
-            /* Reduced from 4px */
             transition: all 0.3s;
+        }
+
+        .status-badge.awaiting-confirmation {
+            background-color: #fff2e8;
+            color: #fa541c;
+        }
+
+        .status-badge.pending-payment {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-badge.pending-confirmation {
+            background-color: #f9f0ff;
+            color: #722ed1;
         }
 
         .status-badge.processing {
@@ -428,25 +414,14 @@
             color: #fa8c16;
         }
 
-        .status-badge.verifying {
-            background-color: #f9f0ff;
-            color: #722ed1;
-        }
-
         .status-badge.delivering {
             background-color: #f2f0ff;
             color: #531dab;
         }
 
         .status-badge.delivered {
-            background-color: #f9f0ff;
-            color: #722ed1;
-        }
-
-        .status-badge.hold,
-        .status-badge.on {
-            background-color: #fffbe6;
-            color: #d4b106;
+            background-color: #f6ffed;
+            color: #52c41a;
         }
 
         .status-badge.cancelled {
@@ -469,16 +444,6 @@
             color: #fa541c;
         }
 
-        .status-badge.transit {
-            background-color: #e6f7ff;
-            color: #1890ff;
-        }
-
-        .status-badge.available {
-            background-color: #f6ffed;
-            color: #52c41a;
-        }
-
         .status-badges-container {
             display: flex;
             flex-direction: column;
@@ -491,7 +456,7 @@
             gap: 4px;
         }
 
-        /* Action buttons styling - NEW */
+        /* Action buttons styling */
         .action-button {
             padding: 3px 6px;
             border-radius: 2px;
@@ -504,33 +469,25 @@
 
         .action-button.edit {
             background-color: #f5f5f5;
-            /* Light gray like the View button */
             color: #555;
-            border: none;
-            /* Remove border */
             border: 1px solid #d9d9d9;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .action-button.edit:hover {
             background-color: #e5e5e5;
-            /* Slightly darker gray on hover */
             border-color: #a8a6a6;
         }
 
-        .action-button.cancel {
-            background-color: #fff1f0;
-            /* Light red background */
-            color: #f5222d;
-            /* Red text */
-            border: none;
+        .action-button.print {
+            background-color: #e6f7ff;
+            color: #1890ff;
             border: 1px solid #d9d9d9;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
-        .action-button.cancel:hover {
-            background-color: #ffd4d4;
-            /* Slightly darker red on hover */
+        .action-button.print:hover {
+            background-color: #cce9ff;
             border-color: #a8a6a6;
         }
 
@@ -738,22 +695,6 @@
             align-items: center;
         }
 
-        .action-button.print {
-            background-color: #e6f7ff;
-            /* Light blue background */
-            color: #1890ff;
-            /* Blue text */
-            border: none;
-            border: 1px solid #d9d9d9;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .action-button.print:hover {
-            background-color: #cce9ff;
-            /* Slightly darker blue on hover */
-            border-color: #a8a6a6;
-        }
-
         .prev-page-button,
         .next-page-button {
             width: 32px;
@@ -840,150 +781,6 @@
             padding: 0 8px;
             font-size: 12px;
             margin-left: 8px;
-        }
-
-        /* Driver Status Panel Styles */
-        .driver-status-panel {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-top: 24px;
-            overflow: hidden;
-        }
-
-        .driver-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .driver-panel-title {
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .driver-panel-action .button {
-            padding: 6px 12px;
-            font-size: 13px;
-        }
-
-        .driver-panel-content {
-            padding: 0;
-            overflow-x: auto;
-        }
-
-        .driver-status-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .driver-status-table th {
-            text-align: left;
-            padding: 14px 20px;
-            font-weight: 500;
-            color: var(--text-light);
-            font-size: 14px;
-            border-bottom: 1px solid #eee;
-            background-color: #fcfcfc;
-        }
-
-        .driver-status-table td {
-            padding: 14px 20px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 14px;
-        }
-
-        .driver-status-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .driver-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .driver-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .driver-avatar.company-driver {
-            background-color: var(--secondary-color);
-        }
-
-        .driver-avatar.external-driver {
-            background-color: var(--tertiary-color);
-        }
-
-        .driver-name {
-            font-weight: 500;
-        }
-
-
-
-        .status-badge.transit {
-            background-color: #EBF5FF;
-            color: #0062ff;
-        }
-
-        .status-badge.available {
-            background-color: #EDFCF2;
-            color: #00a347;
-        }
-
-        .status-badge.multiple {
-            background-color: #EBF5FF;
-            color: #0062ff;
-        }
-
-        .delivery-time {
-            color: var(--text-light);
-            font-weight: normal;
-        }
-
-        .na-text {
-            font-family: monospace;
-            letter-spacing: 1px;
-        }
-
-        .order-info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 16px;
-            padding: 12px 16px;
-            background-color: white;
-            border-radius: var(--border-radius);
-            align-items: center;
-            font-family: monospace;
-        }
-
-        .order-date {
-            font-weight: 500;
-            color: var(--text-light);
-            font-family: monospace;
-        }
-
-        .order-date strong {
-            color: var(--text-color);
-            margin-left: 5px;
-            font-family: monospace;
-        }
-
-        .order-total {
-            font-weight: 500;
-            text-align: right;
         }
 
         .user-avatar {
@@ -1140,113 +937,6 @@
             height: auto;
         }
 
-        /* Print invoice modal */
-        #invoiceModal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .invoice-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 5px;
-        }
-
-        .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 20px;
-        }
-
-        .company-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .company-logo {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-
-        .invoice-to {
-            margin-bottom: 20px;
-        }
-
-        .invoice-to h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: var(--text-light);
-        }
-
-        .invoice-body {
-            padding: 0 15px;
-        }
-
-        .invoice-footer {
-            margin-top: 40px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-            font-size: 14px;
-        }
-
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            #invoiceModal,
-            #invoiceModal * {
-                visibility: visible;
-            }
-
-            #invoiceModal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                background: white;
-            }
-
-            .invoice-content {
-                width: 100%;
-                max-width: none;
-                margin: 0;
-                padding: 20px;
-                border: none;
-                box-shadow: none;
-            }
-
-            #printInvoiceBtn,
-            #closeInvoiceBtn,
-            #closeInvoiceModal {
-                display: none;
-            }
-        }
-
         /* Responsive adjustments */
         @media (max-width: 1200px) {
             .dashboard-overview {
@@ -1280,10 +970,6 @@
             .search-box {
                 max-width: 100%;
             }
-
-            .driver-status-table {
-                min-width: 700px;
-            }
         }
 
         @media (max-width: 576px) {
@@ -1315,7 +1001,7 @@
 
 <body>
     <div class="layout">
-        <!-- Sidebar Menu from test.html -->
+        <!-- Sidebar Menu -->
         <div class="sidebar">
             <div class="logo-container">
                 <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -1370,7 +1056,6 @@
                     </div>
                     <div class="nav-text">Warehouse Operations</div>
                 </a>
-
 
                 <a href="stock.html" class="nav-item">
                     <div class="nav-icon">
@@ -1520,19 +1205,21 @@
                     <div class="tabs" id="statusTabs">
                         <div class="tab active" data-status="all">All Orders <span class="tab-badge"
                                 id="allOrdersCount">-</span></div>
-                        <div class="tab" data-status="processing">Processing <span class="tab-badge"
+                        <div class="tab" data-status="awaiting-confirmation">📱 Awaiting Confirmation <span class="tab-badge"
+                                id="awaitingConfirmationOrdersCount">-</span></div>
+                        <div class="tab" data-status="pending-payment">💳 Pending Payment <span class="tab-badge"
+                                id="pendingPaymentOrdersCount">-</span></div>
+                        <div class="tab" data-status="pending-confirmation">⏳ Pending Admin Approval <span class="tab-badge"
+                                id="pendingConfirmationOrdersCount">-</span></div>
+                        <div class="tab" data-status="processing">⚙️ Processing <span class="tab-badge"
                                 id="processingOrdersCount">-</span></div>
-                        <div class="tab" data-status="verifying">Verifying <span class="tab-badge"
-                                id="verifyingOrdersCount">-</span></div>
-                        <div class="tab" data-status="prepared">Prepared <span class="tab-badge"
+                        <div class="tab" data-status="prepared">📦 Prepared <span class="tab-badge"
                                 id="preparedOrdersCount">-</span></div>
-                        <div class="tab" data-status="delivering">Delivering <span class="tab-badge"
+                        <div class="tab" data-status="delivering">🚚 Delivering <span class="tab-badge"
                                 id="deliveringOrdersCount">-</span></div>
-                        <div class="tab" data-status="delivered">Delivered <span class="tab-badge"
+                        <div class="tab" data-status="delivered">✅ Delivered <span class="tab-badge"
                                 id="deliveredOrdersCount">-</span></div>
-                        <div class="tab" data-status="on hold">On Hold <span class="tab-badge"
-                                id="onHoldOrdersCount">-</span></div>
-                        <div class="tab" data-status="cancelled">Cancelled <span class="tab-badge"
+                        <div class="tab" data-status="cancelled">❌ Cancelled <span class="tab-badge"
                                 id="cancelledOrdersCount">-</span></div>
                     </div>
                     <div class="panel-content">
@@ -1553,13 +1240,14 @@
                                 <span class="filter-label">Status:</span>
                                 <select class="filter-select" id="statusFilter">
                                     <option value="all">All Statuses</option>
-                                    <option value="processing">Processing</option>
-                                    <option value="verifying">Verifying</option>
-                                    <option value="prepared">Prepared to Ship</option>
-                                    <option value="delivering">Delivering</option>
-                                    <option value="delivered">Delivered</option>
-                                    <option value="on hold">On Hold</option>
-                                    <option value="cancelled">Cancelled</option>
+                                    <option value="awaiting-confirmation">📱 Awaiting Confirmation</option>
+                                    <option value="pending-payment">💳 Pending Payment</option>
+                                    <option value="pending-confirmation">⏳ Pending Admin Approval</option>
+                                    <option value="processing">⚙️ Processing</option>
+                                    <option value="prepared">📦 Prepared</option>
+                                    <option value="delivering">🚚 Delivering</option>
+                                    <option value="delivered">✅ Delivered</option>
+                                    <option value="cancelled">❌ Cancelled</option>
                                 </select>
                             </div>
                             <div class="search-box">
@@ -1613,42 +1301,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Driver Status Panel -->
-                <div class="driver-status-panel">
-                    <div class="driver-panel-header">
-                        <div class="driver-panel-title">Driver Status</div>
-                        <div class="driver-panel-action">
-                            <button class="button outline" id="manageDriversBtn">
-                                <span class="icon">👤</span>
-                                <span>Manage Drivers</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="driver-panel-content">
-                        <table class="driver-status-table">
-                            <thead>
-                                <tr>
-                                    <th>Driver</th>
-                                    <th>Vehicle</th>
-                                    <th>Today's Deliveries</th>
-                                    <th>Current Status</th>
-                                    <th>Next Delivery</th>
-                                </tr>
-                            </thead>
-                            <tbody id="driver-status-body">
-                                <tr>
-                                    <td colspan="5">
-                                        <div class="loading">
-                                            <div class="loading-spinner"></div>
-                                            <span>Loading driver status...</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1666,12 +1318,12 @@
                 <div class="form-group">
                     <label for="editOrderStatus">Order Status</label>
                     <select class="form-control" id="editOrderStatus">
+                        <option value="pending-payment">Pending Payment</option>
+                        <option value="pending-confirmation">Pending Confirmation</option>
                         <option value="processing">Processing</option>
-                        <option value="verifying">Verifying</option>
                         <option value="prepared">Prepared</option>
                         <option value="delivering">Delivering</option>
                         <option value="delivered">Delivered</option>
-                        <option value="on hold">On Hold</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
@@ -1699,12 +1351,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Order Items</label>
-                    <div id="editOrderItems" style="margin-bottom: 10px; max-height: 300px; overflow-y: auto;">
-                        <!-- Order items will be loaded here with variations column -->
-                    </div>
-                </div>
-                <div class="form-group">
                     <button type="submit" class="button primary">Update Order</button>
                     <button type="button" class="button outline" id="cancelEditBtn">Cancel</button>
                 </div>
@@ -1712,111 +1358,11 @@
         </div>
     </div>
 
-    <!-- New Order Modal -->
-    <div id="newOrderModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeNewModal">&times;</span>
-            <h2>Create New Order</h2>
-            <form id="newOrderForm">
-                <div class="form-group">
-                    <label for="newCustomer">Customer</label>
-                    <select class="form-control" id="newCustomer" required>
-                        <option value="">-- Select Customer --</option>
-                        <!-- Customers will be loaded dynamically -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newAddress">Delivery Address</label>
-                    <textarea class="form-control" id="newAddress" rows="2" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="newDriver">Delivery Driver</label>
-                    <select class="form-control" id="newDriver">
-                        <option value="">-- Select Driver --</option>
-                        <option value="Driver 1">Driver 1</option>
-                        <option value="Driver 2">Driver 2</option>
-                        <option value="Lalamove">Lalamove (External)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Order Items</label>
-                    <div id="newOrderItems" style="margin-bottom: 10px;">
-                        <table class="product-table" style="margin-bottom: 10px;">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Variations</th>
-                                    <th>Unit Price</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="newOrderItemsBody">
-                                <!-- One empty row for the first item -->
-                                <tr>
-                                    <td>
-                                        <select class="form-control product-select">
-                                            <option value="">-- Select Product --</option>
-                                            <!-- Products will be loaded dynamically -->
-                                        </select>
-                                    </td>
-                                    <td><input type="number" class="form-control item-quantity" value="1" min="1"
-                                            style="width: 70px;"></td>
-                                    <td class="variations-cell"><span class="na-text">Select a product</span></td>
-                                    <td class="item-price">RM 0.00</td>
-                                    <td class="item-total">RM 0.00</td>
-                                    <td><button type="button" class="button outline remove-item"
-                                            style="padding: 4px 8px;">×</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="button" class="button outline" id="addItemBtn">
-                            <span class="icon">+</span> Add Item
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Order Total: <span id="newOrderTotal">RM 0.00</span></label>
-                </div>
-                <div class="form-group">
-                    <label for="newOrderStatus">Order Status</label>
-                    <select class="form-control" id="newOrderStatus">
-                        <option value="on hold">On Hold</option>
-                        <option value="processing">Processing</option>
-                        <option value="verifying">Verifying</option>
-                        <option value="prepared">Prepared</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newPaymentStatus">Payment Status</label>
-                    <select class="form-control" id="newPaymentStatus">
-                        <option value="unpaid">Unpaid</option>
-                        <option value="paid">Paid</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newIsUrgent">Urgent Order</label>
-                    <div style="display: flex; align-items: center;">
-                        <input type="checkbox" id="newIsUrgent" style="width: auto; margin-right: 10px;">
-                        <label for="newIsUrgent" style="margin-bottom: 0;">Mark as urgent</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="button primary">Create Order</button>
-                    <button type="button" class="button outline" id="cancelNewBtn">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
         // Supabase Configuration
-        console.log('Script starting');
         const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        console.log('Supabase initialized:', !!supabase);
 
         // Global variables
         let allOrders = [];
@@ -1826,18 +1372,76 @@
         let sortField = 'order_date';
         let sortDirection = 'desc';
         let currentStatusFilter = 'all';
-        let allCustomers = [];
-        let allProducts = [];
-        let allDrivers = [];
         let statusCounts = {};
 
+        // Single Status Display Function (from paste.txt)
+        function getOrderStatusDisplay(order) {
+            const statusConfig = {
+                'awaiting-confirmation': { 
+                    class: 'awaiting-confirmation', 
+                    text: '📱 Awaiting WhatsApp Confirmation', 
+                    icon: '📱',
+                    color: '#fa8c16',
+                    adminVisible: false
+                },
+                'pending-payment': { 
+                    class: 'pending-payment', 
+                    text: '💳 Confirmed - Pending Payment', 
+                    icon: '💳',
+                    color: '#1890ff',
+                    adminVisible: true
+                },
+                'pending-confirmation': { 
+                    class: 'pending-confirmation', 
+                    text: '⏳ Paid - Pending Admin Approval', 
+                    icon: '⏳',
+                    color: '#722ed1',
+                    adminVisible: true
+                },
+                'processing': { 
+                    class: 'processing', 
+                    text: '⚙️ Processing', 
+                    icon: '⚙️',
+                    color: '#1890ff',
+                    adminVisible: true
+                },
+                'prepared': { 
+                    class: 'prepared', 
+                    text: '📦 Prepared for Delivery', 
+                    icon: '📦',
+                    color: '#fa8c16',
+                    adminVisible: true
+                },
+                'delivering': { 
+                    class: 'delivering', 
+                    text: '🚚 Out for Delivery', 
+                    icon: '🚚',
+                    color: '#531dab',
+                    adminVisible: true
+                },
+                'delivered': { 
+                    class: 'delivered', 
+                    text: '✅ Delivered', 
+                    icon: '✅',
+                    color: '#52c41a',
+                    adminVisible: true
+                },
+                'cancelled': { 
+                    class: 'cancelled', 
+                    text: '❌ Cancelled', 
+                    icon: '❌',
+                    color: '#f5222d',
+                    adminVisible: true
+                }
+            };
+            
+            return statusConfig[order.status] || statusConfig['processing'];
+        }
 
         // Check if user is authenticated
         async function checkAuth() {
-            console.log('checkAuth function called');
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-                // Redirect to login if not authenticated
                 window.location.href = 'admin-login.html';
                 return null;
             }
@@ -1861,14 +1465,9 @@
 
         // Update user interface with user details
         function updateUserInterface(userData) {
-            // Update avatar with initials
             const initials = userData.first_name.charAt(0) + userData.last_name.charAt(0);
             document.getElementById('userAvatar').textContent = initials;
-
-            // Update user name in header
             document.getElementById('userName').textContent = `${userData.first_name} ${userData.last_name}`;
-
-            // Update dropdown menu details
             document.getElementById('userFullName').textContent = `${userData.first_name} ${userData.last_name}`;
             document.getElementById('userStaffId').textContent = `Staff ID: ${userData.staff_id}`;
         }
@@ -1880,10 +1479,7 @@
                 console.error('Error signing out:', error);
                 alert('Error signing out. Please try again.');
             } else {
-                // Clear session storage
                 sessionStorage.removeItem('currentUser');
-
-                // Redirect to login page
                 window.location.href = 'admin-login.html';
             }
         }
@@ -1896,9 +1492,7 @@
 
         // Load orders data from Supabase
         async function loadOrders() {
-            console.log('loadOrders function called');
             try {
-                // Show loading state
                 document.getElementById('orders-table-body').innerHTML = `
                     <tr>
                         <td colspan="8">
@@ -1910,26 +1504,22 @@
                     </tr>
                 `;
 
-                // Fetch all orders
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
                     .order(sortField, { ascending: sortDirection === 'asc' });
 
-                console.log('Orders data fetched:', orders ? orders.length : 0, 'Error:', error);
-
                 if (error) {
                     console.error('Error fetching orders:', error);
-                    console.error('Error details:', JSON.stringify(error));
                     throw new Error('Failed to fetch orders');
                 }
 
                 // Store orders globally
                 allOrders = orders || [];
 
-                // Process orders to add missing fields if necessary
+                // Process orders to ensure proper format
                 allOrders = allOrders.map(order => {
-                    // Ensure order_id exists (use the format ORD-YYYY-XXXX)
+                    // Ensure order_id exists
                     if (!order.order_id) {
                         const orderDate = new Date(order.order_date);
                         const year = orderDate.getFullYear();
@@ -1939,13 +1529,17 @@
 
                     // Ensure amount exists
                     if (order.amount === undefined || order.amount === null) {
-                        // Set from total_amount if available
                         order.amount = order.total_amount || 0;
                     }
 
                     // Extract customer name
                     if (order.customers) {
                         order.customer_name = order.customers.name;
+                    }
+
+                    // Normalize status to use underscores
+                    if (order.status) {
+                        order.status = order.status.replace(/-/g, '-');
                     }
 
                     return order;
@@ -1960,15 +1554,12 @@
                 // Update stats
                 updateOrderStats();
 
-                // Load drivers data
-                loadDrivers();
-
             } catch (err) {
                 console.error('Error in loadOrders:', err);
                 document.getElementById('orders-table-body').innerHTML = `
                     <tr>
                         <td colspan="8" style="text-align: center;">
-                            Error loading orders. Please try again.
+                            Error loading orders: ${err.message}. Check console for details.
                         </td>
                     </tr>
                 `;
@@ -1977,41 +1568,46 @@
 
         // Count orders by status
         function countOrdersByStatus() {
-            // Reset counter
             statusCounts = {
-                'all': allOrders.length,
+                'all': 0,
+                'awaiting-confirmation': 0,
+                'pending-payment': 0,
+                'pending-confirmation': 0,
                 'processing': 0,
-                'verifying': 0,
                 'prepared': 0,
                 'delivering': 0,
                 'delivered': 0,
-                'on hold': 0,
                 'cancelled': 0
             };
 
-            // Count orders by status
             allOrders.forEach(order => {
-                const status = order.status ? order.status.toLowerCase() : 'processing';
+                const status = order.status || 'processing';
                 if (statusCounts[status] !== undefined) {
                     statusCounts[status]++;
                 }
             });
 
+            // Update "All Orders" count to exclude awaiting-confirmation (admin not visible)
+            statusCounts['all'] = allOrders.filter(order => {
+                const statusInfo = getOrderStatusDisplay(order);
+                return statusInfo.adminVisible;
+            }).length;
+
             // Update tab badges
             document.getElementById('allOrdersCount').textContent = statusCounts['all'];
+            document.getElementById('awaitingConfirmationOrdersCount').textContent = statusCounts['awaiting-confirmation'];
+            document.getElementById('pendingPaymentOrdersCount').textContent = statusCounts['pending-payment'];
+            document.getElementById('pendingConfirmationOrdersCount').textContent = statusCounts['pending-confirmation'];
             document.getElementById('processingOrdersCount').textContent = statusCounts['processing'];
-            document.getElementById('verifyingOrdersCount').textContent = statusCounts['verifying'];
             document.getElementById('preparedOrdersCount').textContent = statusCounts['prepared'];
             document.getElementById('deliveringOrdersCount').textContent = statusCounts['delivering'];
             document.getElementById('deliveredOrdersCount').textContent = statusCounts['delivered'];
-            document.getElementById('onHoldOrdersCount').textContent = statusCounts['on hold'];
             document.getElementById('cancelledOrdersCount').textContent = statusCounts['cancelled'];
         }
 
         // Update order statistics
         function updateOrderStats() {
             if (!allOrders || allOrders.length === 0) {
-                // Set default values if no orders
                 document.getElementById('totalOrders').textContent = '0';
                 document.getElementById('pendingOrders').textContent = '0';
                 document.getElementById('urgentOrders').textContent = '0';
@@ -2019,23 +1615,27 @@
                 return;
             }
 
-            // Count total orders
-            const totalOrders = allOrders.length;
+            // Count total visible orders (exclude awaiting-confirmation)
+            const visibleOrders = allOrders.filter(order => {
+                const statusInfo = getOrderStatusDisplay(order);
+                return statusInfo.adminVisible;
+            });
+            const totalOrders = visibleOrders.length;
 
-            // Count pending orders (not delivered or cancelled)
-            const pendingOrders = allOrders.filter(order =>
+            // Count pending orders (confirmed but not delivered or cancelled)
+            const pendingOrders = visibleOrders.filter(order =>
                 order.status !== 'delivered' &&
                 order.status !== 'cancelled'
             ).length;
 
-            // Count urgent orders
-            const urgentOrders = allOrders.filter(order => order.is_urgent).length;
+            // Count urgent orders (from visible orders only)
+            const urgentOrders = visibleOrders.filter(order => order.is_urgent).length;
 
             // Update dashboard cards
             document.getElementById('totalOrders').textContent = totalOrders;
             document.getElementById('pendingOrders').textContent = pendingOrders;
             document.getElementById('urgentOrders').textContent = urgentOrders;
-            document.getElementById('processingTime').textContent = '14 min';  // Placeholder
+            document.getElementById('processingTime').textContent = '14 min';
 
             // Set placeholder change percentages
             document.getElementById('ordersChange').innerHTML = '↑ 12% from last month';
@@ -2050,19 +1650,25 @@
             const statusFilter = document.getElementById('statusFilter').value;
             const dateRangeFilter = document.getElementById('dateRangeFilter').value;
 
-            // Apply tab filter first (if not 'all')
             let filtered = [...allOrders];
 
+            // Apply tab filter first
             if (currentStatusFilter !== 'all') {
                 filtered = filtered.filter(order =>
-                    order.status && order.status.toLowerCase() === currentStatusFilter.toLowerCase()
+                    order.status && order.status === currentStatusFilter
                 );
+            } else {
+                // For "All Orders" tab, only show admin visible orders
+                filtered = filtered.filter(order => {
+                    const statusInfo = getOrderStatusDisplay(order);
+                    return statusInfo.adminVisible;
+                });
             }
 
             // Apply status filter (if different from tab and not 'all')
             if (statusFilter !== 'all' && statusFilter !== currentStatusFilter) {
                 filtered = filtered.filter(order =>
-                    order.status && order.status.toLowerCase() === statusFilter.toLowerCase()
+                    order.status && order.status === statusFilter
                 );
             }
 
@@ -2082,17 +1688,11 @@
             }
 
             // Apply date range filter
-            if (dateRangeFilter) {
+            if (dateRangeFilter && dateRangeFilter !== 'all') {
                 const now = new Date();
                 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                 let dateThreshold;
-                // Apply filter for cases that use a simple date threshold
-                if (dateThreshold) {
-                    filtered = filtered.filter(order => {
-                        const orderDate = new Date(order.order_date);
-                        return orderDate >= dateThreshold;
-                    });
-                }
+
                 switch (dateRangeFilter) {
                     case 'today':
                         dateThreshold = today;
@@ -2109,16 +1709,16 @@
                         break;
                     case 'thisweek':
                         const firstDayOfWeek = new Date(today);
-                        const day = firstDayOfWeek.getDay() || 7; // Make Sunday 7 instead of 0
-                        firstDayOfWeek.setDate(firstDayOfWeek.getDate() - day + 1); // Set to Monday of current week
+                        const day = firstDayOfWeek.getDay() || 7;
+                        firstDayOfWeek.setDate(firstDayOfWeek.getDate() - day + 1);
                         dateThreshold = firstDayOfWeek;
                         break;
                     case 'lastweek':
                         const firstDayLastWeek = new Date(today);
                         const dayLastWeek = firstDayLastWeek.getDay() || 7;
-                        firstDayLastWeek.setDate(firstDayLastWeek.getDate() - dayLastWeek - 6); // Monday of last week
+                        firstDayLastWeek.setDate(firstDayLastWeek.getDate() - dayLastWeek - 6);
                         const lastDayLastWeek = new Date(firstDayLastWeek);
-                        lastDayLastWeek.setDate(lastDayLastWeek.getDate() + 6); // Sunday of last week
+                        lastDayLastWeek.setDate(lastDayLastWeek.getDate() + 6);
                         lastDayLastWeek.setHours(23, 59, 59, 999);
                         filtered = filtered.filter(order => {
                             const orderDate = new Date(order.order_date);
@@ -2128,11 +1728,8 @@
                     case 'thismonth':
                         dateThreshold = new Date(today.getFullYear(), today.getMonth(), 1);
                         break;
-                    default:
-                        dateThreshold = null;
                 }
 
-                // Apply filter for cases that use a simple date threshold
                 if (dateThreshold && dateRangeFilter !== 'yesterday' && dateRangeFilter !== 'lastweek') {
                     filtered = filtered.filter(order => {
                         const orderDate = new Date(order.order_date);
@@ -2181,23 +1778,15 @@
 
             // Generate order rows
             ordersToShow.forEach(order => {
-                // Create main order row
                 const row = document.createElement('tr');
                 row.className = 'order-row';
                 row.setAttribute('data-order', order.order_id);
                 row.setAttribute('data-id', order.id);
 
-                // Format amount
                 const amount = parseFloat(order.amount || 0).toFixed(2);
-
-                // Set customer name
                 const customerName = order.customer_name || 'Unknown Customer';
-
-                // Set order status (default to "Processing" if missing)
-                const status = order.status || 'Processing';
+                const statusInfo = getOrderStatusDisplay(order);
                 const paymentStatus = order.payment_status || 'unpaid';
-
-                // Determine if urgent
                 const isUrgent = order.is_urgent || false;
 
                 row.innerHTML = `
@@ -2212,7 +1801,7 @@
                     <td>
                         <div class="status-badges-container">
                             <div class="visual-badges">
-                                <span class="status-badge ${status.toLowerCase()}">${status}</span>
+                                <span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>
                                 <span class="status-badge ${paymentStatus}">${paymentStatus}</span>
                                 ${isUrgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
                             </div>
@@ -2220,33 +1809,24 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <a href="#" class="action-button edit" data-id="${order.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 01 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                Edit
-                            </a>
-                           ${status.toLowerCase() === 'verifying' ? 
-    `<a href="#" class="action-button print" data-id="${order.id}" style="opacity: 0.5; cursor: not-allowed; background-color: #f5f5f5; color: #999;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-            <rect x="6" y="14" width="12" height="8"></rect>
-        </svg>
-        Print
-    </a>` : 
-    `<a href="#" class="action-button print" data-id="${order.id}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-            <rect x="6" y="14" width="12" height="8"></rect>
-        </svg>
-        Print
-    </a>`
-}
+                            ${order.status === 'awaiting-confirmation' ? 
+                                '<span style="font-size: 12px; color: #fa541c; font-style: italic;">Awaiting Customer Confirmation</span>' : 
+                                '<a href="#" class="action-button edit" data-id="' + order.id + '">' +
+                                    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                        '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>' +
+                                        '<path d="M18.5 2.5a2.121 2.121 0 01 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>' +
+                                    '</svg>' +
+                                    'Edit' +
+                                '</a>' +
+                                '<a href="#" class="action-button print" data-id="' + order.id + '">' +
+                                    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                        '<polyline points="6 9 6 2 18 2 18 9"></polyline>' +
+                                        '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>' +
+                                        '<rect x="6" y="14" width="12" height="8"></rect>' +
+                                    '</svg>' +
+                                    'Print' +
+                                '</a>'
+                            }
                         </div>
                     </td>
                 `;
@@ -2285,38 +1865,29 @@
             const pageButtonsContainer = document.getElementById('page-buttons');
             pageButtonsContainer.innerHTML = '';
 
-            // Update prev/next button states
             document.getElementById('prev-page').classList.toggle('disabled', currentPage === 1);
             document.getElementById('next-page').classList.toggle('disabled', currentPage === totalPages);
 
-            // Always show first, last and some pages around current page
             let pages = [];
-
-            // Add page 1
             pages.push(1);
 
-            // Add pages around current page
             for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
                 if (pages.indexOf(i) === -1) {
                     pages.push(i);
                 }
             }
 
-            // Add last page if there are more than 1 page
             if (totalPages > 1) {
                 pages.push(totalPages);
             }
 
-            // Sort pages
             pages.sort((a, b) => a - b);
 
-            // Create page buttons with ellipsis where needed
             let prevPage = 0;
 
             for (let i = 0; i < pages.length; i++) {
                 const page = pages[i];
 
-                // Add ellipsis if there's a gap
                 if (page - prevPage > 1) {
                     const ellipsis = document.createElement('span');
                     ellipsis.textContent = '...';
@@ -2324,7 +1895,6 @@
                     pageButtonsContainer.appendChild(ellipsis);
                 }
 
-                // Add page button
                 const pageButton = document.createElement('button');
                 pageButton.className = `page-button ${page === currentPage ? 'active' : ''}`;
                 pageButton.textContent = page;
@@ -2348,14 +1918,11 @@
                     const orderId = this.getAttribute('data-id');
                     const detailSection = document.getElementById(`detail-${orderId}`);
 
-                    // Toggle expanded class on row
                     this.classList.toggle('expanded');
 
-                    // Toggle visibility of detail section
                     if (detailSection) {
                         const isVisible = detailSection.classList.toggle('visible');
 
-                        // Load order details if becoming visible and not loaded yet
                         if (isVisible) {
                             const detailContent = detailSection.querySelector('.order-detail-content');
                             if (detailContent.innerHTML.includes('Loading order details')) {
@@ -2364,7 +1931,6 @@
                         }
                     }
 
-                    // Update expand button appearance
                     const expandButton = this.querySelector('.expand-button');
                     if (this.classList.contains('expanded')) {
                         expandButton.style.transform = 'rotate(180deg)';
@@ -2378,7 +1944,7 @@
                 });
             });
 
-            // Expand button click event (prevent row click propagation)
+            // Expand button click event
             document.querySelectorAll('.expand-button').forEach(button => {
                 button.addEventListener('click', function (e) {
                     e.stopPropagation();
@@ -2397,95 +1963,41 @@
                 });
             });
 
-            // Cancel button click event
-            // Print Invoice button click event (replaced Cancel)
+            // Print Invoice button click event
             document.querySelectorAll('.action-button.print').forEach(button => {
                 button.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
 
                     const orderId = this.getAttribute('data-id');
-
-                    // Find the order in the allOrders array
-                    const order = allOrders.find(o => o.id === orderId);
-
-                    // Check if the order status is "verifying"
-                    if (order && order.status && order.status.toLowerCase() === 'verifying') {
-                        alert('Invoice printing is not available for orders in verification status.');
-                        return;
-                    }
-
-                    printInvoice(orderId);
+                    alert('Print invoice functionality for order: ' + orderId);
                 });
             });
         }
 
         // Load order details
-        // Load order details
         async function loadOrderDetails(orderId) {
             try {
-                // Find detail section
                 const detailSection = document.getElementById(`detail-${orderId}`);
                 if (!detailSection) return;
 
                 const detailContent = detailSection.querySelector('.order-detail-content');
 
-                // Show loading state
                 detailContent.innerHTML = `
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <span>Loading order details...</span>
-            </div>
-        `;
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading order details...</span>
+                    </div>
+                `;
 
-                // Find order in local array
                 const order = allOrders.find(o => o.id === orderId);
                 if (!order) {
                     detailContent.innerHTML = `
-                <div class="order-products-heading">Order Details</div>
-                <p>Error: Order not found.</p>
-            `;
+                        <div class="order-products-heading">Order Details</div>
+                        <p>Error: Order not found.</p>
+                    `;
                     return;
                 }
-
-                // Fetch order details
-                const { data: fullOrderDetails, error: orderDetailsError } = await supabase
-                    .from('orders')
-                    .select('*')
-                    .eq('id', orderId)
-                    .single();
-
-                if (orderDetailsError) {
-                    console.error('Error fetching order details:', orderDetailsError);
-                    detailContent.innerHTML = `
-                <div class="order-products-heading">Order Details</div>
-                <p>Error loading order details: ${orderDetailsError.message}</p>
-            `;
-                    return;
-                }
-
-                Object.assign(order, fullOrderDetails);
-                const preparedDate = order.prepared_on ? new Date(order.prepared_on).toLocaleString('ms-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : '-';
-                const departDate = order.depart_on ? new Date(order.depart_on).toLocaleString('ms-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : '-';
-                const deliveredDate = order.delivered_on ? new Date(order.delivered_on).toLocaleString('ms-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : '-';
-
-                // Initialize assignedBy variable
-                let assignedBy = '-';
-
-                // Fetch assigned staff info if assigned_by exists
-                if (order.assigned_by) {
-                    const { data: staffMember, error: staffError } = await supabase
-                        .from('nonadminstaff')
-                        .select('first_name, last_name')
-                        .eq('id', order.assigned_by)
-                        .single();
-
-                    if (!staffError && staffMember) {
-                        // Combine first and last name
-                        assignedBy = `${staffMember.first_name} ${staffMember.last_name}`.trim();
-                    }
-                }
-
 
                 // Fetch order items
                 const { data: orderProducts, error: itemsError } = await supabase
@@ -2496,37 +2008,37 @@
                 if (itemsError) {
                     console.error('Error fetching order items:', itemsError);
                     detailContent.innerHTML = `
-                <div class="order-products-heading">Products in this Order</div>
-                <p>Error loading order items: ${itemsError.message || "Unknown error"}</p>
-            `;
+                        <div class="order-products-heading">Products in this Order</div>
+                        <p>Error loading order items: ${itemsError.message || "Unknown error"}</p>
+                    `;
                     return;
                 }
 
                 if (!orderProducts || orderProducts.length === 0) {
                     detailContent.innerHTML = `
-                <div class="order-products-heading">Products in this Order</div>
-                <p>No items found for this order.</p>
-            `;
+                        <div class="order-products-heading">Products in this Order</div>
+                        <p>No items found for this order.</p>
+                    `;
                     return;
                 }
 
                 // Build product table
                 let orderDetailsHtml = `
-            <div class="order-products-heading">Products in this Order</div>
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Category</th>
-                        <th>Variations</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+                    <div class="order-products-heading">Products in this Order</div>
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Category</th>
+                                <th>Variations</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
 
                 let orderTotal = 0;
 
@@ -2541,39 +2053,23 @@
                     const total = unitPrice * quantity;
                     orderTotal += total;
 
-                    // Try to get formatted product ID
-                    let displayProductId = productId;
-                    try {
-                        const { data: product } = await supabase
-                            .from('products')
-                            .select('product_id')
-                            .eq('id', productId)
-                            .single();
-
-                        if (product?.product_id) {
-                            displayProductId = product.product_id;
-                        }
-                    } catch (err) {
-                        console.log('Product ID lookup failed:', err);
-                    }
-
                     orderDetailsHtml += `
-                <tr>
-                    <td><a href="stock.html?product=${displayProductId}" class="entity-link">${displayProductId}</a></td>
-                    <td>${productName}</td>
-                    <td>${quantity}</td>
-                    <td>${category}</td>
-                    <td>${variations === 'N/A' ? '<span class="na-text">N/A</span>' : variations}</td>
-                    <td>RM ${unitPrice.toFixed(2)}</td>
-                    <td>RM ${total.toFixed(2)}</td>
-                </tr>
-            `;
+                        <tr>
+                            <td><a href="stock.html?product=${productId}" class="entity-link">${productId}</a></td>
+                            <td>${productName}</td>
+                            <td>${quantity}</td>
+                            <td>${category}</td>
+                            <td>${variations === 'N/A' ? '<span class="na-text">N/A</span>' : variations}</td>
+                            <td>RM ${unitPrice.toFixed(2)}</td>
+                            <td>RM ${total.toFixed(2)}</td>
+                        </tr>
+                    `;
                 }
 
                 orderDetailsHtml += `
-                </tbody>
-            </table>
-        `;
+                        </tbody>
+                    </table>
+                `;
 
                 const orderDate = new Date(order.order_date).toLocaleDateString('ms-MY', {
                     year: 'numeric',
@@ -2581,32 +2077,22 @@
                     day: 'numeric',
                     timeZone: 'Asia/Kuala_Lumpur'
                 });
+
                 orderDetailsHtml += `
-    <div class="order-info-row">
-        <div style="display: flex; flex-direction: column; gap: 2px; margin-right: 60px;">
-            <div class="order-date">
-                Order By: <strong>${orderDate}</strong>
-            </div>
-            <div class="order-date">
-                Assigned By: <strong>${assignedBy}</strong>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 2px;">
-            <div class="order-date">
-                Prepared On: <strong>${preparedDate}</strong>
-            </div>
-            <div class="order-date">
-                Depart On: <strong>${departDate}</strong>
-            </div>
-            <div class="order-date">
-                Delivered On: <strong>${deliveredDate}</strong>
-            </div>
-        </div>
-        <div class="order-total" style="margin-left: auto;">
-            Order Total: <span class="order-total-value">RM${orderTotal.toFixed(2)}</span>
-        </div>
-    </div>
-`;
+                    <div class="order-info-row">
+                        <div style="display: flex; flex-direction: column; gap: 2px; margin-right: 60px;">
+                            <div class="order-date">
+                                Order Date: <strong>${orderDate}</strong>
+                            </div>
+                            <div class="order-date">
+                                Status: <strong>${getOrderStatusDisplay(order).text}</strong>
+                            </div>
+                        </div>
+                        <div class="order-total" style="margin-left: auto;">
+                            Order Total: <span class="order-total-value">RM${orderTotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
 
                 detailContent.innerHTML = orderDetailsHtml;
 
@@ -2615,9 +2101,9 @@
                 const detailContent = document.getElementById(`detail-${orderId}`)?.querySelector('.order-detail-content');
                 if (detailContent) {
                     detailContent.innerHTML = `
-                <div class="order-products-heading">Order Details</div>
-                <p>Error loading order details: ${err.message}</p>
-            `;
+                        <div class="order-products-heading">Order Details</div>
+                        <p>Error loading order details: ${err.message}</p>
+                    `;
                 }
             }
         }
@@ -2625,7 +2111,6 @@
         // Open edit order modal
         async function openEditOrderModal(orderId) {
             try {
-                // Fetch order details
                 const { data: order, error } = await supabase
                     .from('orders')
                     .select('*')
@@ -2645,9 +2130,6 @@
                 document.getElementById('editDriver').value = order.driver || '';
                 document.getElementById('editIsUrgent').checked = order.is_urgent || false;
 
-                // Load order items
-                await loadOrderItemsForEdit(orderId);
-
                 // Show modal
                 document.getElementById('editOrderModal').style.display = 'block';
 
@@ -2655,109 +2137,6 @@
                 console.error('Error opening edit modal:', err);
                 alert('Error loading order data. Please try again.');
             }
-        }
-
-        async function loadOrderItemsForEdit(orderId) {
-            try {
-                // Fetch order items with product information including variations
-                const { data: orderItems, error } = await supabase
-                    .from('order_products')
-                    .select('*, products(id, name, price, variations)')
-                    .eq('order_id', orderId);
-
-                if (error) {
-                    console.error('Error fetching order items:', error);
-                    throw new Error('Failed to load order items');
-                }
-
-                // Build HTML for items
-                let itemsHtml = `
-            <table class="product-table" style="margin-bottom: 0;">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Variations</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-                // Add each item
-                for (const item of orderItems) {
-                    const productName = item.products ? item.products.name : 'Unknown Product';
-                    const unitPrice = parseFloat(item.unit_price || 0);
-                    const quantity = parseInt(item.quantity || 0);
-                    const total = unitPrice * quantity;
-
-                    // Get variations from product
-                    let variationsHtml = '';
-
-                    if (item.products && item.products.variations) {
-                        // Create dropdown with available variations
-                        variationsHtml = `<select class="form-control item-variation" style="min-width: 120px;">
-                    <option value="">-- Select --</option>`;
-
-                        // Split variations by comma if it's a string
-                        const variationOptions = item.products.variations.split(',').map(v => v.trim());
-
-                        // Add each variation as an option
-                        variationOptions.forEach(variation => {
-                            const selected = variation === item.variations ? 'selected' : '';
-                            variationsHtml += `<option value="${variation}" ${selected}>${variation}</option>`;
-                        });
-
-                        variationsHtml += `</select>`;
-                    } else {
-                        variationsHtml = '<span class="na-text">N/A</span>';
-                    }
-
-                    itemsHtml += `
-                <tr data-item-id="${item.id}" data-product-id="${item.product_id}">
-                    <td>${productName}</td>
-                    <td>
-                        <input type="number" class="form-control item-quantity" value="${quantity}" min="1" style="width: 70px;">
-                    </td>
-                    <td>${variationsHtml}</td>
-                    <td>RM ${unitPrice.toFixed(2)}</td>
-                    <td>RM ${total.toFixed(2)}</td>
-                </tr>
-            `;
-                }
-
-                itemsHtml += `
-                </tbody>
-            </table>
-        `;
-
-                // Update the items container
-                document.getElementById('editOrderItems').innerHTML = itemsHtml;
-
-                // Add event listeners to quantity inputs
-                document.querySelectorAll('#editOrderItems .item-quantity').forEach(input => {
-                    input.addEventListener('change', updateItemTotal);
-                });
-
-            } catch (err) {
-                console.error('Error loading order items for edit:', err);
-                document.getElementById('editOrderItems').innerHTML = `
-            <p class="text-danger">Error loading order items: ${err.message}</p>
-        `;
-            }
-        }
-
-        // Update item total when quantity changes
-        function updateItemTotal() {
-            const row = this.closest('tr');
-            const quantity = parseInt(this.value);
-            const unitPriceText = row.cells[2].textContent.replace('RM', '').trim();
-            const unitPrice = parseFloat(unitPriceText);
-            const total = unitPrice * quantity;
-
-            // Update total cell
-            row.cells[3].textContent = `RM ${total.toFixed(2)}`;
         }
 
         // Close edit order modal
@@ -2770,14 +2149,12 @@
             e.preventDefault();
 
             try {
-                // Get form data
                 const orderId = document.getElementById('editOrderId').value;
                 const status = document.getElementById('editOrderStatus').value;
                 const paymentStatus = document.getElementById('editPaymentStatus').value;
                 const driver = document.getElementById('editDriver').value;
                 const isUrgent = document.getElementById('editIsUrgent').checked;
 
-                // Create order object
                 const orderData = {
                     status,
                     payment_status: paymentStatus,
@@ -2785,27 +2162,28 @@
                     is_urgent: isUrgent
                 };
 
-                // Set date fields based on status
+                // Set timestamp fields based on status
                 const currentDate = new Date().toISOString();
 
-                // If status is changing to prepared, set prepared_on date
-                if (status === 'prepared') {
-                    orderData.prepared_on = currentDate;
+                if (status === 'pending-payment' && !orderData.confirmed_at) {
+                    orderData.confirmed_at = currentDate;
+                }
+                if (status === 'pending-confirmation' && !orderData.paid_at) {
+                    orderData.paid_at = currentDate;
+                }
+                if (status === 'processing' && !orderData.approved_at) {
+                    orderData.approved_at = currentDate;
+                }
+                if (status === 'prepared' && !orderData.prepared_at) {
+                    orderData.prepared_at = currentDate;
+                }
+                if (status === 'delivering' && !orderData.dispatched_at) {
+                    orderData.dispatched_at = currentDate;
+                }
+                if (status === 'delivered' && !orderData.delivered_at) {
+                    orderData.delivered_at = currentDate;
                 }
 
-                // If status is changing to delivering, set depart_on date
-                if (status === 'delivering') {
-                    orderData.depart_on = currentDate;
-                }
-
-                // If status is changing to delivered, set delivered_on date
-                if (status === 'delivered') {
-                    orderData.delivered_on = currentDate;
-                }
-
-                console.log('Updating order with data:', orderData);
-
-                // Update in database
                 const { error } = await supabase
                     .from('orders')
                     .update(orderData)
@@ -2817,16 +2195,8 @@
                     return;
                 }
 
-                // Update order items
-                await updateOrderItems(orderId);
-
-                // Close modal
                 closeEditOrderModal();
-
-                // Reload orders
                 loadOrders();
-
-                // Show success message
                 alert('Order updated successfully!');
 
             } catch (err) {
@@ -2835,757 +2205,12 @@
             }
         }
 
-        // Update order items
-        async function updateOrderItems(orderId) {
-            try {
-                // Get all item rows
-                const itemRows = document.querySelectorAll('#editOrderItems tr[data-item-id]');
-
-                // Update each item
-                for (const row of itemRows) {
-                    const itemId = row.getAttribute('data-item-id');
-                    const quantity = parseInt(row.querySelector('.item-quantity').value);
-
-                    // Get variation if available
-                    const variationSelect = row.querySelector('.item-variation');
-
-                    // Create update object
-                    const updateData = { quantity };
-
-                    // Add variations if dropdown exists and has a value
-                    if (variationSelect && variationSelect.value) {
-                        updateData.variations = variationSelect.value;
-                    }
-
-                    // Update item in database
-                    const { error } = await supabase
-                        .from('order_products')
-                        .update(updateData)
-                        .eq('id', itemId);
-
-                    if (error) {
-                        console.error(`Error updating order item ${itemId}:`, error);
-                        throw error;
-                    }
-                }
-            } catch (err) {
-                console.error('Error updating order items:', err);
-                throw err;
-            }
-        }
-
-
-        // Cancel an order
-        async function cancelOrder(orderId) {
-            try {
-                // Confirm cancellation
-                if (!confirm('Are you sure you want to cancel this order?')) {
-                    return;
-                }
-
-                // Update order status to cancelled
-                const { error } = await supabase
-                    .from('orders')
-                    .update({ status: 'cancelled' })
-                    .eq('id', orderId);
-
-                if (error) {
-                    console.error('Error cancelling order:', error);
-                    alert('Error cancelling order: ' + error.message);
-                    return;
-                }
-
-                // Reload orders
-                loadOrders();
-
-                // Show success message
-                alert('Order cancelled successfully!');
-
-            } catch (err) {
-                console.error('Error cancelling order:', err);
-                alert('Error cancelling order: ' + err.message);
-            }
-        }
-
-        // Load customers for new order form
-        async function loadCustomers() {
-            try {
-                const { data: customers, error } = await supabase
-                    .from('customers')
-                    .select('id, name, customer_id, address')
-                    .order('name');
-
-                if (error) {
-                    console.error('Error loading customers:', error);
-                    return;
-                }
-
-                allCustomers = customers || [];
-
-                // Populate customer dropdown
-                const customerSelect = document.getElementById('newCustomer');
-                customerSelect.innerHTML = '<option value="">-- Select Customer --</option>';
-
-                allCustomers.forEach(customer => {
-                    const option = document.createElement('option');
-                    option.value = customer.id;
-                    option.textContent = customer.name;
-                    option.setAttribute('data-address', customer.address || '');
-                    customerSelect.appendChild(option);
-                });
-
-                // Add event listener to auto-fill address
-                customerSelect.addEventListener('change', function () {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const address = selectedOption.getAttribute('data-address') || '';
-                    document.getElementById('newAddress').value = address;
-                });
-
-            } catch (err) {
-                console.error('Error in loadCustomers:', err);
-            }
-        }
-
-        // Load products for new order form
-        async function loadProducts() {
-            try {
-                const { data: products, error } = await supabase
-                    .from('products')
-                    .select('id, name, product_id, price, category, variations')
-                    .order('name');
-
-                if (error) {
-                    console.error('Error loading products:', error);
-                    return;
-                }
-
-                allProducts = products || [];
-
-                // Populate product dropdowns
-                const productSelects = document.querySelectorAll('.product-select');
-
-                productSelects.forEach(select => {
-                    select.innerHTML = '<option value="">-- Select Product --</option>';
-
-                    allProducts.forEach(product => {
-                        const option = document.createElement('option');
-                        option.value = product.id;
-                        option.textContent = product.name;
-                        option.setAttribute('data-price', product.price || 0);
-                        option.setAttribute('data-variations', product.variations || '');
-                        select.appendChild(option);
-                    });
-
-                    // Add event listener to update price and variations
-                    select.addEventListener('change', function () {
-                        updateItemPrice.call(this);
-                        updateVariationsDropdown.call(this);
-                    });
-                });
-
-            } catch (err) {
-                console.error('Error in loadProducts:', err);
-            }
-        }
-
-        // Add CSS for styling variations dropdowns
-        function addVariationStyles() {
-            const style = document.createElement('style');
-            style.textContent = `
-        .na-text {
-            color: #aaa;
-            font-style: italic;
-            font-family: monospace;
-        }
-        
-        .form-control.item-variation {
-            min-width: 120px;
-            max-width: 100%;
-        }
-    `;
-            document.head.appendChild(style);
-        }
-
-        // Call this function when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            addVariationStyles();
-        });
-        // Update item price when product is selected
-        function updateItemPrice() {
-            const row = this.closest('tr');
-            const selectedOption = this.options[this.selectedIndex];
-
-            // Check if selectedOption exists before trying to access its attributes
-            if (!selectedOption || selectedOption.value === "") {
-                // Reset price if no product is selected
-                row.querySelector('.item-price').textContent = `RM 0.00`;
-                row.querySelector('.item-total').textContent = `RM 0.00`;
-                calculateNewOrderTotal();
-                return;
-            }
-
-            const price = parseFloat(selectedOption.getAttribute('data-price') || 0);
-
-            // Update price cell
-            row.querySelector('.item-price').textContent = `RM ${price.toFixed(2)}`;
-
-            // Update quantity and recalculate total
-            const quantityInput = row.querySelector('.item-quantity');
-            const quantity = parseInt(quantityInput.value || 1);
-            row.querySelector('.item-total').textContent = `RM ${(price * quantity).toFixed(2)}`;
-
-            // Calculate order total
-            calculateNewOrderTotal();
-        }
-
-        // Calculate new order total
-        function calculateNewOrderTotal() {
-            let total = 0;
-
-            // Get all rows
-            const rows = document.querySelectorAll('#newOrderItemsBody tr');
-
-            // Sum up all item totals
-            rows.forEach(row => {
-                const totalText = row.querySelector('.item-total').textContent.replace('RM', '').trim();
-                total += parseFloat(totalText || 0);
-            });
-
-            // Update total display
-            document.getElementById('newOrderTotal').textContent = `RM ${total.toFixed(2)}`;
-        }
-
-        // Add new item row to new order form
-        function addItemRow() {
-            const tbody = document.getElementById('newOrderItemsBody');
-            const newRow = document.createElement('tr');
-
-            newRow.innerHTML = `
-        <td>
-            <select class="form-control product-select">
-                <option value="">-- Select Product --</option>
-                <!-- Products will be loaded dynamically -->
-            </select>
-        </td>
-        <td><input type="number" class="form-control item-quantity" value="1" min="1" style="width: 70px;"></td>
-        <td class="variations-cell"><span class="na-text">Select a product</span></td>
-        <td class="item-price">RM 0.00</td>
-        <td class="item-total">RM 0.00</td>
-        <td><button type="button" class="button outline remove-item" style="padding: 4px 8px;">×</button></td>
-    `;
-
-            tbody.appendChild(newRow);
-
-            // Populate product dropdown
-            const productSelect = newRow.querySelector('.product-select');
-            allProducts.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.id;
-                option.textContent = product.name;
-                option.setAttribute('data-price', product.price || 0);
-                option.setAttribute('data-variations', product.variations || '');
-                productSelect.appendChild(option);
-            });
-
-            // Add event listeners
-            productSelect.addEventListener('change', function () {
-                updateItemPrice.call(this);
-                updateVariationsDropdown.call(this);
-            });
-            newRow.querySelector('.item-quantity').addEventListener('change', updateItemTotal);
-            newRow.querySelector('.remove-item').addEventListener('click', removeItemRow);
-        }
-
-        // Remove item row from new order form
-        function removeItemRow() {
-            const row = this.closest('tr');
-            row.remove();
-            calculateNewOrderTotal();
-        }
-
-        // Open new order modal
-        function openNewOrderModal() {
-            // Reset form
-            document.getElementById('newOrderForm').reset();
-
-            // Clear order items
-            document.getElementById('newOrderItemsBody').innerHTML = `
-        <tr>
-            <td>
-                <select class="form-control product-select">
-                    <option value="">-- Select Product --</option>
-                    <!-- Products will be loaded dynamically -->
-                </select>
-            </td>
-            <td><input type="number" class="form-control item-quantity" value="1" min="1" style="width: 70px;"></td>
-            <td class="variations-cell"><span class="na-text">Select a product</span></td>
-            <td class="item-price">RM 0.00</td>
-            <td class="item-total">RM 0.00</td>
-            <td><button type="button" class="button outline remove-item" style="padding: 4px 8px;">×</button></td>
-        </tr>
-    `;
-
-            // Reset order total
-            document.getElementById('newOrderTotal').textContent = 'RM 0.00';
-
-            // Populate product dropdown
-            const productSelect = document.querySelector('#newOrderItemsBody .product-select');
-            productSelect.innerHTML = '<option value="">-- Select Product --</option>';
-            allProducts.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.id;
-                option.textContent = product.name;
-                option.setAttribute('data-price', product.price || 0);
-                option.setAttribute('data-variations', product.variations || '');
-                productSelect.appendChild(option);
-            });
-
-            // Add event listeners
-            productSelect.addEventListener('change', function () {
-                updateItemPrice.call(this);
-                updateVariationsDropdown.call(this);
-            });
-            document.querySelector('#newOrderItemsBody .item-quantity').addEventListener('change', updateItemTotal);
-            document.querySelector('#newOrderItemsBody .remove-item').addEventListener('click', removeItemRow);
-
-            // Show modal
-            document.getElementById('newOrderModal').style.display = 'block';
-        }
-
-        // Close new order modal
-        function closeNewOrderModal() {
-            document.getElementById('newOrderModal').style.display = 'none';
-        }
-
-        document.getElementById('newIsUrgent').addEventListener('change', function () {
-            updateStatusOptions();
-        });
-        // Submit new order form
-        function updateStatusOptions() {
-            const isUrgent = document.getElementById('newIsUrgent').checked;
-            const statusSelect = document.getElementById('newOrderStatus');
-
-            // Store current selection if possible
-            let currentSelection = statusSelect.value;
-
-            // Clear existing options
-            statusSelect.innerHTML = '';
-
-            // Add appropriate options based on urgent flag
-            if (isUrgent) {
-                // If urgent, default to "prepared" and don't show "on hold"
-                const options = [
-                    { value: 'prepared', text: 'Prepared' },
-                    { value: 'processing', text: 'Processing' },
-                    { value: 'verifying', text: 'Verifying' },
-                ];
-
-                options.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.text;
-                    statusSelect.appendChild(optionElement);
-                });
-
-                // Set default to "prepared" for urgent orders
-                statusSelect.value = 'prepared';
-            } else {
-                // For non-urgent orders, default to "on hold"
-                const options = [
-                    { value: 'on hold', text: 'On Hold' },
-                    { value: 'processing', text: 'Processing' },
-                    { value: 'prepared', text: 'Prepared' },
-                    { value: 'verifying', text: 'Verifying' },
-                ];
-
-                options.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.text;
-                    statusSelect.appendChild(optionElement);
-                });
-
-                // Set default to "on hold" for regular orders
-                statusSelect.value = 'on hold';
-            }
-
-            // Try to restore previous selection if it's still valid
-            if (Array.from(statusSelect.options).some(option => option.value === currentSelection)) {
-                statusSelect.value = currentSelection;
-            }
-        }
-
-        async function submitNewOrderForm(e) {
-            e.preventDefault();
-
-            try {
-                // Get form data
-                const customerId = document.getElementById('newCustomer').value;
-                const address = document.getElementById('newAddress').value.trim();
-                const driver = document.getElementById('newDriver').value;
-                const status = document.getElementById('newOrderStatus').value;
-                const paymentStatus = document.getElementById('newPaymentStatus').value;
-                const isUrgent = document.getElementById('newIsUrgent').checked;
-
-                // Ensure status is appropriate for urgency
-                let finalStatus = status;
-                if (isUrgent && status === 'on hold') {
-                    // Fallback in case somehow "on hold" is selected for urgent orders
-                    finalStatus = 'prepared';
-                } else if (!isUrgent && !document.getElementById('newOrderStatus').querySelector('option[value="on hold"]')) {
-                    // Fallback if somehow the "on hold" option is missing for non-urgent orders
-                    finalStatus = 'on hold';
-                }
-                // Validate customer and address
-                if (!customerId) {
-                    alert('Please select a customer.');
-                    return;
-                }
-
-                if (!address) {
-                    alert('Please enter a delivery address.');
-                    return;
-                }
-
-                // Check if order has items
-                const orderItems = getNewOrderItems();
-                if (orderItems.length === 0) {
-                    alert('Please add at least one item to the order.');
-                    return;
-                }
-
-                // Calculate order total
-                const orderTotal = orderItems.reduce((total, item) => total + item.total, 0);
-
-                // Generate order ID
-                const orderId = `ORD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-                // Create order data
-                const orderData = {
-                    order_id: orderId,
-                    customer_id: customerId,
-                    address,
-                    driver,
-                    status: finalStatus, // Use finalStatus here
-                    payment_status: paymentStatus,
-                    is_urgent: isUrgent,
-                    amount: orderTotal,
-                    order_date: new Date().toISOString()
-                };
-
-                // Insert order into database
-                const { data: newOrder, error: orderError } = await supabase
-                    .from('orders')
-                    .insert([orderData])
-                    .select();
-
-                if (orderError) {
-                    console.error('Error creating order:', orderError);
-                    alert('Error creating order: ' + orderError.message);
-                    return;
-                }
-
-                // Get the new order ID
-                const newOrderId = newOrder[0].id;
-
-                // Insert order items
-                for (const item of orderItems) {
-                    const orderProductData = {
-                        order_id: newOrderId,
-                        product_id: item.productId,
-                        quantity: item.quantity,
-                        unit_price: item.unitPrice
-                    };
-
-                    // Add variations if selected
-                    if (item.variations) {
-                        orderProductData.variations = item.variations;
-                    }
-
-                    const { error: itemError } = await supabase
-                        .from('order_products')
-                        .insert([orderProductData]);
-
-                    if (itemError) {
-                        console.error('Error adding order item:', itemError);
-                    }
-                }
-
-                // Close modal
-                closeNewOrderModal();
-
-                // Reload orders
-                loadOrders();
-
-                // Show success message
-                alert('Order created successfully!');
-
-            } catch (err) {
-                console.error('Error creating order:', err);
-                alert('Error creating order: ' + err.message);
-            }
-        }
-
-
-        // Get items from new order form
-        function getNewOrderItems() {
-            const items = [];
-
-            // Get all rows
-            const rows = document.querySelectorAll('#newOrderItemsBody tr');
-
-            // Process each row
-            rows.forEach(row => {
-                const productSelect = row.querySelector('.product-select');
-
-                // Skip if product select doesn't exist
-                if (!productSelect) return;
-
-                const productId = productSelect.value;
-
-                // Skip if no product selected
-                if (!productId) return;
-
-                const quantity = parseInt(row.querySelector('.item-quantity').value || 1);
-                const unitPriceText = row.querySelector('.item-price').textContent.replace('RM', '').trim();
-                const unitPrice = parseFloat(unitPriceText || 0);
-                const totalText = row.querySelector('.item-total').textContent.replace('RM', '').trim();
-                const total = parseFloat(totalText || 0);
-
-                // Check for variation dropdown
-                const variationSelect = row.querySelector('.item-variation');
-                const variation = variationSelect && variationSelect.value ? variationSelect.value : null;
-
-                const item = {
-                    productId,
-                    quantity,
-                    unitPrice,
-                    total
-                };
-
-                // Add variation if selected
-                if (variation) {
-                    item.variations = variation;
-                }
-
-                items.push(item);
-            });
-
-            return items;
-        }
-
-        // Load drivers data
-        async function loadDrivers() {
-            try {
-                // In a real app, fetch this from a drivers table
-                // For now, we'll simulate it with static data
-                const driversData = [
-                    {
-                        id: 'driver1',
-                        name: 'Driver 1',
-                        type: 'company',
-                        vehicle: 'Company Van 1',
-                        deliveries: 6,
-                        maxDeliveries: 10,
-                        status: 'transit',
-                        nextDelivery: 'Global Tech',
-                        nextTime: '10:00 AM'
-                    },
-                    {
-                        id: 'driver2',
-                        name: 'Driver 2',
-                        type: 'company',
-                        vehicle: 'Company Van 2',
-                        deliveries: 4,
-                        maxDeliveries: 8,
-                        status: 'available',
-                        nextDelivery: 'New Tech Inc',
-                        nextTime: '11:15 AM'
-                    },
-                    {
-                        id: 'lalamove',
-                        name: 'Lalamove',
-                        type: 'external',
-                        vehicle: 'External Service',
-                        deliveries: 8,
-                        maxDeliveries: 12,
-                        status: 'multiple',
-                        nextDelivery: 'ABC Company',
-                        nextTime: '14:30 PM'
-                    }
-                ];
-
-                allDrivers = driversData;
-
-                // Update the driver status table
-                updateDriverStatus();
-
-            } catch (err) {
-                console.error('Error loading drivers:', err);
-            }
-        }
-        function updateVariationsDropdown() {
-            const row = this.closest('tr');
-            const variationsCell = row.querySelector('.variations-cell');
-
-            // Make sure variationsCell exists
-            if (!variationsCell) {
-                console.error('Variations cell not found');
-                return;
-            }
-
-            const selectedOption = this.options[this.selectedIndex];
-
-            // Check if selectedOption exists
-            if (!selectedOption || selectedOption.value === "") {
-                variationsCell.innerHTML = '<span class="na-text">Select a product</span>';
-                return;
-            }
-
-            // Get variations from data attribute
-            const variations = selectedOption.getAttribute('data-variations');
-
-            // Clear current content
-            variationsCell.innerHTML = '';
-
-            if (variations && variations !== 'null') {
-                // Create dropdown with available variations
-                const variationOptions = variations.split(',').map(v => v.trim()).filter(v => v !== "");
-
-                if (variationOptions.length > 0) {
-                    // Create select element
-                    const select = document.createElement('select');
-                    select.className = 'form-control item-variation';
-                    select.style.minWidth = '120px';
-
-                    // Add default option
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.textContent = '-- Select --';
-                    select.appendChild(defaultOption);
-
-                    // Add variation options
-                    variationOptions.forEach(variation => {
-                        const option = document.createElement('option');
-                        option.value = variation;
-                        option.textContent = variation;
-                        select.appendChild(option);
-                    });
-
-                    variationsCell.appendChild(select);
-                } else {
-                    variationsCell.innerHTML = '<span class="na-text">N/A</span>';
-                }
-            } else {
-                variationsCell.innerHTML = '<span class="na-text">N/A</span>';
-            }
-        }
-
-        // Update driver status table
-        function updateDriverStatus() {
-            const tbody = document.getElementById('driver-status-body');
-            tbody.innerHTML = '';
-
-            allDrivers.forEach(driver => {
-                const row = document.createElement('tr');
-
-                // Determine avatar type class
-                const avatarClass = driver.type === 'company' ? 'company-driver' : 'external-driver';
-
-                // Get initials for avatar
-                const initials = driver.type === 'company' ?
-                    `CD${driver.name.charAt(driver.name.length - 1)}` :
-                    driver.name.substring(0, 2).toUpperCase();
-
-                row.innerHTML = `
-                    <td>
-                        <div class="driver-info">
-                            <div class="driver-avatar ${avatarClass}">${initials}</div>
-                            <div class="driver-name">${driver.name}</div>
-                        </div>
-                    </td>
-                    <td>${driver.vehicle}</td>
-                    <td>${driver.deliveries} / ${driver.maxDeliveries}</td>
-                    <td><span class="status-badge ${driver.status}">${driver.status.charAt(0).toUpperCase() + driver.status.slice(1)}</span></td>
-                    <td>${driver.nextDelivery} <span class="delivery-time">(${driver.nextTime})</span></td>
-                `;
-
-                tbody.appendChild(row);
-            });
-        }
-
-        // Export orders to CSV
-        function exportOrders() {
-            if (!allOrders || allOrders.length === 0) {
-                alert('No orders to export.');
-                return;
-            }
-
-            try {
-                // Create CSV content
-                let csvContent = 'Order ID,Customer,Address,Driver,Amount,Status,Payment Status,Order Date\n';
-
-                allOrders.forEach(order => {
-                    // Format each field and handle commas properly
-                    const orderId = order.order_id || '';
-                    const customerName = `"${(order.customer_name || '').replace(/"/g, '""')}"`;
-                    const address = `"${(order.address || '').replace(/"/g, '""')}"`;
-                    const driver = `"${(order.driver || '').replace(/"/g, '""')}"`;
-                    const amount = parseFloat(order.amount || 0).toFixed(2);
-                    const status = order.status || '';
-                    const paymentStatus = order.payment_status || '';
-                    const orderDate = new Date(order.order_date).toLocaleDateString();
-
-                    csvContent += `${orderId},${customerName},${address},${driver},${amount},${status},${paymentStatus},${orderDate}\n`;
-                });
-
-                // Create download link
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-
-                link.setAttribute('href', url);
-                link.setAttribute('download', `orders_export_${new Date().toISOString().slice(0, 10)}.csv`);
-                document.body.appendChild(link);
-
-                // Trigger download and clean up
-                link.click();
-                document.body.removeChild(link);
-
-            } catch (err) {
-                console.error('Error exporting orders:', err);
-                alert('Error exporting orders: ' + err.message);
-            }
-        }
-
-        // Check URL for order ID to auto-expand
-        function checkUrlParameters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderId = urlParams.get('order');
-
-            if (orderId) {
-                // Find the order by order_id
-                setTimeout(() => {
-                    const orderRow = document.querySelector(`.order-row[data-order="${orderId}"]`);
-                    if (orderRow) {
-                        // Trigger click to expand
-                        orderRow.click();
-
-                        // Scroll to row
-                        orderRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 1000); // Small delay to ensure orders are loaded
-            }
-        }
-
         // Initialize page
         async function initializePage() {
             try {
-                // Check authentication
                 const user = await checkAuth();
                 if (!user) return;
 
-                // Get user details
                 const userDetails = await getUserDetails(user.id);
                 if (!userDetails) {
                     console.error('Unable to load user details');
@@ -3593,21 +2218,9 @@
                     return;
                 }
 
-                // Update UI with user details
                 updateUserInterface(userDetails);
-
-                // Load orders data
                 await loadOrders();
-
-                // Load customers and products for forms
-                await loadCustomers();
-                await loadProducts();
-
-                // Set up event listeners
                 setupEventListeners();
-
-                // Check URL parameters after page initializes
-                setTimeout(checkUrlParameters, 1500);
 
             } catch (err) {
                 console.error('Error initializing page:', err);
@@ -3636,17 +2249,12 @@
             // Filter tab clicks
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function () {
-                    // Update active tab
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
 
-                    // Set current status filter
                     currentStatusFilter = this.getAttribute('data-status');
-
-                    // Always update the status dropdown to match tab selection
                     document.getElementById('statusFilter').value = currentStatusFilter;
 
-                    // Apply filters
                     filterOrders();
                 });
             });
@@ -3673,22 +2281,21 @@
             });
 
             // Modal buttons
-            document.getElementById('newOrderBtn').addEventListener('click', openNewOrderModal);
-            document.getElementById('closeNewModal').addEventListener('click', closeNewOrderModal);
-            document.getElementById('cancelNewBtn').addEventListener('click', closeNewOrderModal);
-
             document.getElementById('closeEditModal').addEventListener('click', closeEditOrderModal);
             document.getElementById('cancelEditBtn').addEventListener('click', closeEditOrderModal);
 
             // Form submissions
             document.getElementById('editOrderForm').addEventListener('submit', submitEditOrderForm);
-            document.getElementById('newOrderForm').addEventListener('submit', submitNewOrderForm);
-
-            // Add item button
-            document.getElementById('addItemBtn').addEventListener('click', addItemRow);
 
             // Export orders button
-            document.getElementById('exportOrdersBtn').addEventListener('click', exportOrders);
+            document.getElementById('exportOrdersBtn').addEventListener('click', function() {
+                alert('Export functionality would be implemented here.');
+            });
+
+            // New order button
+            document.getElementById('newOrderBtn').addEventListener('click', function() {
+                alert('New order functionality would be implemented here.');
+            });
 
             // Mobile menu toggle
             const mobileToggle = document.querySelector('.mobile-toggle');
@@ -3697,395 +2304,12 @@
                     document.querySelector('.sidebar').classList.toggle('open');
                 });
             }
-
-            // Manage drivers button
-            document.getElementById('manageDriversBtn').addEventListener('click', function () {
-                alert('Driver management functionality would be implemented here.');
-            });
-        }
-        // Print invoice function
-        // Print invoice function
-        async function printInvoice(orderId) {
-            try {
-               
-                // Find order in local array
-                const order = allOrders.find(o => o.id === orderId);
-                if (!order) {
-                    alert('Error: Order not found.');
-                    return;
-                }
-                 const paymentTerms = order.payment_status === 'paid'
-                    ? 'Terms: <strong>Cash</strong> / <strike>Credit</strike>'
-                    : 'Terms: <strike>Cash</strike> / <strong>Credit</strong>';
-
-                // Fetch order details
-                const { data: fullOrderDetails, error: orderDetailsError } = await supabase
-                    .from('orders')
-                    .select('*, customers(name)')
-                    .eq('id', orderId)
-                    .single();
-
-                if (orderDetailsError) {
-                    console.error('Error fetching order details:', orderDetailsError);
-                    alert('Error loading order details for invoice.');
-                    return;
-                }
-
-                Object.assign(order, fullOrderDetails);
-
-                // Fetch order items
-                const { data: orderItems, error: itemsError } = await supabase
-                    .from('order_products')
-                    .select('*, products(name, product_id)')
-                    .eq('order_id', orderId);
-
-                if (itemsError) {
-                    console.error('Error fetching order items:', itemsError);
-                    alert('Error loading order items for invoice.');
-                    return;
-                }
-
-                // Format date
-                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-
-                // Build invoice items HTML
-                let itemsHtml = '';
-                let orderTotal = 0;
-                let counter = 1;
-
-                orderItems.forEach(item => {
-                    const productName = item.products ? item.products.name : 'Unknown Product';
-                    const productId = item.products ? item.products.product_id : 'Unknown ID';
-                    const unitPrice = item.unit_price || 0;
-                    const quantity = item.quantity || 0;
-                    const itemTotal = unitPrice * quantity;
-                    orderTotal += itemTotal;
-                    const variations = item.variations || 'N/A';
-
-                    itemsHtml += `
-                <tr>
-                    <td style="font-size: 9px; padding: 2px 3px;">${counter}</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">${productId}</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">${productName}</td>
-                    <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${quantity}</td>
-                    <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${variations}</td>
-                    <td style="font-size: 9px; text-align: right; padding: 2px 3px;">RM ${unitPrice.toFixed(2)}</td>
-                    <td style="font-size: 9px; text-align: center; padding: 2px 3px;"></td>
-                    
-                    <td style="font-size: 9px; text-align: right; padding: 2px 3px;">RM ${itemTotal.toFixed(2)}</td>
-                </tr>
-            `;
-                    counter++;
-                });
-
-                // Fill empty rows if needed (to ensure consistent placement at bottom)
-                const fillerRows = Math.max(0, 12 - orderItems.length); // Assuming 12 rows would fill a page
-                for (let i = 0; i < fillerRows; i++) {
-                    itemsHtml += `
-                <tr>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                    <td style="font-size: 9px; padding: 2px 3px;">&nbsp;</td>
-                </tr>
-            `;
-                }
-
-                // Function to convert number to words
-                function convertToWords(num) {
-                    const ones = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
-                    const tens = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
-
-                    if (num === 0) return 'ZERO';
-
-                    // Function to convert 3 digits to words
-                    function convertLessThanOneThousand(num) {
-                        if (num === 0) return '';
-                        if (num < 20) return ones[num];
-
-                        const digit = num % 10;
-                        if (num < 100) return tens[Math.floor(num / 10)] + (digit ? '-' + ones[digit] : '');
-
-                        return ones[Math.floor(num / 100)] + ' HUNDRED' + (num % 100 ? ' AND ' + convertLessThanOneThousand(num % 100) : '');
-                    }
-
-                    // We need to handle decimals for RM values
-                    let fullNum = Math.floor(num);
-                    let decimalPart = Math.round((num - fullNum) * 100);
-
-                    let result = '';
-
-                    if (fullNum > 0) {
-                        if (fullNum >= 1000000) {
-                            result += convertLessThanOneThousand(Math.floor(fullNum / 1000000)) + ' MILLION ';
-                            fullNum %= 1000000;
-                        }
-
-                        if (fullNum >= 1000) {
-                            result += convertLessThanOneThousand(Math.floor(fullNum / 1000)) + ' THOUSAND ';
-                            fullNum %= 1000;
-                        }
-
-                        if (fullNum > 0) {
-                            result += convertLessThanOneThousand(fullNum);
-                        }
-                    }
-
-                    // Add decimal part if exists
-                    if (decimalPart > 0) {
-                        result += ' AND ' + decimalPart + '/100';
-                    }
-
-                    return result.trim();
-                }
-
-                // Generate full invoice HTML
-                const invoiceHtml = `
-            <div style="padding: 10px; font-family: Arial, sans-serif; width: 100%; height: 99vh; margin: 0 auto; font-size: 9px; display: flex; flex-direction: column;">
-                <!-- Top Section -->
-                <div style="flex: 0 0 auto;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <div>
-                            <h2 style="margin: 0; font-size: 16px;">AUTO LABS SDN BHD</h2>
-                            <p style="margin: 2px 0; font-size: 9px;">No. 12, Jalan UTM</p>
-                            <p style="margin: 2px 0; font-size: 9px;">Skudai, Johor, 77998</p>
-                            <p style="margin: 2px 0; font-size: 9px;">Tel: 07-5550-1735</p>
-                        </div>
-                  <div style="text-align: right;">
-    <div style="border: 1px solid #000; padding: 5px 15px; display: inline-block;">
-        <h2 style="margin: 0; text-align: center; font-size: 14px;">INVOICE</h2>
-        <p style="margin: 3px 0; font-size: 9px;"><strong>No: </strong>INV-${order.order_id.replace('ORD', '')}</p>
-    </div>
-    <p style="margin: 5px 0 2px; font-size: 9px;"><strong>Date: </strong>${orderDate}</p>
-    <p style="margin: 2px 0; font-size: 9px;"><strong>A/C Code: </strong>DMKT78C</p>
-    <p style="margin: 2px 0; font-size: 9px;"><strong>${paymentTerms}</strong></p>
-    <p style="margin: 2px 0; font-size: 9px;"><strong>Salesman: </strong>TECH</p>
-    <p style="margin: 2px 0; font-size: 9px;"><strong>Served By: </strong>HTL</p>
-</div>
-                    </div>
-                    
-                    <div style="margin-bottom: 10px;">
-                        <p style="margin: 2px 0; font-size: 9px;"><strong>Bill To: </strong>${order.customers ? order.customers.name : 'Customer'}</p>
-                        <p style="margin: 2px 0; font-size: 9px;">${order.address || 'No address provided'}</p>
-                        <p style="margin: 2px 0; font-size: 9px;"><strong>Attention: </strong>${order.customers ? order.customers.name : 'Customer'}</p>
-                        <p style="margin: 2px 0; font-size: 9px;"><strong>Tel: </strong>${order.phone_number || 'N/A'}</p>
-                    </div>
-                </div>
-                
-                <!-- Middle Section (Table) - This will take available space -->
-                <div style="flex: 1 1 auto; display: flex; flex-direction: column;">
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
-                        <tr>
-                            <td colspan="8" style="border-top: 1px solid #000; padding: 0;"></td>
-                        </tr>
-                        <thead>
-                            <tr>
-                                <th style="padding: 3px; text-align: left; font-size: 9px; font-weight: bold;">No.</th>
-                                <th style="padding: 3px; text-align: left; font-size: 9px; font-weight: bold;">Stock Code</th>
-                                <th style="padding: 3px; text-align: left; font-size: 9px; font-weight: bold;">Description</th>
-                                <th style="padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">Qty</th>
-                                <th style="padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">U.O.M</th>
-                                <th style="padding: 3px; text-align: right; font-size: 9px; font-weight: bold;">Unit Price</th>
-                                <th style="padding: 3px; text-align: right; font-size: 9px; font-weight: bold;">Discount</th>
-                                <th style="padding: 3px; text-align: right; font-size: 9px; font-weight: bold;">Amount</th>
-                            </tr>
-                        </thead>
-                        <tr>
-                            <td colspan="8" style="border-bottom: 1px solid #000; padding: 0;"></td>
-                        </tr>
-                        <tbody>
-                            ${itemsHtml}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Bottom Section -->
-                <div style="flex: 0 0 auto;">
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
-                        <tr>
-                            <td colspan="7" style="text-align: right; padding: 3px; font-size: 9px; font-weight: bold;">TOTAL</td>
-                            <td style="text-align: right; padding: 3px; font-size: 9px; font-weight: bold; border-top: 1px solid #000;">RM ${orderTotal.toFixed(2)}</td>
-                        </tr>
-                    </table>
-                    
-                    <div style="margin-top: 5px;">
-                        <hr style="border-top: 1px solid #000; border-bottom: none; margin: 0;">
-                        <p style="font-size: 10px; margin: 5px 0; font-weight: bold;">RINGGIT MALAYSIA ${convertToWords(orderTotal)} ONLY</p>
-                        <p style="font-size: 9px; margin-top: 5px;">Note:</p>
-                        <ol style="margin: 0; padding-left: 20px; font-size: 8px;">
-                            <li>Please issue all payment in the name of <strong>AUTO LABS SDN BHD</strong></li>
-                            <li>All items remain the property of the company until fully paid</li>
-                            <li>No return or exchange of goods after inspection</li>
-                            <li>All prices are subject to 10% service tax</li>
-                            <li>Stock borrowed for more than seven (7) days will be billed in full of <strong>AUTO LABS SDN BHD</strong></li>
-                        </ol>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                        <div>
-                            <p style="border-top: 1px solid #000; display: inline-block; padding-top: 3px; font-size: 9px;">Received By</p>
-                        </div>
-                        <div>
-                            <p style="border-top: 1px solid #000; display: inline-block; padding-top: 3px; font-size: 9px;">Company Chop & Signature</p>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 10px; font-style: italic; font-size: 8px;">
-                        <p>This is a computer generated copy.<br>No signature is required.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px; text-align: center; display: flex; justify-content: center; gap: 10px;">
-                <button id="printInvoiceBtn" class="print-invoice-btn" style="background-color: #e6f7ff; color: #1890ff; padding: 8px 16px; border-radius: 4px; border: 1px solid #d9d9d9; cursor: pointer;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                    Print Invoice
-                </button>
-                <button id="downloadInvoiceBtn" class="print-invoice-btn" style="background-color: #e6f7ff; color: #1890ff; padding: 8px 16px; border-radius: 4px; border: 1px solid #d9d9d9; cursor: pointer;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Download PDF
-                </button>
-                <button id="closeInvoiceBtn" class="print-invoice-btn" style="background-color: #f5f5f5; color: #333; padding: 8px 16px; border-radius: 4px; border: 1px solid #d9d9d9; cursor: pointer;">
-                    Close
-                </button>
-            </div>
-        `;
-
-                // Find the invoice modal or create if it doesn't exist
-                let invoiceModal = document.getElementById('invoiceModal');
-
-                if (!invoiceModal) {
-                    invoiceModal = document.createElement('div');
-                    invoiceModal.id = 'invoiceModal';
-                    invoiceModal.className = 'modal';
-                    document.body.appendChild(invoiceModal);
-                }
-
-                // Update the modal content
-                invoiceModal.innerHTML = `
-            <div class="invoice-content">
-                <span class="close" id="closeInvoiceModal">&times;</span>
-                <div class="invoice-body" id="invoiceBody">
-                    ${invoiceHtml}
-                </div>
-            </div>
-            <style>
-                @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-
-                    #invoiceModal,
-                    #invoiceModal * {
-                        visibility: visible;
-                    }
-
-                    #invoiceModal {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                        height: 100%;
-                        margin: 0;
-                        padding: 0;
-                        background: white;
-                    }
-
-                    .invoice-content {
-                        width: 100%;
-                        height: 100%;
-                        margin: 0;
-                        padding: 20px;
-                        border: none;
-                        box-shadow: none;
-                    }
-
-                    #printInvoiceBtn,
-                    #closeInvoiceBtn,
-                    #downloadInvoiceBtn,
-                    #closeInvoiceModal {
-                        display: none;
-                    }
-
-                    @page {
-                        size: auto;
-                        margin: 0mm;
-                    }
-                }
-            </style>
-        `;
-
-                // Display the modal
-                invoiceModal.style.display = 'block';
-
-                // Add event listeners
-                document.getElementById('closeInvoiceModal').addEventListener('click', closeInvoiceModal);
-                document.getElementById('closeInvoiceBtn').addEventListener('click', closeInvoiceModal);
-                document.getElementById('printInvoiceBtn').addEventListener('click', printInvoiceDocument);
-                document.getElementById('downloadInvoiceBtn').addEventListener('click', downloadInvoicePDF);
-
-            } catch (error) {
-                console.error('Error generating invoice:', error);
-                alert(`Error generating invoice: ${error.message}`);
-            }
-        }
-
-        // Close invoice modal
-        function closeInvoiceModal() {
-            const invoiceModal = document.getElementById('invoiceModal');
-            if (invoiceModal) {
-                invoiceModal.style.display = 'none';
-            }
-        }
-
-        // Print invoice
-        function printInvoiceDocument() {
-            // Hide buttons before printing
-            const buttons = document.querySelector('#invoiceBody > div:last-child');
-            const closeButton = document.getElementById('closeInvoiceModal');
-
-            if (buttons) buttons.style.display = 'none';
-            if (closeButton) closeButton.style.display = 'none';
-
-            // Print the document
-            window.print();
-
-            // Show buttons again after printing
-            setTimeout(() => {
-                if (buttons) buttons.style.display = 'flex';
-                if (closeButton) closeButton.style.display = 'block';
-            }, 1000);
-        }
-
-        // Download invoice as PDF
-        function downloadInvoicePDF() {
-            alert('PDF download functionality would be implemented here in a production environment.');
         }
 
         // Start the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             initializePage();
-            console.log('DOM fully loaded');
         });
-        console.log('Script loaded completely');
-
-
     </script>
 </body>
 

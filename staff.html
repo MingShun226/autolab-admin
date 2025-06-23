@@ -1314,69 +1314,92 @@
     <div class="mobile-toggle">☰</div>
 
     <!-- Add Staff Modal -->
-    <div class="modal" id="addStaffModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Add New Staff</div>
-                <button class="modal-close" id="closeAddStaffModal">&times;</button>
-            </div>
-            <div class="modal-body">
+    <!-- Replace the existing Add Staff Modal in your staff.html with this -->
+<div class="modal" id="addStaffModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Add New Staff Member</div>
+            <button class="modal-close" id="closeAddStaffModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
                     <label class="form-label">First Name*</label>
-                    <input type="text" class="form-input" id="newStaffFirstName" placeholder="Enter first name"
-                        required>
+                    <input type="text" class="form-input" id="newStaffFirstName" placeholder="Enter first name" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Last Name*</label>
                     <input type="text" class="form-input" id="newStaffLastName" placeholder="Enter last name" required>
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Staff ID*</label>
+                <input type="text" class="form-input" id="newStaffId" placeholder="Enter unique staff ID (e.g., ST001)" required>
+                <small style="color: #666; font-size: 12px;">Must be unique - this will be used for login</small>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
-                    <label class="form-label">Department*</label>
-                    <select class="form-select" id="newDepartment" required>
+                    <label class="form-label">Department</label>
+                    <select class="form-select" id="newDepartment">
                         <option value="">Select Department</option>
                         <option value="Packaging Department">Packaging Department</option>
                         <option value="Customer Service">Customer Service</option>
                         <option value="Logistics Department">Logistics Department</option>
                         <option value="Administration">Administration</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Sales">Sales</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Position*</label>
-                    <input type="text" class="form-input" id="newPosition" placeholder="Enter staff position" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Work Hours*</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="time" class="form-input" id="newWorkStart" value="09:00" required>
-                        <input type="time" class="form-input" id="newWorkEnd" value="17:00" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Employee ID*</label>
-                    <input type="text" class="form-input" id="newStaffId" placeholder="Enter employee ID" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="newEmail" placeholder="Enter email address">
+                    <label class="form-label">Position</label>
+                    <input type="text" class="form-input" id="newPosition" placeholder="e.g., Manager, Technician, Assistant">
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn" id="cancelAddStaff">Cancel</button>
-                <button class="btn btn-primary" id="confirmAddStaff">Add Staff</button>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="newRole">
+                        <option value="Staff">Staff</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Technician">Technician</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" id="newPhone" placeholder="+60123456789">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="newEmail" placeholder="staff@autolabs.com">
+                <small style="color: #666; font-size: 12px;">Optional - for notifications and communication</small>
             </div>
         </div>
+        <div class="modal-footer">
+            <button class="btn" id="cancelAddStaff">Cancel</button>
+            <button class="btn btn-primary" id="confirmAddStaff">Add Staff Member</button>
+        </div>
     </div>
+</div>
 
     <!-- Edit Staff Modal -->
-    <div class="modal" id="editStaffModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Edit Staff</div>
-                <button class="modal-close" id="closeEditStaffModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="editStaffForm">
-                    <input type="hidden" id="editStaffId">
+    <!-- Replace the existing Edit Staff Modal in your staff.html with this -->
+<div class="modal" id="editStaffModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Edit Staff Member</div>
+            <button class="modal-close" id="closeEditStaffModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="editStaffForm">
+                <input type="hidden" id="editStaffId">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
                         <label class="form-label">First Name*</label>
                         <input type="text" class="form-input" id="editFirstName" required>
@@ -1385,912 +1408,878 @@
                         <label class="form-label">Last Name*</label>
                         <input type="text" class="form-input" id="editLastName" required>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Staff ID</label>
+                    <input type="text" class="form-input" id="editStaffIdNumber" readonly style="background-color: #f5f5f5;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
-                        <label class="form-label">Staff ID</label>
-                        <input type="text" class="form-input" id="editStaffIdNumber" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Department*</label>
-                        <select class="form-select" id="editDepartment" required>
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="editDepartment">
+                            <option value="">Not Assigned</option>
                             <option value="Packaging Department">Packaging Department</option>
                             <option value="Customer Service">Customer Service</option>
                             <option value="Logistics Department">Logistics Department</option>
                             <option value="Administration">Administration</option>
+                            <option value="Technical">Technical</option>
+                            <option value="Sales">Sales</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Position*</label>
-                        <input type="text" class="form-input" id="editPosition" required>
+                        <label class="form-label">Position</label>
+                        <input type="text" class="form-input" id="editPosition" placeholder="e.g., Manager, Technician, Assistant">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="editRole">
+                            <option value="Staff">Staff</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Technician">Technician</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Status</label>
                         <select class="form-select" id="editStatus">
-                            <option value="in work">In Work</option>
-                            <option value="holiday">Holiday</option>
-                            <option value="on mc">On MC</option>
-                            <option value="offline">Offline</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="on_leave">On Leave</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Work Hours</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="time" class="form-input" id="editWorkStart">
-                            <input type="time" class="form-input" id="editWorkEnd">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" id="editEmail">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="cancelEditStaff">Cancel</button>
-                <button class="btn btn-primary" id="confirmEditStaff">Save Changes</button>
-            </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="editEmail" placeholder="staff@autolabs.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" id="editPhone" placeholder="+60123456789">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="cancelEditStaff">Cancel</button>
+            <button class="btn btn-primary" id="confirmEditStaff">Save Changes</button>
         </div>
     </div>
+</div>
     </div>
 
     <script>
-        // Supabase configuration
-        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Updated JavaScript for staff.html - Replace the existing <script> section with this
 
-        // Global variables
-        let allStaff = [];
-        let currentUserDetails = null;
-        function editStaff(staffId) {
-            console.log('Edit staff function called for staff ID:', staffId);
+// Updated JavaScript for staff.html - Replace the existing <script> section with this
 
-            try {
-                // Find staff member in allStaff array
-                const staff = allStaff.find(s => s.id === staffId);
+// Supabase configuration
+const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-                if (!staff) {
-                    console.error('Staff member not found for ID:', staffId);
-                    alert('Staff member not found');
-                    return;
-                }
+// Global variables
+let allStaff = [];
+let currentUserDetails = null;
 
-                // Fill the edit form with staff data
-                document.getElementById('editStaffId').value = staff.id;
-                document.getElementById('editFirstName').value = staff.first_name || '';
-                document.getElementById('editLastName').value = staff.last_name || '';
-                document.getElementById('editStaffIdNumber').value = staff.staff_id || '';
-                document.getElementById('editDepartment').value = staff.department || '';
-                document.getElementById('editPosition').value = staff.position || '';
-                document.getElementById('editStatus').value = staff.status || 'offline';
-                document.getElementById('editWorkStart').value = staff.work_start || '09:00';
-                document.getElementById('editWorkEnd').value = staff.work_end || '17:00';
-                document.getElementById('editEmail').value = staff.email || '';
-
-                // Show the edit modal
-                document.getElementById('editStaffModal').style.display = 'flex';
-            } catch (err) {
-                console.error('Error in editStaff function:', err);
-                alert('An error occurred while editing staff. Please try again.');
-            }
+// Check if user is authenticated
+async function checkAuth() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            window.location.href = 'admin-login.html';
+            return null;
         }
+        return user;
+    } catch (error) {
+        console.error('Auth check failed:', error);
+        window.location.href = 'admin-login.html';
+        return null;
+    }
+}
 
-        // Assign editStaff to window object explicitly to make sure it's globally available
-        window.editStaff = editStaff;
+// Get user details from database
+async function getUserDetails(userId) {
+    try {
+        const { data, error } = await supabase
+            .from('staff_members')
+            .select('*')
+            .eq('id', userId)
+            .single();
 
-        // Check if user is authenticated
-        async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                // Redirect to login if not authenticated
-                window.location.href = 'admin-login.html';
-                return null;
-            }
-            return user;
+        if (error) {
+            console.error('Error fetching user details:', error);
+            return null;
         }
+        return data;
+    } catch (error) {
+        console.error('Error in getUserDetails:', error);
+        return null;
+    }
+}
 
-        // Get user details from database
-        async function getUserDetails(userId) {
-            const { data, error } = await supabase
+// Update user interface with user details
+function updateUserInterface(userData) {
+    currentUserDetails = userData;
+
+    // Update avatar with initials
+    const initials = (userData.first_name?.charAt(0) || '') + (userData.last_name?.charAt(0) || '');
+    document.getElementById('userAvatar').textContent = initials;
+
+    // Update user name in header
+    document.getElementById('userName').textContent = `${userData.first_name || ''} ${userData.last_name || ''}`;
+
+    // Update dropdown menu details
+    document.getElementById('userFullName').textContent = `${userData.first_name || ''} ${userData.last_name || ''}`;
+    document.getElementById('userStaffId').textContent = `Staff ID: ${userData.staff_id || 'N/A'}`;
+}
+
+// Handle logout
+async function logout() {
+    try {
+        // Get current user before logging out
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+            // Update online status to false
+            await supabase
                 .from('staff_members')
-                .select('*')
-                .eq('id', userId)
-                .single();
+                .update({ is_online: false })
+                .eq('id', user.id);
+        }
 
-            if (error) {
-                console.error('Error fetching user details:', error);
-                return null;
+        // Sign out from Supabase
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Error signing out:', error);
+            alert('Error signing out. Please try again.');
+        } else {
+            // Clear session storage
+            sessionStorage.removeItem('currentUser');
+            // Redirect to login page
+            window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error during logout:', error);
+        // Even if there's an error, still try to clear session and redirect
+        sessionStorage.removeItem('currentUser');
+        window.location.href = 'admin-login.html';
+    }
+}
+
+// Toggle dropdown menu
+function toggleDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('active');
+}
+
+// Fetch all staff from database
+async function fetchStaff() {
+    try {
+        // Show loading state
+        document.getElementById('staffListBody').innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <div style="width: 20px; height: 20px; border: 2px solid #52c41a; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <span>Loading staff data...</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        // Fetch all staff members from the correct table
+        const { data, error } = await supabase
+            .from('staff_members')
+            .select('*')
+            .order('first_name', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching staff:', error);
+            document.getElementById('staffListBody').innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        Error loading staff data: ${error.message}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Store staff data globally
+        allStaff = data || [];
+
+        // Display staff data
+        displayStaffList();
+
+        // Update other tabs with staff data
+        updatePerformanceTab();
+        updateAttendanceTab();
+
+        // Update stats overview
+        updateStatsOverview();
+
+        console.log('Staff data loaded successfully:', allStaff.length, 'records');
+    } catch (err) {
+        console.error('Error in fetchStaff:', err);
+        document.getElementById('staffListBody').innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">
+                    Error loading staff data. Please try again.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Display staff list in the table
+function displayStaffList() {
+    try {
+        const tableBody = document.getElementById('staffListBody');
+        const searchTerm = document.getElementById('staffSearch')?.value?.toLowerCase() || '';
+        const departmentFilter = document.getElementById('departmentFilter')?.value || '';
+
+        // Filter staff based on search and department
+        let filteredStaff = [...allStaff];
+
+        if (searchTerm) {
+            filteredStaff = filteredStaff.filter(staff => {
+                const fullName = `${staff.first_name || ''} ${staff.last_name || ''}`.toLowerCase();
+                const position = (staff.position || '').toLowerCase();
+                const department = (staff.department || '').toLowerCase();
+                const staffId = (staff.staff_id || '').toLowerCase();
+
+                return fullName.includes(searchTerm) ||
+                    position.includes(searchTerm) ||
+                    department.includes(searchTerm) ||
+                    staffId.includes(searchTerm);
+            });
+        }
+
+        if (departmentFilter) {
+            filteredStaff = filteredStaff.filter(staff =>
+                staff.department === departmentFilter
+            );
+        }
+
+        // Clear the table
+        tableBody.innerHTML = '';
+
+        // Check if no staff found after filtering
+        if (filteredStaff.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        No staff members found matching your search criteria.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Add staff rows to the table
+        filteredStaff.forEach(staff => {
+            const statusClass = getStatusClass(staff.status);
+            const statusDisplay = formatStatus(staff.status);
+            
+            // Show online/offline status based on is_online field
+            const onlineStatus = staff.is_online ? 'Online' : 'Offline';
+            const onlineClass = staff.is_online ? 'status-online' : 'status-offline';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: ${staff.is_online ? '#52c41a' : '#ccc'};"></div>
+                        <div>
+                            <div style="font-weight: 500;">${staff.first_name || ''} ${staff.last_name || ''}</div>
+                            <div style="font-size: 12px; color: #666;">ID: ${staff.staff_id || 'N/A'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${staff.department || 'Not Assigned'}</td>
+                <td>${staff.position || 'Not Assigned'}</td>
+                <td>
+                    <span class="status-badge ${onlineClass}">${onlineStatus}</span>
+                    ${staff.status ? `<br><small>${statusDisplay}</small>` : ''}
+                </td>
+                <td>
+                    <div style="font-size: 12px;">
+                        <div><strong>Role:</strong> ${staff.role || 'Staff'}</div>
+                        <div><strong>Phone:</strong> ${staff.phone || 'N/A'}</div>
+                        ${staff.email ? `<div><strong>Email:</strong> ${staff.email}</div>` : ''}
+                    </div>
+                </td>
+                <td>
+                    <button class="btn edit-staff-btn" onclick="editStaff('${staff.id}')" style="font-size: 12px; padding: 6px 12px;">
+                        <span>✏️</span> Edit
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+
+        console.log('Staff list displayed successfully:', filteredStaff.length, 'records');
+    } catch (err) {
+        console.error('Error in displayStaffList:', err);
+        document.getElementById('staffListBody').innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">
+                    Error displaying staff data. Please try again.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Format status for display
+function formatStatus(status) {
+    if (!status) return 'Active';
+    
+    // Capitalize first letter of each word
+    return status.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Get CSS class for status badges
+function getStatusClass(status) {
+    switch (status?.toLowerCase()) {
+        case 'active':
+            return 'status-online';
+        case 'inactive':
+            return 'status-offline';
+        case 'on_leave':
+            return 'status-busy';
+        default:
+            return 'status-online';
+    }
+}
+
+// Edit staff function
+function editStaff(staffId) {
+    console.log('Edit staff function called for staff ID:', staffId);
+
+    try {
+        // Find staff member in allStaff array
+        const staff = allStaff.find(s => s.id === staffId);
+
+        if (!staff) {
+            console.error('Staff member not found for ID:', staffId);
+            alert('Staff member not found');
+            return;
+        }
+
+        // Fill the edit form with staff data
+        document.getElementById('editStaffId').value = staff.id;
+        document.getElementById('editFirstName').value = staff.first_name || '';
+        document.getElementById('editLastName').value = staff.last_name || '';
+        document.getElementById('editStaffIdNumber').value = staff.staff_id || '';
+        document.getElementById('editDepartment').value = staff.department || '';
+        document.getElementById('editPosition').value = staff.position || '';
+        document.getElementById('editRole').value = staff.role || 'Staff';
+        document.getElementById('editStatus').value = staff.status || 'active';
+        document.getElementById('editEmail').value = staff.email || '';
+        document.getElementById('editPhone').value = staff.phone || '';
+
+        // Show the edit modal
+        document.getElementById('editStaffModal').style.display = 'flex';
+    } catch (err) {
+        console.error('Error in editStaff function:', err);
+        alert('An error occurred while editing staff. Please try again.');
+    }
+}
+
+// Save edit staff changes
+async function saveStaffChanges() {
+    try {
+        const staffId = document.getElementById('editStaffId').value;
+
+        // Collect form data
+        const staffData = {
+            first_name: document.getElementById('editFirstName').value.trim(),
+            last_name: document.getElementById('editLastName').value.trim(),
+            department: document.getElementById('editDepartment').value || null,
+            position: document.getElementById('editPosition').value.trim() || null,
+            role: document.getElementById('editRole').value,
+            status: document.getElementById('editStatus').value,
+            email: document.getElementById('editEmail').value.trim() || null,
+            phone: document.getElementById('editPhone').value.trim() || null
+        };
+
+        // Validate required fields
+        if (!staffData.first_name || !staffData.last_name) {
+            alert('Please fill in first name and last name');
+            return;
+        }
+
+        // Update staff in database
+        const { error } = await supabase
+            .from('staff_members')
+            .update(staffData)
+            .eq('id', staffId);
+
+        if (error) {
+            console.error('Error updating staff:', error);
+            alert('Error updating staff member: ' + error.message);
+            return;
+        }
+
+        // Close modal
+        document.getElementById('editStaffModal').style.display = 'none';
+
+        // Refresh staff data
+        await fetchStaff();
+
+        // Show success message
+        alert('Staff member updated successfully');
+
+    } catch (err) {
+        console.error('Error in saveStaffChanges:', err);
+        alert('Error saving staff changes. Please try again.');
+    }
+}
+
+// Add new staff
+async function addNewStaff(e) {
+    e.preventDefault();
+    try {
+        // Get form values
+        const firstName = document.getElementById('newStaffFirstName').value.trim();
+        const lastName = document.getElementById('newStaffLastName').value.trim();
+        const staffId = document.getElementById('newStaffId').value.trim();
+        const department = document.getElementById('newDepartment').value;
+        const position = document.getElementById('newPosition').value.trim();
+        const role = document.getElementById('newRole').value;
+        const phone = document.getElementById('newPhone').value.trim();
+        const email = document.getElementById('newEmail').value.trim();
+
+        // Validate required fields
+        if (!firstName || !lastName || !staffId) {
+            alert('Please fill in first name, last name, and staff ID');
+            return;
+        }
+
+        // Check if staff ID already exists
+        const { data: existingStaff, error: checkError } = await supabase
+            .from('staff_members')
+            .select('staff_id')
+            .eq('staff_id', staffId);
+
+        if (checkError) {
+            console.error('Error checking staff ID:', checkError);
+            alert('Error checking staff ID. Please try again.');
+            return;
+        }
+
+        if (existingStaff && existingStaff.length > 0) {
+            alert('Staff ID already exists. Please use a different ID.');
+            return;
+        }
+
+        const staffData = {
+            first_name: firstName,
+            last_name: lastName,
+            staff_id: staffId,
+            department: department || null,
+            position: position || null,
+            role: role,
+            phone: phone || null,
+            email: email || null,
+            status: 'active',
+            is_online: false
+        };
+
+        console.log('Adding staff with data:', staffData);
+
+        // Insert new staff into database
+        const { data, error } = await supabase
+            .from('staff_members')
+            .insert([staffData]);
+
+        if (error) {
+            console.error('Error adding staff:', error);
+            alert('Error adding staff member: ' + error.message);
+            return;
+        }
+
+        // Close modal and reset form
+        document.getElementById('addStaffModal').style.display = 'none';
+        document.getElementById('newStaffFirstName').value = '';
+        document.getElementById('newStaffLastName').value = '';
+        document.getElementById('newStaffId').value = '';
+        document.getElementById('newDepartment').value = '';
+        document.getElementById('newPosition').value = '';
+        document.getElementById('newRole').value = 'Staff';
+        document.getElementById('newPhone').value = '';
+        document.getElementById('newEmail').value = '';
+
+        // Refresh staff data
+        await fetchStaff();
+
+        // Show success message
+        alert('Staff member added successfully');
+
+    } catch (err) {
+        console.error('Error in addNewStaff:', err);
+        alert('Error adding staff member. Please try again.');
+    }
+}
+
+// Update performance tab with staff data
+function updatePerformanceTab() {
+    const tableBody = document.getElementById('performanceBody');
+
+    // Clear the table
+    tableBody.innerHTML = '';
+
+    // Add each staff member to the performance table
+    allStaff.forEach(staff => {
+        const row = document.createElement('tr');
+
+        // Mock performance data since we don't have actual order processing data yet
+        const mockOrders = Math.floor(Math.random() * 50) + 10;
+        const performanceScore = Math.floor(Math.random() * 40) + 60; // 60-100%
+        const performanceColor = performanceScore >= 85 ? '#52c41a' :
+            performanceScore >= 70 ? '#faad14' : '#f5222d';
+
+        row.innerHTML = `
+            <td>${staff.first_name || ''} ${staff.last_name || ''}</td>
+            <td>${staff.department || 'Not Assigned'}</td>
+            <td>${mockOrders}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 100px; background: #f0f0f0; height: 8px; border-radius: 4px;">
+                        <div style="width: ${performanceScore}%; background: ${performanceColor}; height: 8px; border-radius: 4px;"></div>
+                    </div>
+                    <span style="font-size: 12px;">${performanceScore}%</span>
+                </div>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
+// Update attendance tab
+function updateAttendanceTab() {
+    const tableBody = document.getElementById('attendanceBody');
+
+    // Clear the table
+    tableBody.innerHTML = '';
+
+    // Add each staff member to the attendance table
+    allStaff.forEach(staff => {
+        const row = document.createElement('tr');
+
+        // Check if staff is online
+        const isOnline = staff.is_online;
+        const clockInTime = isOnline ? '09:00 AM' : '--';
+        const attendanceStatus = isOnline ? 'Present' : 'Absent';
+        const statusClass = isOnline ? 'status-online' : 'status-offline';
+
+        row.innerHTML = `
+            <td>${staff.first_name || ''} ${staff.last_name || ''}</td>
+            <td>${clockInTime}</td>
+            <td>--</td>
+            <td><span class="status-badge ${statusClass}">${attendanceStatus}</span></td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+
+    // Update morning shift count
+    document.getElementById('morningShiftCount').textContent = allStaff.length;
+}
+
+// Update stats overview
+function updateStatsOverview() {
+    // Count total staff
+    const totalStaff = allStaff.length;
+
+    // Count online staff
+    const onlineStaff = allStaff.filter(staff => staff.is_online).length;
+
+    // Calculate online percentage
+    const onlinePercentage = totalStaff ? Math.round((onlineStaff / totalStaff) * 100) : 0;
+
+    // Mock average orders (since we don't have real order data yet)
+    const avgOrders = Math.floor(Math.random() * 20) + 25;
+
+    // Update UI
+    document.getElementById('totalStaff').textContent = totalStaff;
+    document.getElementById('activeStaff').textContent = onlineStaff;
+    document.getElementById('avgOrders').textContent = avgOrders;
+
+    document.getElementById('staffChange').innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+        <span>Total registered staff</span>
+    `;
+
+    document.getElementById('activePercentage').textContent = `${onlinePercentage}% currently online`;
+
+    document.getElementById('orderChange').innerHTML = avgOrders >= 30 ?
+        `<span class="positive">Above average</span>` :
+        `<span class="negative">Below average</span>`;
+}
+
+// Export staff report
+function exportStaffReport() {
+    if (!allStaff || allStaff.length === 0) {
+        alert('No staff data to export');
+        return;
+    }
+
+    try {
+        // Create CSV content
+        let csvContent = 'Staff ID,First Name,Last Name,Department,Position,Role,Status,Email,Phone,Online Status\n';
+
+        allStaff.forEach(staff => {
+            // Format each field with proper escaping for CSV
+            const row = [
+                staff.staff_id || '',
+                `"${(staff.first_name || '').replace(/"/g, '""')}"`,
+                `"${(staff.last_name || '').replace(/"/g, '""')}"`,
+                `"${(staff.department || '').replace(/"/g, '""')}"`,
+                `"${(staff.position || '').replace(/"/g, '""')}"`,
+                staff.role || 'Staff',
+                staff.status || 'active',
+                staff.email || '',
+                staff.phone || '',
+                staff.is_online ? 'Online' : 'Offline'
+            ];
+
+            csvContent += row.join(',') + '\n';
+        });
+
+        // Create a temporary download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `staff_report_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+
+        // Trigger the download and cleanup
+        link.click();
+        document.body.removeChild(link);
+
+        console.log('Staff report exported successfully');
+
+    } catch (err) {
+        console.error('Error exporting staff report:', err);
+        alert('Error exporting staff report: ' + err.message);
+    }
+}
+
+// Update clock display
+function updateClock() {
+    const now = new Date();
+    const timeElement = document.getElementById('currentTime');
+    const dateElement = document.getElementById('currentDate');
+
+    if (timeElement && dateElement) {
+        // Format time (HH:MM:SS)
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+
+        // Format date (Weekday, Month Day, Year)
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = now.toLocaleDateString('en-US', options);
+    }
+}
+
+// Set up all modals
+function setupAllModals() {
+    // Add Staff Modal
+    const addStaffModal = document.getElementById('addStaffModal');
+    const closeAddStaffModalBtn = document.getElementById('closeAddStaffModal');
+    const cancelAddStaffBtn = document.getElementById('cancelAddStaff');
+    const confirmAddStaffBtn = document.getElementById('confirmAddStaff');
+    const addStaffBtn = document.getElementById('addStaffBtn');
+
+    if (addStaffBtn) {
+        addStaffBtn.addEventListener('click', function () {
+            addStaffModal.style.display = 'flex';
+        });
+    }
+
+    if (closeAddStaffModalBtn) {
+        closeAddStaffModalBtn.addEventListener('click', function () {
+            addStaffModal.style.display = 'none';
+        });
+    }
+
+    if (cancelAddStaffBtn) {
+        cancelAddStaffBtn.addEventListener('click', function () {
+            addStaffModal.style.display = 'none';
+        });
+    }
+
+    if (confirmAddStaffBtn) {
+        confirmAddStaffBtn.addEventListener('click', addNewStaff);
+    }
+
+    // Edit Staff Modal
+    const editStaffModal = document.getElementById('editStaffModal');
+    const closeEditStaffModalBtn = document.getElementById('closeEditStaffModal');
+    const cancelEditStaffBtn = document.getElementById('cancelEditStaff');
+    const confirmEditStaffBtn = document.getElementById('confirmEditStaff');
+
+    if (closeEditStaffModalBtn) {
+        closeEditStaffModalBtn.addEventListener('click', function () {
+            editStaffModal.style.display = 'none';
+        });
+    }
+
+    if (cancelEditStaffBtn) {
+        cancelEditStaffBtn.addEventListener('click', function () {
+            editStaffModal.style.display = 'none';
+        });
+    }
+
+    if (confirmEditStaffBtn) {
+        confirmEditStaffBtn.addEventListener('click', saveStaffChanges);
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function (event) {
+        if (event.target === addStaffModal) {
+            addStaffModal.style.display = 'none';
+        }
+        if (event.target === editStaffModal) {
+            editStaffModal.style.display = 'none';
+        }
+    });
+}
+
+// Set up all event listeners
+function setupEventListeners() {
+    // User dropdown toggle
+    document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+        const dropdown = document.getElementById('userDropdown');
+        const avatar = document.getElementById('userAvatar');
+
+        if (dropdown.classList.contains('active') &&
+            !avatar.contains(event.target) &&
+            !dropdown.contains(event.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Logout button
+    document.getElementById('logoutButton').addEventListener('click', logout);
+
+    // Tab switching
+    document.querySelectorAll('.tab-item').forEach(tab => {
+        tab.addEventListener('click', function () {
+            const tabId = this.getAttribute('data-tab');
+
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Add active class to clicked tab and its content
+            this.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            // Load data based on tab
+            if (tabId === 'performance') {
+                updatePerformanceTab();
+            } else if (tabId === 'attendance') {
+                updateAttendanceTab();
             }
-            return data;
+        });
+    });
+
+    // Department filter
+    document.getElementById('departmentFilter').addEventListener('change', displayStaffList);
+
+    // Search input
+    document.getElementById('staffSearch').addEventListener('input', displayStaffList);
+
+    // Export report buttons
+    document.getElementById('exportReportBtn').addEventListener('click', exportStaffReport);
+    document.getElementById('exportPerformanceBtn').addEventListener('click', exportStaffReport);
+
+    // Mobile menu toggle
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+        });
+    }
+
+    // Set up all modals
+    setupAllModals();
+}
+
+// Initialize the page
+async function initializePage() {
+    try {
+        console.log('Initializing staff page...');
+
+        // Check authentication
+        const user = await checkAuth();
+        if (!user) {
+            console.error('User not authenticated');
+            return;
+        }
+
+        // Get user details
+        const userDetails = await getUserDetails(user.id);
+        if (!userDetails) {
+            console.error('Unable to load user details');
+            alert('Unable to load user information. Please try logging in again.');
+            logout();
+            return;
         }
 
         // Update user interface with user details
-        function updateUserInterface(userData) {
-            currentUserDetails = userData;
-
-            // Update avatar with initials
-            const initials = userData.first_name.charAt(0) + userData.last_name.charAt(0);
-            document.getElementById('userAvatar').textContent = initials;
-
-            // Update user name in header
-            document.getElementById('userName').textContent = `${userData.first_name} ${userData.last_name}`;
-
-            // Update dropdown menu details
-            document.getElementById('userFullName').textContent = `${userData.first_name} ${userData.last_name}`;
-            document.getElementById('userStaffId').textContent = `Staff ID: ${userData.staff_id}`;
-        }
-
-        // Handle logout
-        async function logout() {
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-                console.error('Error signing out:', error);
-                alert('Error signing out. Please try again.');
-            } else {
-                // Clear session storage
-                sessionStorage.removeItem('currentUser');
-
-                // Redirect to login page
-                window.location.href = 'admin-login.html';
-            }
-        }
-
-        // Toggle dropdown menu
-        function toggleDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('active');
-        }
-
-        // Fetch all staff from database
-        async function fetchStaff() {
-            try {
-                // Show loading state
-                document.getElementById('staffListBody').innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                                <div style="width: 20px; height: 20px; border: 2px solid #52c41a; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                                <span>Loading staff data...</span>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                // Fetch non-admin staff members
-                const { data, error } = await supabase
-                    .from('nonadminstaff')
-                    .select('*');
-
-                if (error) {
-                    console.error('Error fetching staff:', error);
-                    document.getElementById('staffListBody').innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 20px;">
-                                Error loading staff data: ${error.message}
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                // Sort data client-side
-                const sortedData = data ? [...data].sort((a, b) => {
-                    if (a.first_name < b.first_name) return -1;
-                    if (a.first_name > b.first_name) return 1;
-                    return 0;
-                }) : [];
-
-                // Store staff data globally
-                allStaff = sortedData;
-
-                // Display staff data
-                displayStaffList();
-
-                // Update other tabs with staff data
-                updatePerformanceTab();
-                updateAttendanceTab();
-
-                // Update stats overview
-                updateStatsOverview();
-
-                console.log('Staff data loaded successfully:', sortedData.length, 'records');
-            } catch (err) {
-                console.error('Error in fetchStaff:', err);
-                document.getElementById('staffListBody').innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            Error loading staff data. Please try again. Details: ${err.message}
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-        function setupEditButtons() {
-            document.querySelectorAll('.edit-staff-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const staffId = this.getAttribute('data-staff-id');
-                    console.log('Edit button clicked for staff ID:', staffId);
-                    editStaff(staffId);
-                });
-            });
-        }
-
-        // Display staff list in the table
-        function displayStaffList() {
-            try {
-                const tableBody = document.getElementById('staffListBody');
-                const searchTerm = document.getElementById('staffSearch')?.value?.toLowerCase() || '';
-                const departmentFilter = document.getElementById('departmentFilter')?.value || '';
-
-                // Filter staff based on search and department
-                let filteredStaff = [...allStaff];
-
-                if (searchTerm) {
-                    filteredStaff = filteredStaff.filter(staff => {
-                        const fullName = `${staff.first_name} ${staff.last_name}`.toLowerCase();
-                        const position = (staff.position || '').toLowerCase();
-                        const department = (staff.department || '').toLowerCase();
-                        const staffId = (staff.staff_id || '').toLowerCase();
-
-                        return fullName.includes(searchTerm) ||
-                            position.includes(searchTerm) ||
-                            department.includes(searchTerm) ||
-                            staffId.includes(searchTerm);
-                    });
-                }
-
-                if (departmentFilter) {
-                    filteredStaff = filteredStaff.filter(staff =>
-                        staff.department === departmentFilter
-                    );
-                }
-
-                // Clear the table
-                tableBody.innerHTML = '';
-
-                // Check if no staff found after filtering
-                if (filteredStaff.length === 0) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 20px;">
-                                No staff members found matching your search criteria.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                // Add staff rows to the table
-                filteredStaff.forEach(staff => {
-                    const workHours = `${formatTime(staff.work_start)} - ${formatTime(staff.work_end)}`;
-                    const statusClass = getStatusClass(staff.status);
-                    const statusDisplay = staff.status ? formatStatus(staff.status) : 'Offline';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${staff.first_name} ${staff.last_name}</td>
-                        <td>${staff.department || 'N/A'}</td>
-                        <td>${staff.position || 'N/A'}</td>
-                        <td><span class="status-badge ${statusClass}">${statusDisplay}</span></td>
-                        <td>${workHours}</td>
-                        <td>
-                           <button class="btn edit-staff-btn" data-staff-id="${staff.id}">Edit</button>
-                        </td>
-                    `;
-
-                    tableBody.appendChild(row);
-                });
-
-                console.log('Staff list displayed successfully:', filteredStaff.length, 'records');
-                setupEditButtons();
-            } catch (err) {
-                console.error('Error in displayStaffList:', err);
-                document.getElementById('staffListBody').innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            Error displaying staff data. Please try again.
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        // Format time (09:00 to 9:00 AM)
-        function formatTime(timeString) {
-            if (!timeString) return 'N/A';
-
-            try {
-                // Parse the time string (assuming format like "09:00")
-                const [hours, minutes] = timeString.split(':');
-                if (!hours || !minutes) {
-                    return timeString; // Return original if parsing fails
-                }
-
-                const hour = parseInt(hours);
-                const minute = parseInt(minutes);
-
-                // Convert to 12-hour format with AM/PM
-                const period = hour >= 12 ? 'PM' : 'AM';
-                const hour12 = hour % 12 || 12; // Convert 0 to 12 for 12 AM
-
-                return `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
-            } catch (err) {
-                console.error('Error formatting time:', err);
-                return timeString || 'N/A'; // Return original if any error
-            }
-        }
-
-        // Format status for display
-        function formatStatus(status) {
-            if (!status) return 'Offline';
-
-            // Capitalize first letter of each word
-            return status.split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
-        }
-
-        // Get CSS class for status badges
-        function getStatusClass(status) {
-            switch (status?.toLowerCase()) {
-                case 'in work':
-                    return 'status-online';
-                case 'holiday':
-                    return 'status-offline';
-                case 'on mc':
-                    return 'status-busy';
-                case 'offline':
-                    return 'status-offline';
-                default:
-                    return 'status-offline';
-            }
-        }
-
-        // Set up all modals
-        function setupAllModals() {
-            // Add Staff Modal
-            const addStaffModal = document.getElementById('addStaffModal');
-            const closeAddStaffModalBtn = document.getElementById('closeAddStaffModal');
-            const cancelAddStaffBtn = document.getElementById('cancelAddStaff');
-            const confirmAddStaffBtn = document.getElementById('confirmAddStaff');
-            const addStaffBtn = document.getElementById('addStaffBtn');
-
-            if (addStaffBtn) {
-                addStaffBtn.addEventListener('click', function () {
-                    addStaffModal.style.display = 'flex';
-                });
-            }
-
-            if (closeAddStaffModalBtn) {
-                closeAddStaffModalBtn.addEventListener('click', function () {
-                    addStaffModal.style.display = 'none';
-                });
-            }
-
-            if (cancelAddStaffBtn) {
-                cancelAddStaffBtn.addEventListener('click', function () {
-                    addStaffModal.style.display = 'none';
-                });
-            }
-
-            if (confirmAddStaffBtn) {
-                confirmAddStaffBtn.addEventListener('click', addNewStaff);
-            }
-
-            // Edit Staff Modal
-            const editStaffModal = document.getElementById('editStaffModal');
-            const closeEditStaffModalBtn = document.getElementById('closeEditStaffModal');
-            const cancelEditStaffBtn = document.getElementById('cancelEditStaff');
-            const confirmEditStaffBtn = document.getElementById('confirmEditStaff');
-
-            if (closeEditStaffModalBtn) {
-                closeEditStaffModalBtn.addEventListener('click', function () {
-                    editStaffModal.style.display = 'none';
-                });
-            }
-
-            if (cancelEditStaffBtn) {
-                cancelEditStaffBtn.addEventListener('click', function () {
-                    editStaffModal.style.display = 'none';
-                });
-            }
-
-            if (confirmEditStaffBtn) {
-                confirmEditStaffBtn.addEventListener('click', saveStaffChanges);
-            }
-
-            // Assignment Modal
-            const assignmentModal = document.getElementById('assignmentModal');
-            const closeAssignmentModalBtn = document.getElementById('closeAssignmentModal');
-            const cancelAssignmentBtn = document.getElementById('cancelAssignment');
-
-            if (closeAssignmentModalBtn) {
-                closeAssignmentModalBtn.addEventListener('click', function () {
-                    assignmentModal.style.display = 'none';
-                });
-            }
-
-            if (cancelAssignmentBtn) {
-                cancelAssignmentBtn.addEventListener('click', function () {
-                    assignmentModal.style.display = 'none';
-                });
-            }
-
-            // Close modals when clicking outside
-            window.addEventListener('click', function (event) {
-                if (event.target === addStaffModal) {
-                    addStaffModal.style.display = 'none';
-                }
-                if (event.target === editStaffModal) {
-                    editStaffModal.style.display = 'none';
-                }
-                if (event.target === assignmentModal) {
-                    assignmentModal.style.display = 'none';
-                }
-            });
-        }
-
-        // Update performance tab with staff data
-        function updatePerformanceTab() {
-            const tableBody = document.getElementById('performanceBody');
-
-            // Clear the table
-            tableBody.innerHTML = '';
-
-            // Sort staff by orders processed (descending)
-            const sortedStaff = [...allStaff].sort((a, b) =>
-                (b.orders_processed || 0) - (a.orders_processed || 0)
-            );
-
-            // Add each staff member to the performance table
-            sortedStaff.forEach(staff => {
-                const row = document.createElement('tr');
-
-                // Calculate performance score
-                const performanceScore = staff.performance_score || 0;
-                const performanceColor = performanceScore >= 85 ? '#52c41a' :
-                    performanceScore >= 70 ? '#faad14' : '#f5222d';
-
-                row.innerHTML = `
-                    <td>${staff.first_name} ${staff.last_name}</td>
-                    <td>${staff.department}</td>
-                    <td>${staff.orders_processed || 0}</td>
-                    <td>
-                        <div style="width: 100%; background: #f0f0f0; height: 8px; border-radius: 4px;">
-                            <div style="width: ${performanceScore}%; background: ${performanceColor}; height: 8px; border-radius: 4px;"></div>
-                        </div>
-                    </td>
-                `;
-
-                tableBody.appendChild(row);
-            });
-        }
-
-
-
-        // Update attendance tab
-        function updateAttendanceTab() {
-            const tableBody = document.getElementById('attendanceBody');
-
-            // Clear the table
-            tableBody.innerHTML = '';
-
-            // Add each staff member to the attendance table
-            allStaff.forEach(staff => {
-                const row = document.createElement('tr');
-
-                // Check if staff is working
-                const isWorking = staff.status?.toLowerCase() === 'in work';
-
-                row.innerHTML = `
-                    <td>${staff.first_name} ${staff.last_name}</td>
-                    <td>${isWorking ? '08:45 AM' : '--'}</td>
-                    <td>--</td>
-                    <td><span class="status-badge ${getStatusClass(staff.status)}">${isWorking ? 'Working' : 'Absent'}</span></td>
-                `;
-
-                tableBody.appendChild(row);
-            });
-
-            // Update morning shift count
-            document.getElementById('morningShiftCount').textContent = allStaff.length;
-        }
-
-        // Update stats overview
-        function updateStatsOverview() {
-            // Count total staff
-            const totalStaff = allStaff.length;
-
-            // Count active staff (status = 'in work')
-            const activeStaff = allStaff.filter(staff =>
-                staff.status?.toLowerCase() === 'in work'
-            ).length;
-
-            // Calculate active percentage
-            const activePercentage = totalStaff ? Math.round((activeStaff / totalStaff) * 100) : 0;
-
-            // Calculate average orders processed
-            const totalOrders = allStaff.reduce((sum, staff) => sum + (staff.orders_processed || 0), 0);
-            const avgOrders = totalStaff ? Math.round(totalOrders / totalStaff) : 0;
-
-            // Update UI
-            document.getElementById('totalStaff').textContent = totalStaff;
-            document.getElementById('activeStaff').textContent = activeStaff;
-            document.getElementById('avgOrders').textContent = avgOrders;
-
-            document.getElementById('staffChange').innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <polyline points="18 15 12 9 6 15"></polyline>
-                </svg>
-                <span>+2 since last month</span>
-            `;
-
-            document.getElementById('activePercentage').textContent = `${activePercentage}% of total staff`;
-
-            document.getElementById('orderChange').innerHTML = avgOrders >= 40 ?
-                `<span class="positive">Target reached</span>` :
-                `<span class="negative">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                    ${40 - avgOrders} fewer than target
-                </span>`;
-        }
-
-        // Add new staff - with separate first/last name fields
-        async function addNewStaff(e) {
-            e.preventDefault();
-            try {
-                // Get form values
-                const firstName = document.getElementById('newStaffFirstName').value.trim();
-                const lastName = document.getElementById('newStaffLastName').value.trim();
-                const department = document.getElementById('newDepartment').value;
-                const position = document.getElementById('newPosition').value.trim();
-                const staffId = document.getElementById('newStaffId').value.trim();
-                const workStart = document.getElementById('newWorkStart').value;
-                const workEnd = document.getElementById('newWorkEnd').value;
-                const email = document.getElementById('newEmail').value.trim();
-
-                // Validate required fields
-                if (!firstName || !lastName || !department || !position || !staffId) {
-                    alert('Please fill in all required fields');
-                    return;
-                }
-
-                const staffData = {
-                    first_name: firstName,
-                    last_name: lastName,
-                    staff_id: staffId, // Explicitly add staff_id here
-                    department,
-                    position,
-                    status: 'offline',
-                    work_start: workStart,
-                    work_end: workEnd,
-                    email: email || null,
-                    current_load: 0,
-                    orders_processed: 0,
-                    performance_score: 0
-                };
-
-
-                console.log('Adding staff with data:', staffData);
-
-                // Insert new staff into database
-                const { data, error } = await supabase
-                    .from('nonadminstaff')
-                    .insert([staffData]);
-
-                if (error) {
-                    console.error('Error adding staff:', error);
-                    alert('Error adding staff member: ' + error.message);
-                    return;
-                }
-
-                // Close modal and reset form
-                document.getElementById('addStaffModal').style.display = 'none';
-                document.getElementById('newStaffFirstName').value = '';
-                document.getElementById('newStaffLastName').value = '';
-                document.getElementById('newDepartment').value = '';
-                document.getElementById('newPosition').value = '';
-                document.getElementById('newStaffId').value = '';
-                document.getElementById('newWorkStart').value = '09:00';
-                document.getElementById('newWorkEnd').value = '17:00';
-                document.getElementById('newEmail').value = '';
-
-                // Refresh staff data
-                await fetchStaff();
-
-                // Show success message
-                alert('Staff member added successfully');
-
-            } catch (err) {
-                console.error('Error in addNewStaff:', err);
-                alert('Error adding staff member. Please try again.');
-            }
-        }
-
-        // Save edit staff changes
-        async function saveStaffChanges() {
-            try {
-                // Get the staff ID from the hidden input field
-                const staffId = document.getElementById('editStaffId').value;
-
-                // Don't reference "staff" here, it doesn't exist in this function's scope
-
-                // Collect form data
-                const staffData = {
-                    first_name: document.getElementById('editFirstName').value.trim(),
-                    last_name: document.getElementById('editLastName').value.trim(),
-                    department: document.getElementById('editDepartment').value,
-                    position: document.getElementById('editPosition').value.trim(),
-                    status: document.getElementById('editStatus').value,
-                    work_start: document.getElementById('editWorkStart').value,
-                    work_end: document.getElementById('editWorkEnd').value,
-                    email: document.getElementById('editEmail').value.trim()
-                };
-
-                // Validate required fields
-                if (!staffData.first_name || !staffData.last_name || !staffData.department || !staffData.position) {
-                    alert('Please fill in all required fields');
-                    return;
-                }
-
-                // Update staff in database
-                const { error } = await supabase
-                    .from('nonadminstaff')
-                    .update(staffData)
-                    .eq('id', staffId);
-
-                if (error) {
-                    console.error('Error updating staff:', error);
-                    alert('Error updating staff member: ' + error.message);
-                    return;
-                }
-
-                // Close modal
-                document.getElementById('editStaffModal').style.display = 'none';
-
-                // Refresh staff data
-                await fetchStaff();
-
-                // Show success message
-                alert('Staff member updated successfully');
-
-            } catch (err) {
-                console.error('Error in saveStaffChanges:', err);
-                alert('Error saving staff changes. Please try again.');
-            }
-        }
-
-        // Export staff report
-        function exportStaffReport() {
-            if (!allStaff || allStaff.length === 0) {
-                alert('No staff data to export');
-                return;
-            }
-
-            try {
-                // Create CSV content
-                let csvContent = 'Staff ID,First Name,Last Name,Department,Position,Status,Work Hours,Orders Processed,Performance Score\n';
-
-                allStaff.forEach(staff => {
-                    const workHours = `${formatTime(staff.work_start)} - ${formatTime(staff.work_end)}`;
-
-                    // Format each field with proper escaping for CSV
-                    const row = [
-                        staff.staff_id || '',
-                        `"${(staff.first_name || '').replace(/"/g, '""')}"`,
-                        `"${(staff.last_name || '').replace(/"/g, '""')}"`,
-                        `"${(staff.department || '').replace(/"/g, '""')}"`,
-                        `"${(staff.position || '').replace(/"/g, '""')}"`,
-                        staff.status || 'offline',
-                        `"${workHours}"`,
-                        staff.orders_processed || 0,
-                        staff.performance_score || 0
-                    ];
-
-                    csvContent += row.join(',') + '\n';
-                });
-
-                // Create a temporary download link
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', `staff_report_${new Date().toISOString().slice(0, 10)}.csv`);
-                document.body.appendChild(link);
-
-                // Trigger the download and cleanup
-                link.click();
-                document.body.removeChild(link);
-
-                console.log('Staff report exported successfully');
-
-            } catch (err) {
-                console.error('Error exporting staff report:', err);
-                alert('Error exporting staff report: ' + err.message);
-            }
-        }
-
-        // Update clock display
-        function updateClock() {
-            const now = new Date();
-            const timeElement = document.getElementById('currentTime');
-            const dateElement = document.getElementById('currentDate');
-
-            if (timeElement && dateElement) {
-                // Format time (HH:MM:SS)
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                const seconds = now.getSeconds().toString().padStart(2, '0');
-                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
-
-                // Format date (Weekday, Month Day, Year)
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                dateElement.textContent = now.toLocaleDateString('en-US', options);
-            }
-        }
-
-        // Set up all event listeners
-        function setupEventListeners() {
-            // User dropdown toggle
-            document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function (event) {
-                const dropdown = document.getElementById('userDropdown');
-                const avatar = document.getElementById('userAvatar');
-
-                if (dropdown.classList.contains('active') &&
-                    !avatar.contains(event.target) &&
-                    !dropdown.contains(event.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-            // Logout button
-            document.getElementById('logoutButton').addEventListener('click', logout);
-
-            // Tab switching with data loading
-            document.querySelectorAll('.tab-item').forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const tabId = this.getAttribute('data-tab');
-
-                    // Remove active class from all tabs and contents
-                    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                    // Add active class to clicked tab and its content
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-
-                    // Load data based on tab
-                    if (tabId === 'performance') {
-                        updatePerformanceTab();
-                    } else if (tabId === 'attendance') {
-                        updateAttendanceTab();
-                    }
-                });
-            });
-
-            // Department filter
-            document.getElementById('departmentFilter').addEventListener('change', displayStaffList);
-
-            // Search input
-            document.getElementById('staffSearch').addEventListener('input', displayStaffList);
-
-            function setupEditButtons() {
-                document.querySelectorAll('.edit-staff-btn').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const staffId = document.getElementById('editStaffId').value;
-                        console.log('Edit button clicked for staff ID:', staffId);
-                        editStaff(staffId);
-                    });
-                });
-            }
-
-            // Export report buttons
-            document.getElementById('exportReportBtn').addEventListener('click', exportStaffReport);
-            document.getElementById('exportPerformanceBtn').addEventListener('click', exportStaffReport);
-
-            // Auto response toggle
-            document.getElementById('autoResponseToggle').addEventListener('change', function () {
-                // In a real app, this would update a settings table in the database
-                console.log('Auto response after hours:', this.checked ? 'enabled' : 'disabled');
-            });
-
-            // Clock in/out buttons
-            document.getElementById('clockInBtn').addEventListener('click', function () {
-                alert('Clock in functionality would be implemented here.');
-                // In a real app, this would record the clock-in time for the selected staff member
-            });
-
-            document.getElementById('clockOutBtn').addEventListener('click', function () {
-                alert('Clock out functionality would be implemented here.');
-                // In a real app, this would record the clock-out time for the selected staff member
-            });
-
-            // Mobile menu toggle
-            const mobileToggle = document.querySelector('.mobile-toggle');
-            const sidebar = document.querySelector('.sidebar');
-
-            if (mobileToggle && sidebar) {
-                mobileToggle.addEventListener('click', function () {
-                    sidebar.classList.toggle('open');
-                });
-            }
-
-            // Set up all modals
-            setupAllModals();
-        }
-
-
-
-        window.editStaff = editStaff;
-
-
-        // Initialize the page
-        async function initializePage() {
-            try {
-                console.log('Initializing staff page...');
-
-                // Check authentication
-                const user = await checkAuth();
-                if (!user) {
-                    console.error('User not authenticated');
-                    return;
-                }
-
-                // Get user details
-                const userDetails = await getUserDetails(user.id);
-                if (!userDetails) {
-                    console.error('Unable to load user details');
-                    alert('Unable to load user information. Please try logging in again.');
-                    logout();
-                    return;
-                }
-
-                // Update user interface with user details
-                updateUserInterface(userDetails);
-
-                // Fetch staff data
-                await fetchStaff();
-
-                // Set up event listeners
-                setupEventListeners();
-
-                // Set up clock update
-                setInterval(updateClock, 1000);
-                updateClock(); // Initial call
-
-                console.log('Staff page initialized successfully');
-            } catch (err) {
-                console.error('Error initializing page:', err);
-                throw err;
-            }
-        }
-
-        // Make these functions available globally
-        window.editStaff = editStaff;  // Reassign to be safe
-
-
-        // Initialize the page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOM loaded, initializing page...');
-
-            initializePage().catch(err => {
-                console.error('Error during initialization:', err);
-                alert('An error occurred while loading the page. Please try again later.');
-            });
-        });
-        function setupStaffFunctions() {
-            window.editStaff = editStaff;
-
-            console.log('Staff functions successfully set up in global scope');
-        }
+        updateUserInterface(userDetails);
+
+        // Fetch staff data
+        await fetchStaff();
+
+        // Set up event listeners
+        setupEventListeners();
+
+        // Set up clock update
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
+
+        console.log('Staff page initialized successfully');
+    } catch (err) {
+        console.error('Error initializing page:', err);
+        alert('An error occurred while loading the page. Please try again later.');
+    }
+}
+
+// Make editStaff function globally available
+window.editStaff = editStaff;
+
+// Initialize the page when DOM is loaded
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM loaded, initializing page...');
+    initializePage();
+});
     </script>
 </body>
 

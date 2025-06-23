@@ -1093,13 +1093,31 @@
 
         // Check if user is authenticated
         async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                // Redirect to login if not authenticated
+            try {
+                console.log('Checking authentication...');
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error) {
+                    console.error('Auth error:', error);
+                    window.location.href = 'admin-login.html';
+                    return null;
+                }
+                
+                if (!user) {
+                    console.log('No user found, redirecting to login...');
+                    alert('Please log in to access the dashboard.');
+                    window.location.href = 'admin-login.html';
+                    return null;
+                }
+                
+                console.log('User authenticated:', user.email);
+                return user;
+            } catch (err) {
+                console.error('Authentication check failed:', err);
+                alert('Authentication failed. Please try logging in.');
                 window.location.href = 'admin-login.html';
                 return null;
             }
-            return user;
         }
 
         // Get user details from database
@@ -1132,19 +1150,38 @@
         }
 
         // Handle logout
-        async function logout() {
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-                console.error('Error signing out:', error);
-                alert('Error signing out. Please try again.');
-            } else {
-                // Clear session storage
-                sessionStorage.removeItem('currentUser');
-
-                // Redirect to login page
-                window.location.href = 'admin-login.html';
-            }
+async function logout() {
+    try {
+        // Get current user before logging out
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+            // Update online status to false
+            await supabase
+                .from('staff_members')
+                .update({ is_online: false })
+                .eq('id', user.id);
         }
+
+        // Sign out from Supabase
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Error signing out:', error);
+            alert('Error signing out. Please try again.');
+        } else {
+            // Clear session storage
+            sessionStorage.removeItem('currentUser');
+
+            // Redirect to login page
+            window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error during logout:', error);
+        // Even if there's an error, still try to clear session and redirect
+        sessionStorage.removeItem('currentUser');
+        window.location.href = 'admin-login.html';
+    }
+}
 
         // Toggle dropdown menu
         function toggleDropdown() {
@@ -1225,24 +1262,26 @@ async function loadOrderStats() {
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-        // Fetch today's orders
+        // Fetch today's orders (excluding unconfirmed)
         const { data: todayOrders, error: todayError } = await supabase
             .from('orders')
             .select('*')
+            .neq('status', 'awaiting_confirmation')
             .gte('created_at', todayStr);
 
         if (todayError) throw todayError;
 
-        // Fetch yesterday's orders
+        // Fetch yesterday's orders (excluding unconfirmed)
         const { data: yesterdayOrders, error: yesterdayError } = await supabase
             .from('orders')
             .select('*')
+            .neq('status', 'awaiting_confirmation')
             .gte('created_at', yesterdayStr)
             .lt('created_at', todayStr);
 
         if (yesterdayError) throw yesterdayError;
 
-        // Fetch pending orders
+        // Fetch pending orders (excluding unconfirmed)
         const { data: pendingOrders, error: pendingError } = await supabase
             .from('orders')
             .select('*')
@@ -1296,10 +1335,11 @@ async function loadInventoryStats() {
 // Load delivery statistics
 async function loadDeliveryStats() {
     try {
-        // Fetch active deliveries
+        // Fetch active deliveries (excluding unconfirmed)
         const { data: activeDeliveries, error: deliveryError } = await supabase
             .from('orders')
             .select('*')
+            .neq('status', 'awaiting_confirmation')
             .in('status', ['shipping', 'delivering']);
 
         if (deliveryError) throw deliveryError;
@@ -1355,6 +1395,7 @@ async function loadActiveDeliveries() {
         const { data: deliveries, error: deliveryError } = await supabase
             .from('orders')
             .select('*, customers(*)')
+            .neq('status', 'awaiting_confirmation')
             .in('status', ['shipping', 'delivering'])
             .order('created_at', { ascending: false })
             .limit(3);
@@ -1400,6 +1441,7 @@ async function initializeMonthlyTrendsChart() {
         const { data: monthlyOrders, error: ordersError } = await supabase
             .from('orders')
             .select('created_at, total_amount')
+            .neq('status', 'awaiting_confirmation')
             .gte('created_at', startDate.toISOString());
 
         if (ordersError) throw ordersError;

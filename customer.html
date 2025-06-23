@@ -1581,10 +1581,11 @@
         // Calculate average purchase amount
         async function calculateAveragePurchase() {
             try {
-                // Fetch all orders
+                // Fetch all confirmed orders (excluding unconfirmed)
                 const { data: orders, error } = await supabase
                     .from('orders')
-                    .select('total_amount');
+                    .select('total_amount')
+                    .neq('status', 'awaiting_confirmation');
 
                 if (error) {
                     console.error('Error fetching orders for average:', error);
@@ -1964,11 +1965,12 @@
                     return;
                 }
 
-                // Fetch orders for this customer
+                // Fetch confirmed orders for this customer (excluding unconfirmed)
                 const { data: orders, error: ordersError } = await supabase
                     .from('orders')
                     .select('*')
                     .eq('customer_id', customerId)
+                    .neq('status', 'awaiting_confirmation')
                     .order('order_date', { ascending: false });
 
                 console.log("Orders query result:", ordersError ? "Error" : "Success",

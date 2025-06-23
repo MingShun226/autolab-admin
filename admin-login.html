@@ -204,9 +204,9 @@
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number">
-                <div class="error-message" id="phoneError">Please enter your phone number</div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email address">
+                <div class="error-message" id="emailError">Please enter your email address</div>
             </div>
 
             <div class="form-group">
@@ -233,162 +233,182 @@
 
     <script>
         // Initialize Supabase client
-        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        // Check if user is already logged in
-        window.addEventListener('load', async function () {
-            const { data: { user } } = await supabase.auth.getUser();
+const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// Check if user is already logged in
+window.addEventListener('load', async function () {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+        // Get staff details from the database
+        const { data: staffData, error: staffError } = await supabase
+            .from('staff_members')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        if (staffData) {
+            // Store staff info in session with consistent structure
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.id,
+                phone: staffData.phone,
+                email: staffData.email,  // Now properly available from database
+                staffId: staffData.staff_id,
+                firstName: staffData.first_name,
+                lastName: staffData.last_name,
+                role: staffData.role || 'Staff',
+                department: staffData.department,
+                position: staffData.position,
+                status: staffData.status,
+                type: 'admin'
+            }));
+
+            // Update online status
+            await supabase
+                .from('staff_members')
+                .update({ is_online: true })
+                .eq('id', user.id);
+
+            // Redirect to admin panel
+            window.location.href = '/dashboard.html';
+        }
+    }
+});
+
+// Handle form submission
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    // Reset error messages
+    document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+    });
+
+    let isValid = true;
+
+    // Email validation
+    if (!email) {
+        document.getElementById('emailError').style.display = 'block';
+        isValid = false;
+    }
+
+    // Password validation
+    if (!password) {
+        document.getElementById('passwordError').style.display = 'block';
+        isValid = false;
+    }
+
+    if (isValid) {
+        try {
+            // Sign in directly with email and password
+            console.log('🔍 Signing in with email:', email);
+            const { data: { user }, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) throw error;
+
             if (user) {
-                // Get staff details from the database
+                // Get staff details from database using the authenticated user's ID
+                console.log('📊 Getting staff details for user ID:', user.id);
                 const { data: staffData, error: staffError } = await supabase
                     .from('staff_members')
                     .select('*')
                     .eq('id', user.id)
                     .single();
 
-                if (staffData) {
-                    // Store staff info in session
-                    sessionStorage.setItem('currentUser', JSON.stringify({
-                        id: user.id,
-                        phone: user.phone,
-                        email: staffData.email,
-                        staffId: staffData.staff_id,
-                        firstName: staffData.first_name,
-                        lastName: staffData.last_name,
-                        type: 'admin'
-                    }));
-
-                    // Redirect to admin panel
-                    window.location.href = '/dashboard.html';
+                if (staffError || !staffData) {
+                    console.error('Staff data not found:', staffError);
+                    throw new Error('Staff account not found in database');
                 }
-            }
-        });
 
-        // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
+                console.log('✅ Staff data found:', staffData);
 
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
+                // Update online status
+                await supabase
+                    .from('staff_members')
+                    .update({ is_online: true })
+                    .eq('id', user.id);
 
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.style.display = 'none';
-            });
+                // Store staff info in session with consistent structure
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.id,
+                    phone: staffData.phone,
+                    email: staffData.email,  // Now properly available from database
+                    staffId: staffData.staff_id,
+                    firstName: staffData.first_name,
+                    lastName: staffData.last_name,
+                    role: staffData.role || 'Staff',
+                    department: staffData.department,
+                    position: staffData.position,
+                    status: staffData.status,
+                    type: 'admin'
+                }));
 
-            let isValid = true;
-
-            // Phone validation
-            if (!phone) {
-                document.getElementById('phoneError').style.display = 'block';
-                isValid = false;
-            }
-
-            // Password validation
-            if (!password) {
-                document.getElementById('passwordError').style.display = 'block';
-                isValid = false;
-            }
-
-            if (isValid) {
+                // Send login event to n8n webhook (optional)
                 try {
-                    // Sign in with Supabase Auth - find user by phone in database
-                    // First, find the user by phone number in the database
-                    const { data: userData, error: dbError } = await supabase
-                        .from('staff_members')
-                        .select('email')
-                        .eq('phone', phone)
-                        .single();
-                    
-                    if (dbError || !userData) {
-                        throw new Error('Phone number not found');
-                    }
-                    
-                    // Then sign in with email
-                    const { data: { user }, error } = await supabase.auth.signInWithPassword({
-                        email: userData.email,
-                        password: password
-                    });
-
-                    if (error) throw error;
-
-                    if (user) {
-                        // Get staff details from the database
-                        const { data: staffData, error: staffError } = await supabase
-                            .from('staff_members')
-                            .select('*')
-                            .eq('id', user.id)
-                            .single();
-
-                        if (staffError) throw staffError;
-
-                        // Store staff info in session
-                        sessionStorage.setItem('currentUser', JSON.stringify({
-                            id: user.id,
-                            phone: user.phone,
+                    await fetch('https://subapipie.app.n8n.cloud/webhook-test/order-placed', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            event: 'staff_login',
+                            staff_id: staffData.staff_id,
+                            name: `${staffData.first_name} ${staffData.last_name}`,
+                            phone: staffData.phone,
                             email: staffData.email,
-                            staffId: staffData.staff_id,
-                            firstName: staffData.first_name,
-                            lastName: staffData.last_name,
-                            type: 'admin'
-                        }));
-
-                        // Send login event to n8n webhook (optional)
-                        try {
-                            await fetch('https://subapipie.app.n8n.cloud/webhook-test/order-placed', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    event: 'staff_login',
-                                    staff_id: staffData.staff_id,
-                                    name: `${staffData.first_name} ${staffData.last_name}`,
-                                    phone: user.phone,
-                                    timestamp: new Date().toISOString()
-                                })
-                            });
-                        } catch (webhookError) {
-                            console.log('Webhook notification failed:', webhookError);
-                            // Don't block login if webhook fails
-                        }
-
-                        // Redirect to admin panel
-                        window.location.href = 'dashboard.html';
-                    }
-                } catch (error) {
-                    console.error('Error signing in:', error);
-                    alert('Invalid phone number or password');
+                            role: staffData.role,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                } catch (webhookError) {
+                    console.log('Webhook notification failed:', webhookError);
+                    // Don't block login if webhook fails
                 }
+
+                // Redirect to admin panel
+                window.location.href = 'dashboard.html';
             }
+        } catch (error) {
+            console.error('Error signing in:', error);
+            alert('Invalid email or password');
+        }
+    }
+});
+
+// Handle forgot password
+document.getElementById('forgotPassword').addEventListener('click', async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+
+    if (!email) {
+        document.getElementById('emailError').textContent = 'Please enter your email address to reset password';
+        document.getElementById('emailError').style.display = 'block';
+        return;
+    }
+
+    try {
+        // Send password reset email directly
+        console.log('🔍 Sending password reset for email:', email);
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/resetpassword.html',
         });
 
-        // Handle forgot password
-        document.getElementById('forgotPassword').addEventListener('click', async function (e) {
-            e.preventDefault();
+        if (error) throw error;
 
-            const phone = document.getElementById('phone').value;
-
-            if (!phone) {
-                document.getElementById('phoneError').textContent = 'Please enter your phone number to reset password';
-                document.getElementById('phoneError').style.display = 'block';
-                return;
-            }
-
-            try {
-                const { error } = await supabase.auth.resetPasswordForPhone(phone, {
-                    redirectTo: window.location.origin + '/reset-password.html',
-                });
-
-                if (error) throw error;
-
-                alert('Password reset SMS sent. Please check your inbox.');
-            } catch (error) {
-                console.error('Error sending password reset SMS:', error);
-                alert('Failed to send password reset SMS. Please try again.');
-            }
-        });
+        alert('Password reset email sent. Please check your inbox.');
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        alert('Failed to send password reset email. Please check your email address and try again.');
+    }
+});
     </script>
 </body>
 

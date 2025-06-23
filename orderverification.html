@@ -5,9 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <title>Order Verification - Autolabs</title>
+    <title>WhatsApp Order Workflow - Admin Approval</title>
     <style>
-        /* Insert the updated CSS styles from the first artifact here */
         :root {
             --primary-color: #52c41a;
             --secondary-color: #1890ff;
@@ -190,7 +189,6 @@
             color: white;
         }
 
-
         .user-info {
             display: flex;
             align-items: center;
@@ -232,8 +230,7 @@
             cursor: pointer;
         }
 
-        .dropdown-item.logout:hover,
-        .dropdown-item.order:hover {
+        .dropdown-item.logout:hover {
             background-color: #f8f8f8;
         }
 
@@ -249,78 +246,6 @@
         /* Content Container */
         .content {
             padding: 24px;
-        }
-
-        /* Status badges */
-        .status-badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 11px;
-            font-weight: 500;
-            margin-right: 3px;
-            transition: all 0.3s;
-        }
-
-        .status-badge.processing {
-            background-color: #e6f7ff;
-            color: #1890ff;
-        }
-
-        .status-badge.prepared {
-            background-color: #fff7e6;
-            color: #fa8c16;
-        }
-
-        .status-badge.verifying {
-            background-color: #f9f0ff;
-            color: #722ed1;
-        }
-
-        .status-badge.delivering {
-            background-color: #f2f0ff;
-            color: #531dab;
-        }
-
-        .status-badge.delivered {
-            background-color: #f9f0ff;
-            color: #722ed1;
-        }
-
-        .status-badge.hold,
-        .status-badge.on {
-            background-color: #fffbe6;
-            color: #d4b106;
-        }
-
-        .status-badge.cancelled {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
-
-        .status-badge.paid {
-            background-color: #f6ffed;
-            color: #52c41a;
-        }
-
-        .status-badge.unpaid {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
-
-        .status-badge.urgent {
-            background-color: #fff2e8;
-            color: #fa541c;
-        }
-
-        .status-badge.transit {
-            background-color: #e6f7ff;
-            color: #1890ff;
-        }
-
-        .status-badge.available {
-            background-color: #f6ffed;
-            color: #52c41a;
         }
 
         /* Panel Styles */
@@ -363,7 +288,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            cursor: pointer;
         }
 
         .order-title {
@@ -418,6 +342,72 @@
             color: #2c3e50;
         }
 
+        /* Status badges using simplified system */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 3px;
+            transition: all 0.3s;
+        }
+
+        .status-badge.awaiting-confirmation {
+            background-color: #fff2e8;
+            color: #fa541c;
+        }
+
+        .status-badge.pending-payment {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-badge.pending-confirmation {
+            background-color: #f9f0ff;
+            color: #722ed1;
+        }
+
+        .status-badge.processing {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-badge.prepared {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .status-badge.delivering {
+            background-color: #f2f0ff;
+            color: #531dab;
+        }
+
+        .status-badge.delivered {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-badge.cancelled {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .status-badge.paid {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-badge.unpaid {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .status-badge.urgent {
+            background-color: #fff2e8;
+            color: #fa541c;
+        }
+
         /* Items Table */
         .items-table {
             width: 100%;
@@ -451,13 +441,6 @@
         .item-price {
             font-weight: 500;
             color: #e21b1b;
-        }
-
-        /* Change highlights */
-        .change-highlight {
-            background-color: #ffeb3b;
-            padding: 2px 4px;
-            border-radius: 3px;
         }
 
         /* Order Action Buttons */
@@ -608,6 +591,32 @@
             margin-right: auto;
         }
 
+        /* Info Box Styles */
+        .info-box {
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .info-box.awaiting {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            border-left: 4px solid #fa8c16;
+        }
+
+        .info-box.payment {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            border-left: 4px solid #1890ff;
+        }
+
+        .info-box.approval {
+            background-color: #f9f0ff;
+            color: #722ed1;
+            border-left: 4px solid #722ed1;
+        }
+
         /* Responsive styles */
         @media (max-width: 768px) {
             .main-content {
@@ -668,7 +677,7 @@
                     </div>
                     <div class="nav-text">Admin Dashboard</div>
                 </a>
-                <a href="order.html" class="nav-item ">
+                <a href="order.html" class="nav-item">
                     <div class="nav-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -789,8 +798,8 @@
                     </div>
                     <!-- Dropdown menu -->
                     <div class="dropdown-menu" id="userDropdown">
-                        <div class="dropdown-item">Admin User</div>
-                        <div class="dropdown-item">Staff ID: 8888</div>
+                        <div class="dropdown-item" id="userFullName">Admin User</div>
+                        <div class="dropdown-item" id="userStaffId">Staff ID: 8888</div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item logout" id="logoutButton">Logout</div>
                     </div>
@@ -800,37 +809,50 @@
             <!-- Page Content -->
             <div class="content">
                 <div class="page-title">
-                    <span>Order Verification</span>
+                    <span>WhatsApp Order Workflow Management</span>
                 </div>
 
-                <!-- Tab Navigation -->
                 <div class="panel">
                     <div class="tabs" id="verificationTabs">
-                        <div class="tab active" data-tab="new-orders">New Orders <span id="newOrdersBadge"
+                        <div class="tab active" data-tab="awaiting-confirmation">📱 Awaiting WhatsApp Confirmation <span id="awaitingConfirmationBadge"
                                 class="tab-badge">0</span></div>
-                        <div class="tab" data-tab="edit-requests">Edit Requests <span id="editRequestsBadge"
+                        <div class="tab" data-tab="pending-payment">💳 Confirmed - Pending Payment <span id="pendingPaymentBadge"
+                                class="tab-badge">0</span></div>
+                        <div class="tab" data-tab="pending-approval">⏳ Payment Complete - Admin Approval <span id="pendingApprovalBadge"
                                 class="tab-badge">0</span></div>
                     </div>
 
-                    <!-- New Orders Tab Content -->
-                    <div class="tab-content active" id="new-orders-content">
+                    <!-- Awaiting WhatsApp Confirmation Tab Content -->
+                    <div class="tab-content active" id="awaiting-confirmation-content">
                         <div class="panel-content">
-                            <div id="new-orders-container">
+                            <div id="awaiting-confirmation-container">
                                 <div class="loading">
                                     <div class="loading-spinner"></div>
-                                    <span>Loading orders...</span>
+                                    <span>Loading orders awaiting confirmation...</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Edit Requests Tab Content -->
-                    <div class="tab-content" id="edit-requests-content">
+                    <!-- Confirmed - Pending Payment Tab Content -->
+                    <div class="tab-content" id="pending-payment-content">
                         <div class="panel-content">
-                            <div id="edit-requests-container">
+                            <div id="pending-payment-container">
                                 <div class="loading">
                                     <div class="loading-spinner"></div>
-                                    <span>Loading edit requests...</span>
+                                    <span>Loading orders pending payment...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Complete - Admin Approval Tab Content -->
+                    <div class="tab-content" id="pending-approval-content">
+                        <div class="panel-content">
+                            <div id="pending-approval-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading orders for admin approval...</span>
                                 </div>
                             </div>
                         </div>
@@ -839,6 +861,7 @@
             </div>
         </div>
     </div>
+
     <script>
         const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
@@ -846,25 +869,73 @@
 
         // Global variables
         let allOrders = [];
-        let pendingEdits = [];
-        let allCustomers = [];
-        let allProducts = [];
+        let currentUserDetails = null;
+
+        // Single Status Display Function
+        function getOrderStatusDisplay(order) {
+            const statusConfig = {
+                'awaiting-confirmation': { 
+                    class: 'awaiting-confirmation', 
+                    text: '📱 Awaiting WhatsApp Confirmation', 
+                    icon: '📱',
+                    color: '#fa8c16'
+                },
+                'pending-payment': { 
+                    class: 'pending-payment', 
+                    text: '💳 Confirmed - Pending Payment', 
+                    icon: '💳',
+                    color: '#1890ff'
+                },
+                'pending-confirmation': { 
+                    class: 'pending-confirmation', 
+                    text: '⏳ Paid - Pending Admin Approval', 
+                    icon: '⏳',
+                    color: '#722ed1'
+                },
+                'processing': { 
+                    class: 'processing', 
+                    text: '⚙️ Processing', 
+                    icon: '⚙️',
+                    color: '#1890ff'
+                },
+                'prepared': { 
+                    class: 'prepared', 
+                    text: '📦 Prepared for Delivery', 
+                    icon: '📦',
+                    color: '#fa8c16'
+                },
+                'delivering': { 
+                    class: 'delivering', 
+                    text: '🚚 Out for Delivery', 
+                    icon: '🚚',
+                    color: '#531dab'
+                },
+                'delivered': { 
+                    class: 'delivered', 
+                    text: '✅ Delivered', 
+                    icon: '✅',
+                    color: '#52c41a'
+                },
+                'cancelled': { 
+                    class: 'cancelled', 
+                    text: '❌ Cancelled', 
+                    icon: '❌',
+                    color: '#f5222d'
+                }
+            };
+            
+            return statusConfig[order.status] || statusConfig['processing'];
+        }
 
         // When document loads
         document.addEventListener('DOMContentLoaded', async function () {
-            // Check user authentication
             await checkAuth();
-
-            // Setup tab navigation
             setupTabs();
-
-            // Load data for both tabs
             await Promise.all([
-                loadVerifyingOrders(),
-                loadPendingEdits()
+                loadAwaitingConfirmationOrders(),
+                loadPendingPaymentOrders(),
+                loadPendingApprovalOrders()
             ]);
-
-            // Setup event listeners
             setupEventListeners();
         });
 
@@ -872,12 +943,10 @@
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-                // Redirect to login if not authenticated
                 window.location.href = 'admin-login.html';
                 return null;
             }
 
-            // Get staff member details
             const { data: staffMember, error } = await supabase
                 .from('staff_members')
                 .select('*')
@@ -890,48 +959,55 @@
                 return;
             }
 
-            // Update UI with user info
             updateUIForUser(staffMember);
             return staffMember;
         }
 
         // Update UI with user info
         function updateUIForUser(user) {
-            // Set avatar initials
-            const initials = user.first_name ? user.first_name.charAt(0) : 'A';
+            currentUserDetails = user;
+            const initials = user.first_name ? user.first_name.charAt(0) + user.last_name.charAt(0) : 'AD';
             document.getElementById('userAvatar').textContent = initials;
-
-            // Set name
             document.getElementById('userName').textContent = user.first_name + ' ' + user.last_name;
+            document.getElementById('userFullName').textContent = user.first_name + ' ' + user.last_name;
+            document.getElementById('userStaffId').textContent = `Staff ID: ${user.staff_id}`;
         }
 
         // Setup tab navigation
         function setupTabs() {
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    // Remove active class from all tabs and content
+                tab.addEventListener('click', async function () {
                     tabs.forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(content => {
                         content.classList.remove('active');
                     });
 
-                    // Add active class to clicked tab and corresponding content
                     this.classList.add('active');
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(tabId + '-content').classList.add('active');
+
+                    switch (tabId) {
+                        case 'awaiting-confirmation':
+                            await loadAwaitingConfirmationOrders();
+                            break;
+                        case 'pending-payment':
+                            await loadPendingPaymentOrders();
+                            break;
+                        case 'pending-approval':
+                            await loadPendingApprovalOrders();
+                            break;
+                    }
                 });
             });
         }
 
         // Setup event listeners
         function setupEventListeners() {
-            // User dropdown
             document.getElementById('userAvatar').addEventListener('click', function () {
                 document.getElementById('userDropdown').classList.toggle('active');
             });
 
-            // Close dropdown when clicking outside
             document.addEventListener('click', function (e) {
                 const dropdown = document.getElementById('userDropdown');
                 const avatar = document.getElementById('userAvatar');
@@ -940,7 +1016,6 @@
                 }
             });
 
-            // Logout button
             document.getElementById('logoutButton').addEventListener('click', logout);
         }
 
@@ -950,163 +1025,353 @@
             window.location.href = 'admin-login.html';
         }
 
-        // Load orders with 'verifying' status
-        async function loadVerifyingOrders() {
+        // Load orders with 'awaiting-confirmation' status
+        async function loadAwaitingConfirmationOrders() {
             try {
-                const container = document.getElementById('new-orders-container');
+                const container = document.getElementById('awaiting-confirmation-container');
                 container.innerHTML = `
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <span>Loading orders for verification...</span>
-            </div>
-        `;
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading orders awaiting confirmation...</span>
+                    </div>
+                `;
 
-                // Fetch orders with 'verifying' status
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
-                    .eq('status', 'verifying');
+                    .eq('status', 'awaiting-confirmation')
+                    .order('order_date', { ascending: false });
 
                 if (error) {
-                    console.error('Error loading verifying orders:', error);
+                    console.error('Error loading awaiting confirmation orders:', error);
                     container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">❌</div>
-                    <div class="empty-title">Error Loading Orders</div>
-                    <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
-                </div>
-            `;
+                        <div class="empty-state">
+                            <div class="empty-icon">❌</div>
+                            <div class="empty-title">Error Loading Orders</div>
+                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                        </div>
+                    `;
                     return;
                 }
 
-                // Update badge count
-                document.getElementById('newOrdersBadge').textContent = orders ? orders.length : 0;
-
-                // Display orders
-                renderVerifyingOrders(orders || []);
+                document.getElementById('awaitingConfirmationBadge').textContent = orders ? orders.length : 0;
+                renderAwaitingConfirmationOrders(orders || []);
             } catch (err) {
-                console.error('Error in loadVerifyingOrders:', err);
-                document.getElementById('new-orders-container').innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">❌</div>
-                <div class="empty-title">Error Loading Orders</div>
-                <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
-            </div>
-        `;
+                console.error('Error in loadAwaitingConfirmationOrders:', err);
+                document.getElementById('awaiting-confirmation-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">Error Loading Orders</div>
+                        <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                    </div>
+                `;
             }
         }
 
-        // Render verifying orders
-        function renderVerifyingOrders(orders) {
-            const container = document.getElementById('new-orders-container');
+        // Load orders with 'pending-payment' status
+        async function loadPendingPaymentOrders() {
+            try {
+                const container = document.getElementById('pending-payment-container');
+                container.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading orders pending payment...</span>
+                    </div>
+                `;
 
-            // Check if there are any orders
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*, customers(name)')
+                    .eq('status', 'pending-payment')
+                    .order('confirmed_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading pending payment orders:', error);
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">❌</div>
+                            <div class="empty-title">Error Loading Orders</div>
+                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                document.getElementById('pendingPaymentBadge').textContent = orders ? orders.length : 0;
+                renderPendingPaymentOrders(orders || []);
+            } catch (err) {
+                console.error('Error in loadPendingPaymentOrders:', err);
+                document.getElementById('pending-payment-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">Error Loading Orders</div>
+                        <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load orders with 'pending-confirmation' status
+        async function loadPendingApprovalOrders() {
+            try {
+                const container = document.getElementById('pending-approval-container');
+                container.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading orders for admin approval...</span>
+                    </div>
+                `;
+
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*, customers(name)')
+                    .eq('status', 'pending-confirmation')
+                    .order('paid_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading pending approval orders:', error);
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">❌</div>
+                            <div class="empty-title">Error Loading Orders</div>
+                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                document.getElementById('pendingApprovalBadge').textContent = orders ? orders.length : 0;
+                renderPendingApprovalOrders(orders || []);
+            } catch (err) {
+                console.error('Error in loadPendingApprovalOrders:', err);
+                document.getElementById('pending-approval-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">Error Loading Orders</div>
+                        <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Render awaiting confirmation orders (read-only, no actions)
+        function renderAwaitingConfirmationOrders(orders) {
+            const container = document.getElementById('awaiting-confirmation-container');
+
             if (!orders || orders.length === 0) {
                 container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </div>
-                <div class="empty-title">No Orders Need Verification</div>
-                <div class="empty-message">There are currently no new orders that require verification.</div>
-            </div>
-        `;
+                    <div class="empty-state">
+                        <div class="empty-icon">📱</div>
+                        <div class="empty-title">No Orders Awaiting Confirmation</div>
+                        <div class="empty-message">All orders have been confirmed via WhatsApp or there are no new orders.</div>
+                    </div>
+                `;
                 return;
             }
 
-            // Sort orders by date (newest first)
-            orders.sort((a, b) => {
-                return new Date(b.order_date) - new Date(a.order_date);
-            });
-
-            // Build HTML for orders
             let html = '';
-
             for (const order of orders) {
                 const customerName = order.customers ? order.customers.name : 'Unknown Customer';
                 const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
 
                 html += `
-            <div class="order-card" id="order-${order.id}">
-                <div class="order-header">
-                    <div>
-                        <div class="order-title">Order #${order.order_id}</div>
-                        <div class="order-date">Placed on ${orderDate}</div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-title">Order #${order.order_id}</div>
+                                <div class="order-date">Placed on ${orderDate}</div>
+                            </div>
+                            <div class="order-status-container">
+                                <span class="status-badge awaiting-confirmation">📱 Awaiting WhatsApp Confirmation</span>
+                                ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="order-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery Address</div>
+                                <div class="meta-value">${order.address || 'No address provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Total Amount</div>
+                                <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
+                            </div>
+                        </div>
+                        <div class="info-box awaiting">
+                            <p style="margin: 0;">
+                                ⏳ Waiting for customer to confirm order via WhatsApp. Once confirmed, this order will move to pending payment.
+                            </p>
+                        </div>
                     </div>
-                    <div class="order-status-container">
-                        <span class="status-badge verifying">Verifying</span>
-                        ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
-                        <span class="status-badge ${order.payment_status}">${order.payment_status}</span>
-                    </div>
-                </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
 
-                <div class="order-meta">
-                    <div class="meta-item">
-                        <div class="meta-label">Customer</div>
-                        <div class="meta-value">${customerName}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Delivery Address</div>
-                        <div class="meta-value">${order.address || 'No address provided'}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Driver</div>
-                        <div class="meta-value">${order.driver || 'Not assigned'}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Total Amount</div>
-                        <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
-                    </div>
-                </div>
-                
-                <div class="order-details" id="items-${order.id}">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <span>Loading order items...</span>
-                    </div>
-                </div>
+        // Render pending payment orders (read-only, no actions)
+        function renderPendingPaymentOrders(orders) {
+            const container = document.getElementById('pending-payment-container');
 
-                <div class="order-actions">
-                    <button class="btn btn-approve" onclick="approveOrder('${order.id}', ${order.is_urgent})">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        Approve Order
-                    </button>
-                    <button class="btn btn-reject" onclick="rejectOrder('${order.id}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="15" y1="9" x2="9" y2="15"></line>
-                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                        </svg>
-                        Reject Order
-                    </button>
-                </div>
-            </div>
-        `;
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💳</div>
+                        <div class="empty-title">No Orders Pending Payment</div>
+                        <div class="empty-message">All confirmed orders have completed payment or there are no confirmed orders.</div>
+                    </div>
+                `;
+                return;
+            }
 
-                // After rendering the card, fetch the item details
+            let html = '';
+            for (const order of orders) {
+                const customerName = order.customers ? order.customers.name : 'Unknown Customer';
+                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-title">Order #${order.order_id}</div>
+                                <div class="order-date">Placed on ${orderDate}</div>
+                            </div>
+                            <div class="order-status-container">
+                                <span class="status-badge pending-payment">💳 Confirmed - Pending Payment</span>
+                                ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="order-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery Address</div>
+                                <div class="meta-value">${order.address || 'No address provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Total Amount</div>
+                                <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
+                            </div>
+                        </div>
+                        <div class="info-box payment">
+                            <p style="margin: 0;">
+                                💳 Customer has confirmed order via WhatsApp. Waiting for payment completion. Once payment is received, this order will need admin approval.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // Render pending approval orders (with admin actions)
+        function renderPendingApprovalOrders(orders) {
+            const container = document.getElementById('pending-approval-container');
+
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <div class="empty-title">No Orders Need Admin Approval</div>
+                        <div class="empty-message">All paid orders have been processed or there are no paid orders.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            for (const order of orders) {
+                const customerName = order.customers ? order.customers.name : 'Unknown Customer';
+                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                html += `
+                    <div class="order-card" id="order-${order.id}">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-title">Order #${order.order_id}</div>
+                                <div class="order-date">Placed on ${orderDate}</div>
+                            </div>
+                            <div class="order-status-container">
+                                <span class="status-badge pending-confirmation">⏳ Payment Complete - Ready for Approval</span>
+                                ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
+                                <span class="status-badge paid">Paid</span>
+                            </div>
+                        </div>
+                        <div class="order-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery Address</div>
+                                <div class="meta-value">${order.address || 'No address provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Driver</div>
+                                <div class="meta-value">${order.driver || 'Not assigned'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Total Amount</div>
+                                <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="order-details" id="items-${order.id}">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading order items...</span>
+                            </div>
+                        </div>
+
+                        <div class="info-box approval">
+                            <p style="margin: 0;">
+                                ⏳ Payment has been completed. This order is ready for admin approval to move to ${order.is_urgent ? 'processing' : 'on hold'} status.
+                            </p>
+                        </div>
+
+                        <div class="order-actions">
+                            <button class="btn btn-approve" onclick="approveOrder('${order.id}', ${order.is_urgent})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                Approve Order
+                            </button>
+                            <button class="btn btn-reject" onclick="rejectOrder('${order.id}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                Reject Order
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Fetch order items after rendering
                 setTimeout(() => {
                     fetchOrderItems(order.id);
                 }, 100);
             }
-
             container.innerHTML = html;
         }
+
+        // Make global functions available
+        window.approveOrder = approveOrder;
+        window.rejectOrder = rejectOrder;
 
         // Fetch order items for a specific order
         async function fetchOrderItems(orderId) {
@@ -1114,7 +1379,6 @@
                 const container = document.getElementById(`items-${orderId}`);
                 if (!container) return;
 
-                // Fetch order items with product details
                 const { data: orderItems, error } = await supabase
                     .from('order_products')
                     .select('*, products(name, product_id, category)')
@@ -1131,26 +1395,24 @@
                     return;
                 }
 
-                // Build HTML for items table
                 let html = `
-            <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 18px;">Order Items</h3>
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Unit Price</th>
-                        <th>Quantity</th>
-                        <th>Variations</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+                    <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 18px;">Order Items</h3>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Variations</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
 
                 let orderTotal = 0;
 
-                // Add each item to the table
                 orderItems.forEach(item => {
                     const productName = item.products ? item.products.name : 'Unknown Product';
                     const productId = item.products ? item.products.product_id : 'Unknown';
@@ -1162,34 +1424,30 @@
                     const variations = item.variations ? item.variations : 'N/A';
 
                     html += `
-                <tr>
-                    <td>
-                        <div class="item-name">${productName}</div>
-                        <div class="item-sku">${productId}</div>
-                    </td>
-                    <td>${category}</td>
-                    <td class="item-price">RM ${unitPrice.toFixed(2)}</td>
-                    <td>${quantity}</td>
-                    <td>${variations}</td>
-                    <td class="item-price">RM ${itemTotal.toFixed(2)}</td>
-                </tr>
-            `;
+                        <tr>
+                            <td>
+                                <div class="item-name">${productName}</div>
+                                <div class="item-sku">${productId}</div>
+                            </td>
+                            <td>${category}</td>
+                            <td class="item-price">RM ${unitPrice.toFixed(2)}</td>
+                            <td>${quantity}</td>
+                            <td>${variations}</td>
+                            <td class="item-price">RM ${itemTotal.toFixed(2)}</td>
+                        </tr>
+                    `;
                 });
 
-                // Add total row
                 html += `
-                <tr>
-                    <td colspan="5" style="text-align: right; font-weight: bold;">Order Total:</td>
-                    <td class="item-price" style="font-weight: bold;">RM ${orderTotal.toFixed(2)}</td>
-                </tr>
-            </tbody>
-            </table>
-        `;
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Order Total:</td>
+                            <td class="item-price" style="font-weight: bold;">RM ${orderTotal.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                `;
 
                 container.innerHTML = html;
-
-                // Make the order details section visible after loading
-                container.style.display = 'block';
 
             } catch (err) {
                 console.error('Error fetching order items:', err);
@@ -1200,184 +1458,26 @@
             }
         }
 
-        // Modified renderVerifyingOrders function to make order headers clickable to show/hide details
-        function renderVerifyingOrders(orders) {
-            const container = document.getElementById('new-orders-container');
-
-            // Check if there are any orders
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </div>
-                <div class="empty-title">No Orders Need Verification</div>
-                <div class="empty-message">There are currently no new orders that require verification.</div>
-            </div>
-        `;
-                return;
-            }
-
-            // Sort orders by date (newest first)
-            orders.sort((a, b) => {
-                return new Date(b.order_date) - new Date(a.order_date);
-            });
-
-            // Build HTML for orders
-            let html = '';
-
-            for (const order of orders) {
-                const customerName = order.customers ? order.customers.name : 'Unknown Customer';
-                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                html += `
-            <div class="order-card" id="order-${order.id}">
-                <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
-                    <div>
-                        <div class="order-title">Order #${order.order_id}</div>
-                        <div class="order-date">Placed on ${orderDate}</div>
-                    </div>
-                    <div class="order-status-container">
-                        <span class="status-badge verifying">Verifying</span>
-                        ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
-                        <span class="status-badge ${order.payment_status}">${order.payment_status}</span>
-                        <span class="toggle-indicator">▼</span>
-                    </div>
-                </div>
-
-                <div class="order-meta">
-                    <div class="meta-item">
-                        <div class="meta-label">Customer</div>
-                        <div class="meta-value">${customerName}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Delivery Address</div>
-                        <div class="meta-value">${order.address || 'No address provided'}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Driver</div>
-                        <div class="meta-value">${order.driver || 'Not assigned'}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Total Amount</div>
-                        <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
-                    </div>
-                </div>
-                
-               <div class="order-details" id="items-${order.id}" style="display: none;">
-                    <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <span>Loading order items...</span>
-                    </div>
-                    </div>
-
-                <div class="order-actions">
-                    <button class="btn btn-approve" onclick="approveOrder('${order.id}', ${order.is_urgent})">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        Approve Order
-                    </button>
-                    <button class="btn btn-reject" onclick="rejectOrder('${order.id}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="15" y1="9" x2="9" y2="15"></line>
-                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                        </svg>
-                        Reject Order
-                    </button>
-                </div>
-            </div>
-        `;
-            }
-
-            container.innerHTML = html;
-
-            // Fetch order items for each order card after they are rendered
-            setTimeout(() => {
-                fetchOrderItems(order.id);
-            }, 100);
-        }
-
-        // Toggle function to show/hide order details
-        function toggleOrderDetails(orderId) {
-            const detailsSection = document.getElementById(`items-${orderId}`);
-            const orderCard = document.getElementById(`order-${orderId}`);
-            const toggleIndicator = orderCard.querySelector('.toggle-indicator');
-
-            if (detailsSection.style.display === 'block') {
-                detailsSection.style.display = 'none';
-                toggleIndicator.textContent = '▼';
-            } else {
-                detailsSection.style.display = 'block';
-                toggleIndicator.textContent = '▲';
-
-                // Only fetch items when opening the details for the first time
-                if (detailsSection.querySelector('.loading')) {
-                    fetchOrderItems(orderId);
-                }
-            }
-        }
-
-        // Add CSS styles for the toggle functionality
-        document.addEventListener('DOMContentLoaded', function () {
-            const styleElement = document.createElement('style');
-            styleElement.textContent = `
-        .order-header {
-            cursor: pointer;
-        }
-        
-        .toggle-indicator {
-            font-size: 12px;
-            margin-left: 8px;
-        }
-        
-        .order-details {
-            display: none;
-            margin-top: 20px;
-            border-top: 1px solid #e9ecef;
-            padding-top: 20px;
-        }
-    `;
-            document.head.appendChild(styleElement);
-
-            // Make toggleOrderDetails available globally
-            window.toggleOrderDetails = toggleOrderDetails;
-        });
         // Approve order function
         async function approveOrder(orderId, isUrgent) {
             try {
                 // Set new status based on urgency
-                const newStatus = isUrgent ? 'processing' : 'on hold';
+                const newStatus = isUrgent ? 'processing' : 'processing'; // Both go to processing now
 
-                // Update order status
                 const { error } = await supabase
                     .from('orders')
-                    .update({ status: newStatus })
+                    .update({ 
+                        status: newStatus,
+                        approved_at: new Date().toISOString()
+                    })
                     .eq('id', orderId);
 
                 if (error) {
                     throw error;
                 }
 
-                // Show success message
                 alert(`Order approved! Status set to ${newStatus}.`);
 
-                // Remove the order card from UI
                 const orderCard = document.getElementById(`order-${orderId}`);
                 if (orderCard) {
                     orderCard.style.opacity = '0.5';
@@ -1385,28 +1485,18 @@
                     setTimeout(() => {
                         orderCard.remove();
 
-                        // Check if there are any orders left
-                        const remainingOrders = document.querySelectorAll('#new-orders-container .order-card');
+                        const remainingOrders = document.querySelectorAll('#pending-approval-container .order-card');
                         if (remainingOrders.length === 0) {
-                            // Show empty state if no orders remain
-                            document.getElementById('new-orders-container').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                                </svg>
-                            </div>
-                            <div class="empty-title">No Orders Need Verification</div>
-                            <div class="empty-message">There are currently no new orders that require verification.</div>
-                        </div>
-                    `;
+                            document.getElementById('pending-approval-container').innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-icon">✅</div>
+                                    <div class="empty-title">No Orders Need Admin Approval</div>
+                                    <div class="empty-message">All paid orders have been processed or there are no paid orders.</div>
+                                </div>
+                            `;
                         }
 
-                        // Update badge count
-                        const badge = document.getElementById('newOrdersBadge');
+                        const badge = document.getElementById('pendingApprovalBadge');
                         const currentCount = parseInt(badge.textContent);
                         badge.textContent = Math.max(0, currentCount - 1);
                     }, 500);
@@ -1421,12 +1511,10 @@
         // Reject order function
         async function rejectOrder(orderId) {
             try {
-                // Confirm with the user
                 if (!confirm('Are you sure you want to reject this order? This will cancel the order.')) {
                     return;
                 }
 
-                // Update order status to cancelled
                 const { error } = await supabase
                     .from('orders')
                     .update({ status: 'cancelled' })
@@ -1436,10 +1524,8 @@
                     throw error;
                 }
 
-                // Show success message
                 alert('Order rejected and cancelled.');
 
-                // Remove the order card from UI
                 const orderCard = document.getElementById(`order-${orderId}`);
                 if (orderCard) {
                     orderCard.style.opacity = '0.5';
@@ -1447,28 +1533,18 @@
                     setTimeout(() => {
                         orderCard.remove();
 
-                        // Check if there are any orders left
-                        const remainingOrders = document.querySelectorAll('#new-orders-container .order-card');
+                        const remainingOrders = document.querySelectorAll('#pending-approval-container .order-card');
                         if (remainingOrders.length === 0) {
-                            // Show empty state if no orders remain
-                            document.getElementById('new-orders-container').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                                </svg>
-                            </div>
-                            <div class="empty-title">No Orders Need Verification</div>
-                            <div class="empty-message">There are currently no new orders that require verification.</div>
-                        </div>
-                    `;
+                            document.getElementById('pending-approval-container').innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-icon">✅</div>
+                                    <div class="empty-title">No Orders Need Admin Approval</div>
+                                    <div class="empty-message">All paid orders have been processed or there are no paid orders.</div>
+                                </div>
+                            `;
                         }
 
-                        // Update badge count
-                        const badge = document.getElementById('newOrdersBadge');
+                        const badge = document.getElementById('pendingApprovalBadge');
                         const currentCount = parseInt(badge.textContent);
                         badge.textContent = Math.max(0, currentCount - 1);
                     }, 500);
@@ -1479,604 +1555,6 @@
                 alert('Error rejecting order. Please try again.');
             }
         }
-
-        // Load pending edit requests
-        async function loadPendingEdits() {
-            try {
-                const container = document.getElementById('edit-requests-container');
-                container.innerHTML = `
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <span>Loading edit requests...</span>
-            </div>
-        `;
-
-                // Fetch orders with pendingedit records
-                const { data: editRecords, error: editError } = await supabase
-                    .from('pendingedit')
-                    .select('orders_id');
-
-                if (editError) {
-                    console.error('Error loading pending edits:', editError);
-                    container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">❌</div>
-                    <div class="empty-title">Error Loading Edit Requests</div>
-                    <div class="empty-message">There was a problem loading the edit requests. Please try again later.</div>
-                </div>
-            `;
-                    return;
-                }
-
-                // No edit requests found
-                if (!editRecords || editRecords.length === 0) {
-                    document.getElementById('editRequestsBadge').textContent = '0';
-                    container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </div>
-                    <div class="empty-title">No Edit Requests</div>
-                    <div class="empty-message">There are currently no orders with pending edit requests.</div>
-                </div>
-            `;
-                    return;
-                }
-
-                // Get unique order IDs
-                const uniqueOrderIds = [...new Set(editRecords.map(record => record.orders_id))];
-                document.getElementById('editRequestsBadge').textContent = uniqueOrderIds.length;
-
-                // Fetch the orders with their details
-                const { data: orders, error: ordersError } = await supabase
-                    .from('orders')
-                    .select('*, customers(name)')
-                    .in('id', uniqueOrderIds);
-
-                if (ordersError) {
-                    console.error('Error loading orders with edit requests:', ordersError);
-                    container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">❌</div>
-                    <div class="empty-title">Error Loading Edit Requests</div>
-                    <div class="empty-message">There was a problem loading the orders with edit requests. Please try again later.</div>
-                </div>
-            `;
-                    return;
-                }
-
-                // Fetch all pending edits
-                const { data: allPendingEdits, error: allEditsError } = await supabase
-                    .from('pendingedit')
-                    .select('*')
-                    .in('orders_id', uniqueOrderIds);
-
-                if (allEditsError) {
-                    console.error('Error loading all pending edits:', allEditsError);
-                    container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">❌</div>
-                    <div class="empty-title">Error Loading Edit Details</div>
-                    <div class="empty-message">There was a problem loading the edit details. Please try again later.</div>
-                </div>
-            `;
-                    return;
-                }
-
-                // Store pending edits globally
-                pendingEdits = allPendingEdits || [];
-
-                // Render the edit requests
-                renderEditRequests(orders || [], pendingEdits);
-            } catch (err) {
-                console.error('Error in loadPendingEdits:', err);
-                document.getElementById('edit-requests-container').innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">❌</div>
-                <div class="empty-title">Error Loading Edit Requests</div>
-                <div class="empty-message">There was a problem loading the edit requests. Please try again later.</div>
-            </div>
-        `;
-            }
-        }
-
-        function renderEditRequests(orders, allPendingEdits) {
-            const container = document.getElementById('edit-requests-container');
-
-            // Check if there are any orders
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                </div>
-                <div class="empty-title">No Edit Requests</div>
-                <div class="empty-message">There are currently no orders with pending edit requests.</div>
-            </div>
-        `;
-                return;
-            }
-
-            // Sort orders by date (newest first)
-            orders.sort((a, b) => {
-                return new Date(b.order_date) - new Date(a.order_date);
-            });
-
-            // Build HTML for orders
-            let html = '';
-
-            for (const order of orders) {
-                const customerName = order.customers ? order.customers.name : 'Unknown Customer';
-                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                // Find edit requests for this order
-                const editRequests = allPendingEdits.filter(edit => edit.orders_id === order.id);
-
-                // Check if no edits found (shouldn't happen, but just in case)
-                if (editRequests.length === 0) continue;
-
-                // Extract changes from edit requests
-                const statusChange = editRequests.find(edit => edit.orders_status && edit.orders_status !== edit.original_status);
-                const driverChange = editRequests.find(edit => edit.orders_driver && edit.orders_driver !== order.driver);
-                const urgentChange = editRequests.find(edit => edit.orders_is_urgent !== undefined && edit.orders_is_urgent !== order.is_urgent);
-
-                // Check if this is a cancellation request
-                const isCancellation = statusChange && statusChange.orders_status === 'cancel';
-
-                // Get original status from the first edit request that has one
-                const originalStatus = editRequests[0].original_status || order.status;
-                html += `
-            <div class="order-card" id="edit-${order.id}">
-                <div class="order-header">
-                    <div>
-                        <div class="order-title">Order #${order.order_id}</div>
-                        <div class="order-date">Placed on ${orderDate}</div>
-                        ${isCancellation ? '<div style="color: #f5222d; font-weight: bold; margin-top: 5px;">⚠️ CANCELLATION REQUESTED</div>' : ''}
-                    </div>
-                    <div class="order-status-container">
-                        <span class="status-badge verifying">Edit Requested</span>
-                        ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
-                        <span class="status-badge ${order.payment_status}">${order.payment_status}</span>
-                    </div>
-                </div>
-
-                <div class="order-meta">
-                    <div class="meta-item">
-                        <div class="meta-label">Customer</div>
-                        <div class="meta-value">${customerName}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Delivery Address</div>
-                        <div class="meta-value">${order.address || 'No address provided'}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Driver</div>
-                        <div class="meta-value">
-                            ${order.driver || 'Not assigned'}
-                            ${driverChange ?
-                        `<span class="change-highlight">→ ${driverChange.orders_driver}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Status</div>
-    <div class="meta-value">
-        ${originalStatus || 'Unknown'} (Currently: ${order.status})
-        ${statusChange && !isCancellation ?
-                        `<span class="change-highlight">→ ${statusChange.orders_status}</span>` : ''}
-        ${isCancellation ?
-                        `<span class="change-highlight">→ Cancel Order</span>` : ''}
-    </div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Urgent</div>
-                        <div class="meta-value">
-                            ${order.is_urgent ? 'Yes' : 'No'}
-                            ${urgentChange !== undefined ?
-                        `<span class="change-highlight">→ ${urgentChange.orders_is_urgent ? 'Yes' : 'No'}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Total Amount</div>
-                        <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
-                    </div>
-                </div>
-
-                <div class="order-details-section" id="edit-items-${order.id}">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <span>Loading order items and changes...</span>
-                    </div>
-                </div>
-
-                <div class="order-actions">
-                   <button class="btn btn-approve" onclick="approveEditRequest('${order.id}')">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg>
-    ${isCancellation ? 'Approve Cancellation' : 'Approve Changes'}
-</button>
-                    <button class="btn btn-reject" onclick="rejectEditRequest('${order.id}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="15" y1="9" x2="9" y2="15"></line>
-                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                        </svg>
-                        ${isCancellation ? 'Reject Cancellation' : 'Reject Changes'}
-                    </button>
-                </div>
-            </div>
-        `;
-
-                // After rendering the card, fetch the item details
-                setTimeout(() => {
-                    fetchEditItems(order.id, editRequests);
-                }, 100);
-            }
-
-            container.innerHTML = html;
-        }
-
-        // Fetch order items with edit requests
-        async function fetchEditItems(orderId, editRequests) {
-            try {
-                const container = document.getElementById(`edit-items-${orderId}`);
-                if (!container) return;
-
-                // Fetch order items
-                const { data: orderItems, error } = await supabase
-                    .from('order_products')
-                    .select('*, products(name, product_id)')
-                    .eq('order_id', orderId);
-
-                if (error) {
-                    console.error('Error fetching order items:', error);
-                    container.innerHTML = '<p>Error loading order items.</p>';
-                    return;
-                }
-
-                if (!orderItems || orderItems.length === 0) {
-                    container.innerHTML = '<p>No items found for this order.</p>';
-                    return;
-                }
-
-                // Build HTML for items table
-                let html = `
-            <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 18px;">Order Items with Requested Changes</h3>
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Unit Price</th>
-                        <th>Current Quantity</th>
-                        <th>Requested Quantity</th>
-                        <th>Variations</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-                let orderTotal = 0;
-                let editedTotal = 0;
-
-                // Add each item to the table
-                orderItems.forEach(item => {
-                    const productName = item.products ? item.products.name : 'Unknown Product';
-                    const productId = item.products ? item.products.product_id : 'Unknown';
-                    const unitPrice = parseFloat(item.unit_price || 0);
-                    const currentQuantity = parseInt(item.quantity || 0);
-                    const itemTotal = unitPrice * currentQuantity;
-                    orderTotal += itemTotal;
-
-                    // Find edit request for this item if any
-                    const editRequest = editRequests.find(edit => edit.order_products_id === item.id);
-                    let requestedQuantity = currentQuantity;
-                    let hasChange = false;
-
-                    if (editRequest && editRequest.order_products_quantity !== null &&
-                        editRequest.order_products_quantity !== undefined &&
-                        editRequest.order_products_quantity !== currentQuantity) {
-                        requestedQuantity = editRequest.order_products_quantity;
-                        hasChange = true;
-                    }
-
-                    const editedItemTotal = unitPrice * requestedQuantity;
-                    editedTotal += editedItemTotal;
-
-                    const variations = item.variations || 'N/A';
-
-                    html += `
-                <tr class="${hasChange ? 'edit-row' : ''}">
-                    <td>
-                        <div class="item-name">${productName}</div>
-                        <div class="item-sku">${productId}</div>
-                    </td>
-                    <td class="item-price">RM ${unitPrice.toFixed(2)}</td>
-                    <td>${currentQuantity}</td>
-                    <td>${hasChange ? `<span class="change-highlight">${requestedQuantity}</span>` : 'No change'}</td>
-                    <td>${variations}</td>
-                    <td class="item-price">
-                        RM ${itemTotal.toFixed(2)}
-                        ${hasChange ? `<span class="change-highlight">→ RM ${editedItemTotal.toFixed(2)}</span>` : ''}
-                    </td>
-                </tr>
-            `;
-                });
-
-                // Add total row
-                html += `
-                <tr>
-                    <td colspan="5" style="text-align: right; font-weight: bold;">Order Total:</td>
-                    <td class="item-price" style="font-weight: bold;">
-                        RM ${orderTotal.toFixed(2)}
-                        ${editedTotal !== orderTotal ? `<span class="change-highlight">→ RM ${editedTotal.toFixed(2)}</span>` : ''}
-                    </td>
-                </tr>
-            </tbody>
-            </table>
-        `;
-
-                container.innerHTML = html;
-            } catch (err) {
-                console.error('Error fetching order items with edits:', err);
-                const container = document.getElementById(`edit-items-${orderId}`);
-                if (container) {
-                    container.innerHTML = '<p>Error loading order items.</p>';
-                }
-            }
-        }
-
-        // Approve edit request function
-        async function approveEditRequest(orderId) {
-            try {
-                // Find all edit requests for this order
-                const orderEdits = pendingEdits.filter(edit => edit.orders_id === orderId);
-
-                if (orderEdits.length === 0) {
-                    alert('No edit requests found for this order.');
-                    return;
-                }
-
-                // Check if this is a cancellation request
-                const statusEdit = orderEdits.find(edit => edit.orders_status);
-                const isCancellation = statusEdit && statusEdit.orders_status === 'cancel';
-
-                // Confirm with the user
-                if (!confirm(`Are you sure you want to approve ${isCancellation ? 'cancellation' : 'changes'} for this order?`)) {
-                    return;
-                }
-
-                // Create a transaction to update everything
-                // First update order products if quantity changes
-                for (const edit of orderEdits) {
-                    if (edit.order_products_id && edit.order_products_quantity !== undefined && edit.order_products_quantity !== null) {
-                        const { error } = await supabase
-                            .from('order_products')
-                            .update({ quantity: edit.order_products_quantity })
-                            .eq('id', edit.order_products_id);
-
-                        if (error) {
-                            console.error('Error updating product quantity:', error);
-                            throw new Error('Failed to update product quantities');
-                        }
-                    }
-                }
-
-                // Prepare order update data
-                let updateData = {};
-
-                // If it's a cancellation, set status to cancelled
-                // Prepare order update data
-
-
-                // If it's a cancellation, set status to cancelled
-                if (isCancellation) {
-                    updateData.status = 'cancelled';
-                }
-                // Otherwise, add status update if requested
-                else if (statusEdit && statusEdit.orders_status) {
-                    updateData.status = statusEdit.orders_status;
-                }
-                // If no status change requested but we have original_status, use that
-                else {
-                    const originalStatusEdit = orderEdits.find(edit => edit.original_status);
-                    if (originalStatusEdit && originalStatusEdit.original_status) {
-                        updateData.status = originalStatusEdit.original_status;
-                    }
-                }
-                // Add driver update if requested
-                const driverEdit = orderEdits.find(edit => edit.orders_driver);
-                if (driverEdit) {
-                    updateData.driver = driverEdit.orders_driver;
-                }
-
-                // Add urgency update if requested
-                const urgentEdit = orderEdits.find(edit => edit.orders_is_urgent !== undefined);
-                if (urgentEdit) {
-                    updateData.is_urgent = urgentEdit.orders_is_urgent;
-                }
-
-                // Update the order if we have changes
-                if (Object.keys(updateData).length > 0) {
-                    const { error } = await supabase
-                        .from('orders')
-                        .update(updateData)
-                        .eq('id', orderId);
-
-                    if (error) {
-                        console.error('Error updating order:', error);
-                        throw new Error('Failed to update order details');
-                    }
-                }
-
-                // Delete all pending edits for this order
-                const { error } = await supabase
-                    .from('pendingedit')
-                    .delete()
-                    .eq('orders_id', orderId);
-
-                if (error) {
-                    console.error('Error deleting pending edits:', error);
-                    throw new Error('Failed to remove pending edit requests');
-                }
-
-                // Show success message
-                alert(`${isCancellation ? 'Cancellation' : 'Changes'} approved successfully.`);
-
-                // Remove the order card from UI
-                const orderCard = document.getElementById(`edit-${orderId}`);
-                if (orderCard) {
-                    orderCard.style.opacity = '0.5';
-                    orderCard.style.transition = 'opacity 0.5s ease';
-                    setTimeout(() => {
-                        orderCard.remove();
-
-                        // Check if there are any orders left
-                        const remainingOrders = document.querySelectorAll('#edit-requests-container .order-card');
-                        if (remainingOrders.length === 0) {
-                            // Show empty state if no orders remain
-                            document.getElementById('edit-requests-container').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                            </div>
-                            <div class="empty-title">No Edit Requests</div>
-                            <div class="empty-message">There are currently no orders with pending edit requests.</div>
-                        </div>
-                    `;
-                        }
-
-                        // Update badge count
-                        const badge = document.getElementById('editRequestsBadge');
-                        const currentCount = parseInt(badge.textContent);
-                        badge.textContent = Math.max(0, currentCount - 1);
-                    }, 500);
-                }
-
-            } catch (error) {
-                console.error('Error approving edit request:', error);
-                alert(`Error approving ${isCancellation ? 'cancellation' : 'changes'}. Please try again.`);
-            }
-        }
-
-        // Reject edit request function
-        async function rejectEditRequest(orderId) {
-            try {
-                // Find edit requests for this order
-                const orderEdits = pendingEdits.filter(edit => edit.orders_id === orderId);
-
-                if (orderEdits.length === 0) {
-                    alert('No edit requests found for this order.');
-                    return;
-                }
-
-                // Check if this is a cancellation request
-                const statusEdit = orderEdits.find(edit => edit.orders_status);
-                const isCancellation = statusEdit && statusEdit.orders_status === 'cancel';
-
-                // Get the original status from the first edit record that has it
-                const originalStatusRecord = orderEdits.find(edit => edit.original_status);
-                const originalStatus = originalStatusRecord ? originalStatusRecord.original_status : null;
-
-                // Confirm with the user
-                if (!confirm(`Are you sure you want to reject ${isCancellation ? 'cancellation' : 'changes'} for this order?`)) {
-                    return;
-                }
-
-                // If we have the original status, update the order back to it
-                if (originalStatus) {
-                    const { error: updateError } = await supabase
-                        .from('orders')
-                        .update({ status: originalStatus })
-                        .eq('id', orderId);
-
-                    if (updateError) {
-                        console.error('Error restoring original status:', updateError);
-                        throw new Error('Failed to restore original order status');
-                    }
-                }
-
-                // Delete all pending edits for this order
-                const { error } = await supabase
-                    .from('pendingedit')
-                    .delete()
-                    .eq('orders_id', orderId);
-
-                if (error) {
-                    console.error('Error deleting pending edits:', error);
-                    throw new Error('Failed to remove pending edit requests');
-                }
-
-                // Show success message
-                alert(`${isCancellation ? 'Cancellation' : 'Changes'} rejected. ${originalStatus ? 'Order status restored to original.' : ''}`);
-
-
-                // Remove the order card from UI
-                const orderCard = document.getElementById(`edit-${orderId}`);
-                if (orderCard) {
-                    orderCard.style.opacity = '0.5';
-                    orderCard.style.transition = 'opacity 0.5s ease';
-                    setTimeout(() => {
-                        orderCard.remove();
-
-                        // Check if there are any orders left
-                        const remainingOrders = document.querySelectorAll('#edit-requests-container .order-card');
-                        if (remainingOrders.length === 0) {
-                            // Show empty state if no orders remain
-                            document.getElementById('edit-requests-container').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                            </div>
-                            <div class="empty-title">No Edit Requests</div>
-                            <div class="empty-message">There are currently no orders with pending edit requests.</div>
-                        </div>
-                    `;
-                        }
-
-                        // Update badge count
-                        const badge = document.getElementById('editRequestsBadge');
-                        const currentCount = parseInt(badge.textContent);
-                        badge.textContent = Math.max(0, currentCount - 1);
-                    }, 500);
-                }
-
-            } catch (error) {
-                console.error('Error rejecting edit request:', error);
-                alert(`Error rejecting ${isCancellation ? 'cancellation' : 'changes'}. Please try again.`);
-            }
-        }
-
-        // Make global functions available
-        window.approveOrder = approveOrder;
-        window.rejectOrder = rejectOrder;
-        window.approveEditRequest = approveEditRequest;
-        window.rejectEditRequest = rejectEditRequest;
     </script>
 </body>
 
