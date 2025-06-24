@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>Order Verification - AutoLab</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #52c41a;
@@ -56,6 +55,7 @@
             z-index: 100;
         }
 
+        /* Logo Section */
         .logo-container {
             padding: 16px;
             display: flex;
@@ -76,6 +76,7 @@
             font-weight: bold;
         }
 
+        /* Navigation Menu */
         .nav-menu {
             display: flex;
             flex-direction: column;
@@ -131,6 +132,7 @@
             margin-left: -12px;
         }
 
+        /* Active sub-item styling */
         .nav-item.sub-item.active {
             background-color: #e21b1b;
             border-left: 3px solid #fff;
@@ -150,7 +152,7 @@
             font-size: 14px;
         }
 
-        /* Main Content */
+        /* Main Content Area */
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
@@ -167,6 +169,147 @@
             position: sticky;
             top: 0;
             z-index: 99;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Content Container */
+        .content {
+            padding: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .button {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .button.primary:hover {
+            background-color: #3fa00c;
+        }
+
+        .button.secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .button.secondary:hover {
+            background-color: #096dd9;
+        }
+
+        .button.tertiary {
+            background-color: var(--tertiary-color);
+            color: white;
+        }
+
+        .button.tertiary:hover {
+            background-color: #d87205;
+        }
+
+        .button.outline {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid #d9d9d9;
+        }
+
+        .button.outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .button .icon {
+            margin-right: 8px;
+        }
+
+        /* Panel Styles */
+        .panel {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-badge {
+            display: inline-block;
+            background-color: #f5f5f5;
+            color: var(--text-light);
+            border-radius: 10px;
+            padding: 0 8px;
+            font-size: 12px;
+            margin-left: 8px;
         }
 
         .user-avatar {
@@ -227,67 +370,12 @@
             background-color: #f8f8f8;
         }
 
-        .content {
-            padding: 24px;
-        }
-
         .page-title {
             font-size: 24px;
             margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .tab-btn {
-            padding: 15px 25px;
-            background: transparent;
-            border: none;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .tab-btn.active {
-            background: #007bff;
-            color: white;
-        }
-
-        .tab-btn:not(.active):hover {
-            background: #f8f9fa;
-        }
-
-        .badge {
-            background: #dc3545;
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 12px;
-            margin-left: 8px;
-        }
-
-        .tab-content {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-height: 500px;
         }
 
         .tab-panel {
@@ -299,31 +387,23 @@
         }
 
         .order-card {
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .order-card:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            border: 1px solid #f0f0f0;
         }
 
         .order-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 15px;
+            cursor: pointer;
         }
 
         .order-id {
             font-size: 18px;
-            font-weight: bold;
-            color: #007bff;
+            font-weight: 600;
         }
 
         .order-status {
@@ -334,27 +414,34 @@
             text-transform: uppercase;
         }
 
+        .order-details {
+            display: none;
+            margin-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        .order-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .meta-item .meta-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .meta-item .meta-value {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
         .status-processing {
             background: #fff3cd;
             color: #856404;
-        }
-
-        .order-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .detail-item i {
-            color: #6c757d;
-            width: 16px;
         }
 
         .approval-form {
@@ -520,6 +607,48 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toggle-indicator {
+            font-size: 12px;
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+
+        .order-header.expanded .toggle-indicator {
+            transform: rotate(180deg);
+        }
+
+        .order-product-details {
+            margin-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -666,62 +795,64 @@
                     <span>WhatsApp Order Workflow Management</span>
                 </div>
 
-                <div class="tabs">
-                    <button class="tab-btn" data-tab="awaiting">
-                        <i class="fas fa-clock"></i> Awaiting WhatsApp Confirmation
-                        <span class="badge" id="awaiting-count">0</span>
-                    </button>
-                    <button class="tab-btn" data-tab="confirmed">
-                        <i class="fas fa-credit-card"></i> Confirmed - Pending Payment
-                        <span class="badge" id="confirmed-count">0</span>
-                    </button>
-                    <button class="tab-btn active" data-tab="admin-approval">
-                        <i class="fas fa-user-check"></i> Pending Admin Approval
-                        <span class="badge" id="approval-count">0</span>
-                    </button>
-                    <button class="tab-btn" data-tab="approved">
-                        <i class="fas fa-check-circle"></i> Approved & Processing
-                        <span class="badge" id="approved-count">0</span>
-                    </button>
-                </div>
-
-                <div class="tab-content">
-                    <!-- Awaiting WhatsApp Confirmation Tab -->
-                    <div class="tab-panel" id="awaiting-panel">
-                        <div id="awaiting-orders-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading awaiting confirmation orders...</span>
-                            </div>
+                <div class="panel">
+                    <div class="tabs" id="statusTabs">
+                        <div class="tab" data-tab="awaiting">
+                            📱 Awaiting WhatsApp Confirmation
+                            <span class="tab-badge" id="awaiting-count">0</span>
+                        </div>
+                        <div class="tab" data-tab="confirmed">
+                            💳 Confirmed - Pending Payment
+                            <span class="tab-badge" id="confirmed-count">0</span>
+                        </div>
+                        <div class="tab active" data-tab="admin-approval">
+                            ⏳ Pending Admin Approval
+                            <span class="tab-badge" id="approval-count">0</span>
+                        </div>
+                        <div class="tab" data-tab="approved">
+                            ✅ Approved & Processing
+                            <span class="tab-badge" id="approved-count">0</span>
                         </div>
                     </div>
 
-                    <!-- Confirmed - Pending Payment Tab -->
-                    <div class="tab-panel" id="confirmed-panel">
-                        <div id="confirmed-orders-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading confirmed orders...</span>
+                    <div class="panel-content">
+                        <!-- Awaiting WhatsApp Confirmation Tab -->
+                        <div class="tab-panel" id="awaiting-panel">
+                            <div id="awaiting-orders-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading awaiting confirmation orders...</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Pending Admin Approval Tab -->
-                    <div class="tab-panel active" id="admin-approval-panel">
-                        <div id="approval-orders-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading orders pending approval...</span>
+                        <!-- Confirmed - Pending Payment Tab -->
+                        <div class="tab-panel" id="confirmed-panel">
+                            <div id="confirmed-orders-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading confirmed orders...</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Approved & Processing Tab -->
-                    <div class="tab-panel" id="approved-panel">
-                        <div id="approved-orders-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading approved orders...</span>
+                        <!-- Pending Admin Approval Tab -->
+                        <div class="tab-panel active" id="admin-approval-panel">
+                            <div id="approval-orders-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading orders pending approval...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Approved & Processing Tab -->
+                        <div class="tab-panel" id="approved-panel">
+                            <div id="approved-orders-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading approved orders...</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -818,10 +949,10 @@
         }
 
         // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.tab').forEach(btn => {
             btn.addEventListener('click', () => {
                 // Remove active class from all tabs and panels
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
                 
                 // Add active class to clicked tab and corresponding panel
@@ -1044,81 +1175,83 @@
             }[order.processing_priority] || { color: '#28a745', text: 'NORMAL' };
 
             return `
-                <div class="order-card">
-                    <div class="order-header">
+                <div class="order-card" id="order-card-${order.id}">
+                    <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
                         <div>
                             <div class="order-id">
                                 <span class="priority-indicator" style="background: ${priorityBadge.color};"></span>
                                 ✅ ${order.order_id}
                             </div>
-                            <div class="time-badge">Approved ${approvedDate}</div>
                         </div>
-                        <div class="order-status" style="color: #52c41a; background: #f6ffed; border: 1px solid #b7eb8f;">
-                            ${priorityBadge.text} - PROCESSING
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="order-status" style="color: #52c41a; background: #f6ffed; border: 1px solid #b7eb8f;">
+                                ${priorityBadge.text} - PROCESSING
+                            </div>
+                            <span class="toggle-indicator">▼</span>
                         </div>
                     </div>
                     
-                    <div class="order-details">
-                        <div class="detail-item">
-                            <i class="fas fa-user"></i>
-                            <span><strong>${customerName}</strong></span>
+                    <div class="order-details" id="details-${order.id}" style="display: none;">
+                        <div class="order-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Approved</div>
+                                <div class="meta-value">${approvedDate}</div>
+                            </div>
+                             <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Phone</div>
+                                <div class="meta-value">${order.customer_phone || 'N/A'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Address</div>
+                                <div class="meta-value">${order.address || 'Address not provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Amount</div>
+                                <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Driver</div>
+                                <div class="meta-value">${order.assigned_driver || 'Not assigned'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery</div>
+                                <div class="meta-value">${deliveryDate} at ${order.estimated_delivery_time || 'Not set'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Installation</div>
+                                <div class="meta-value">${order.requires_installation ? 'Required' : 'Not required'}</div>
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <i class="fas fa-phone"></i>
-                            <span>${order.customer_phone || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${order.address || 'Address not provided'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>RM ${parseFloat(order.amount || 0).toFixed(2)}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-user-tie"></i>
-                            <span><strong>Driver:</strong> ${order.assigned_driver || 'Not assigned'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span><strong>Delivery:</strong> ${deliveryDate}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-clock"></i>
-                            <span><strong>Time:</strong> ${order.estimated_delivery_time || 'Not set'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-tools"></i>
-                            <span><strong>Installation:</strong> ${order.requires_installation ? 'Required' : 'Not required'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-stopwatch"></i>
-                            <span><strong>Prep Time:</strong> ${order.preparation_hours || 2} hours</span>
-                        </div>
-                    </div>
 
-                    ${order.delivery_instructions || order.installation_instructions || order.admin_notes ? `
-                        <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                            ${order.delivery_instructions ? `
-                                <div style="margin-bottom: 10px;">
-                                    <strong><i class="fas fa-clipboard-list"></i> Delivery Instructions:</strong>
-                                    <div style="margin-top: 5px; color: #666;">${order.delivery_instructions}</div>
-                                </div>
-                            ` : ''}
-                            ${order.installation_instructions ? `
-                                <div style="margin-bottom: 10px;">
-                                    <strong><i class="fas fa-wrench"></i> Installation Instructions:</strong>
-                                    <div style="margin-top: 5px; color: #666;">${order.installation_instructions}</div>
-                                </div>
-                            ` : ''}
-                            ${order.admin_notes ? `
-                                <div>
-                                    <strong><i class="fas fa-sticky-note"></i> Admin Notes:</strong>
-                                    <div style="margin-top: 5px; color: #666;">${order.admin_notes}</div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    ` : ''}
+                        <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
+
+                        ${order.delivery_instructions || order.installation_instructions || order.admin_notes ? `
+                            <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                ${order.delivery_instructions ? `
+                                    <div style="margin-bottom: 10px;">
+                                        <strong><i class="fas fa-clipboard-list"></i> Delivery Instructions:</strong>
+                                        <div style="margin-top: 5px; color: #666;">${order.delivery_instructions}</div>
+                                    </div>
+                                ` : ''}
+                                ${order.installation_instructions ? `
+                                    <div style="margin-bottom: 10px;">
+                                        <strong><i class="fas fa-wrench"></i> Installation Instructions:</strong>
+                                        <div style="margin-top: 5px; color: #666;">${order.installation_instructions}</div>
+                                    </div>
+                                ` : ''}
+                                ${order.admin_notes ? `
+                                    <div>
+                                        <strong><i class="fas fa-sticky-note"></i> Admin Notes:</strong>
+                                        <div style="margin-top: 5px; color: #666;">${order.admin_notes}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
             `;
         }
@@ -1143,32 +1276,41 @@
             const status = statusConfig[type] || statusConfig['awaiting'];
 
             return `
-                <div class="order-card">
-                    <div class="order-header">
+                <div class="order-card" id="order-card-${order.id}">
+                    <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
                         <div>
                             <div class="order-id">${status.icon} ${order.order_id}</div>
-                            <div class="time-badge">${type === 'confirmed' ? 'Confirmed' : type === 'approved' ? 'Approved' : 'Placed'} ${orderDate}</div>
                         </div>
-                        <div class="order-status status-processing" style="color: ${status.color};">${status.text}</div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="order-status" style="color: ${status.color};">${status.text}</div>
+                             <span class="toggle-indicator">▼</span>
+                        </div>
                     </div>
                     
-                    <div class="order-details">
-                        <div class="detail-item">
-                            <i class="fas fa-user"></i>
-                            <span><strong>${customerName}</strong></span>
+                    <div class="order-details" id="details-${order.id}" style="display: none;">
+                        <div class="order-meta">
+                             <div class="meta-item">
+                                <div class="meta-label">Placed</div>
+                                <div class="meta-value">${orderDate}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Phone</div>
+                                <div class="meta-value">${order.customer_phone || 'N/A'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Address</div>
+                                <div class="meta-value">${order.address || 'Address not provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Amount</div>
+                                <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <i class="fas fa-phone"></i>
-                            <span>${order.customer_phone || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${order.address || 'Address not provided'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>RM ${parseFloat(order.amount || 0).toFixed(2)}</span>
-                        </div>
+                        <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
                     </div>
                 </div>
             `;
@@ -1202,157 +1344,165 @@
             const defaultDeliveryDate = tomorrow.toISOString().split('T')[0];
 
             return `
-                <div class="order-card">
-                    <div class="order-header">
+                <div class="order-card" id="order-card-${order.id}">
+                     <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
                         <div>
                             <div class="order-id">
                                 <span class="priority-indicator priority-${order.is_urgent ? 'urgent' : 'normal'}"></span>
                                 ${order.order_id}
                             </div>
-                            <div class="time-badge">Payment completed ${paidDate} (${hoursWaiting}h ago)</div>
                         </div>
-                        <div class="order-status status-processing">⏳ Pending Admin Approval</div>
-                    </div>
-                    
-                    <div class="order-details">
-                        <div class="detail-item">
-                            <i class="fas fa-user"></i>
-                            <span><strong>${customerName}</strong></span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-phone"></i>
-                            <span>${order.customer_phone || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${order.address || 'Address not provided'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>RM ${parseFloat(order.amount || 0).toFixed(2)}</span>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="order-status status-processing">⏳ Pending Admin Approval</div>
+                            <span class="toggle-indicator">▼</span>
                         </div>
                     </div>
                     
-                    <div class="approval-form">
-                        <h4><i class="fas fa-cog"></i> Order Processing Details</h4>
-                        
-                        <form class="approval-form-content" data-order-id="${order.order_id}" data-order-db-id="${order.id}">
-                            <div class="form-grid">
-                                <!-- Driver Assignment -->
-                                <div class="form-group">
-                                    <label for="driver-${order.order_id}">
-                                        <i class="fas fa-user-tie"></i> Assign Driver
-                                    </label>
-                                    <select id="driver-${order.order_id}" name="assigned_driver" required>
-                                        <option value="">Select Driver</option>
-                                        ${availableDrivers.map(driver => `
-                                            <option value="${driver.name}" ${driver.status === 'busy' ? 'disabled' : ''}>
-                                                ${driver.name} - ${driver.phone} 
-                                                ${driver.status === 'busy' ? '(Busy)' : '(Available)'}
-                                            </option>
-                                        `).join('')}
-                                    </select>
-                                </div>
-                                
-                                <!-- Delivery Date -->
-                                <div class="form-group">
-                                    <label for="delivery-date-${order.order_id}">
-                                        <i class="fas fa-calendar"></i> Delivery Date
-                                    </label>
-                                    <input type="date" id="delivery-date-${order.order_id}" 
-                                           name="estimated_delivery_date" required
-                                           value="${defaultDeliveryDate}"
-                                           min="${new Date().toISOString().split('T')[0]}">
-                                </div>
-                                
-                                <!-- Delivery Time -->
-                                <div class="form-group">
-                                    <label for="delivery-time-${order.order_id}">
-                                        <i class="fas fa-clock"></i> Estimated Arrival Time
-                                    </label>
-                                    <input type="time" id="delivery-time-${order.order_id}" 
-                                           name="estimated_delivery_time" required
-                                           value="14:00">
-                                </div>
-                                
-                                <!-- Priority -->
-                                <div class="form-group">
-                                    <label for="priority-${order.order_id}">
-                                        <i class="fas fa-flag"></i> Priority Level
-                                    </label>
-                                    <select id="priority-${order.order_id}" name="processing_priority">
-                                        <option value="normal" ${!order.is_urgent ? 'selected' : ''}>Normal</option>
-                                        <option value="high">High</option>
-                                        <option value="urgent" ${order.is_urgent ? 'selected' : ''}>Urgent</option>
-                                        <option value="low">Low</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Installation Required -->
-                                <div class="form-group">
-                                    <label for="installation-${order.order_id}">
-                                        <i class="fas fa-tools"></i> Installation Required
-                                    </label>
-                                    <select id="installation-${order.order_id}" name="requires_installation">
-                                        <option value="false">No Installation</option>
-                                        <option value="true">Installation Required</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Preparation Time -->
-                                <div class="form-group">
-                                    <label for="prep-time-${order.order_id}">
-                                        <i class="fas fa-stopwatch"></i> Preparation Time (hours)
-                                    </label>
-                                    <select id="prep-time-${order.order_id}" name="preparation_hours">
-                                        <option value="1">1 hour</option>
-                                        <option value="2" selected>2 hours</option>
-                                        <option value="4">4 hours</option>
-                                        <option value="8">8 hours (Next day)</option>
-                                        <option value="24">24 hours</option>
-                                    </select>
-                                </div>
+                    <div class="order-details" id="details-${order.id}" style="display: none;">
+                         <div class="order-meta">
+                             <div class="meta-item">
+                                <div class="meta-label">Paid</div>
+                                <div class="meta-value">${paidDate} (${hoursWaiting}h ago)</div>
                             </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                             <div class="meta-item">
+                                <div class="meta-label">Phone</div>
+                                <div class="meta-value">${order.customer_phone || 'N/A'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Address</div>
+                                <div class="meta-value">${order.address || 'Address not provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Amount</div>
+                                <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
+                            </div>
+                        </div>
+                        <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
+                        <div class="approval-form">
+                            <h4><i class="fas fa-cog"></i> Order Processing Details</h4>
                             
-                            <!-- Delivery Instructions -->
-                            <div class="form-group">
-                                <label for="delivery-instructions-${order.order_id}">
-                                    <i class="fas fa-clipboard-list"></i> Delivery Instructions
-                                </label>
-                                <textarea id="delivery-instructions-${order.order_id}" 
-                                          name="delivery_instructions" 
-                                          placeholder="Special delivery notes, access instructions, contact person, etc."></textarea>
-                            </div>
-                            
-                            <!-- Installation Instructions (if applicable) -->
-                            <div class="form-group">
-                                <label for="installation-instructions-${order.order_id}">
-                                    <i class="fas fa-wrench"></i> Installation Instructions
-                                </label>
-                                <textarea id="installation-instructions-${order.order_id}" 
-                                          name="installation_instructions" 
-                                          placeholder="Special installation requirements, tools needed, preparations, etc."></textarea>
-                            </div>
-                            
-                            <!-- Admin Notes -->
-                            <div class="form-group">
-                                <label for="admin-notes-${order.order_id}">
-                                    <i class="fas fa-sticky-note"></i> Admin Notes
-                                </label>
-                                <textarea id="admin-notes-${order.order_id}" 
-                                          name="admin_notes" 
-                                          placeholder="Internal notes for warehouse, driver, customer service, or other staff"></textarea>
-                            </div>
-                            
-                            <div class="action-buttons">
-                                <button type="button" class="btn btn-reject" onclick="rejectOrder('${order.order_id}', '${order.id}')">
-                                    <i class="fas fa-times"></i> Reject Order
-                                </button>
-                                <button type="submit" class="btn btn-approve">
-                                    <i class="fas fa-check"></i> Approve & Process Order
-                                </button>
-                            </div>
-                        </form>
+                            <form class="approval-form-content" data-order-id="${order.order_id}" data-order-db-id="${order.id}">
+                                <div class="form-grid">
+                                    <!-- Driver Assignment -->
+                                    <div class="form-group">
+                                        <label for="driver-${order.order_id}">
+                                            <i class="fas fa-user-tie"></i> Assign Driver
+                                        </label>
+                                        <select id="driver-${order.order_id}" name="assigned_driver" required>
+                                            <option value="">Select Driver</option>
+                                            ${availableDrivers.map(driver => `
+                                                <option value="${driver.name}" ${driver.status === 'busy' ? 'disabled' : ''}>
+                                                    ${driver.name} - ${driver.phone} 
+                                                    ${driver.status === 'busy' ? '(Busy)' : '(Available)'}
+                                                </option>
+                                            `).join('')}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Delivery Date -->
+                                    <div class="form-group">
+                                        <label for="delivery-date-${order.order_id}">
+                                            <i class="fas fa-calendar"></i> Delivery Date
+                                        </label>
+                                        <input type="date" id="delivery-date-${order.order_id}" 
+                                               name="estimated_delivery_date" required
+                                               value="${defaultDeliveryDate}"
+                                               min="${new Date().toISOString().split('T')[0]}">
+                                    </div>
+                                    
+                                    <!-- Delivery Time -->
+                                    <div class="form-group">
+                                        <label for="delivery-time-${order.order_id}">
+                                            <i class="fas fa-clock"></i> Estimated Arrival Time
+                                        </label>
+                                        <input type="time" id="delivery-time-${order.order_id}" 
+                                               name="estimated_delivery_time" required
+                                               value="14:00">
+                                    </div>
+                                    
+                                    <!-- Priority -->
+                                    <div class="form-group">
+                                        <label for="priority-${order.order_id}">
+                                            <i class="fas fa-flag"></i> Priority Level
+                                        </label>
+                                        <select id="priority-${order.order_id}" name="processing_priority">
+                                            <option value="normal" ${!order.is_urgent ? 'selected' : ''}>Normal</option>
+                                            <option value="high">High</option>
+                                            <option value="urgent" ${order.is_urgent ? 'selected' : ''}>Urgent</option>
+                                            <option value="low">Low</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Installation Required -->
+                                    <div class="form-group">
+                                        <label for="installation-${order.order_id}">
+                                            <i class="fas fa-tools"></i> Installation Required
+                                        </label>
+                                        <select id="installation-${order.order_id}" name="requires_installation">
+                                            <option value="false">No Installation</option>
+                                            <option value="true">Installation Required</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Preparation Time -->
+                                    <div class="form-group">
+                                        <label for="prep-time-${order.order_id}">
+                                            <i class="fas fa-stopwatch"></i> Preparation Time (hours)
+                                        </label>
+                                        <select id="prep-time-${order.order_id}" name="preparation_hours">
+                                            <option value="1">1 hour</option>
+                                            <option value="2" selected>2 hours</option>
+                                            <option value="4">4 hours</option>
+                                            <option value="8">8 hours (Next day)</option>
+                                            <option value="24">24 hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Delivery Instructions -->
+                                <div class="form-group">
+                                    <label for="delivery-instructions-${order.order_id}">
+                                        <i class="fas fa-clipboard-list"></i> Delivery Instructions
+                                    </label>
+                                    <textarea id="delivery-instructions-${order.order_id}" 
+                                              name="delivery_instructions" 
+                                              placeholder="Special delivery notes, access instructions, contact person, etc."></textarea>
+                                </div>
+                                
+                                <!-- Installation Instructions (if applicable) -->
+                                <div class="form-group">
+                                    <label for="installation-instructions-${order.order_id}">
+                                        <i class="fas fa-wrench"></i> Installation Instructions
+                                    </label>
+                                    <textarea id="installation-instructions-${order.order_id}" 
+                                              name="installation_instructions" 
+                                              placeholder="Special installation requirements, tools needed, preparations, etc."></textarea>
+                                </div>
+                                
+                                <!-- Admin Notes -->
+                                <div class="form-group">
+                                    <label for="admin-notes-${order.order_id}">
+                                        <i class="fas fa-sticky-note"></i> Admin Notes
+                                    </label>
+                                    <textarea id="admin-notes-${order.order_id}" 
+                                              name="admin_notes" 
+                                              placeholder="Internal notes for warehouse, driver, customer service, or other staff"></textarea>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-reject" onclick="rejectOrder('${order.order_id}', '${order.id}')">
+                                        <i class="fas fa-times"></i> Reject Order
+                                    </button>
+                                    <button type="submit" class="btn btn-approve">
+                                        <i class="fas fa-check"></i> Approve & Process Order
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1429,6 +1579,9 @@
                     
                     // Also refresh approved orders to show the newly approved order
                     await loadApprovedOrders();
+                    
+                    // Refresh all counts
+                    await loadAllOrderCounts();
                     
                 } catch (error) {
                     console.error('Error approving order:', error);
@@ -1641,6 +1794,7 @@ Thank you for choosing AutoLab! 🚗✨
 
                 showSuccessNotification('Order has been rejected and customer will be notified.');
                 await loadAdminApprovalOrders();
+                await loadAllOrderCounts();
 
             } catch (error) {
                 console.error('Error rejecting order:', error);
@@ -1706,6 +1860,42 @@ AutoLab Team 🚗`;
             }
         }
 
+        // NEW: Load counts for all tabs on page load
+        async function loadAllOrderCounts() {
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('status')
+                    .in('status', ['awaiting_confirmation', 'pending_payment', 'pending_confirmation', 'processing']);
+
+                if (error) throw error;
+
+                // Reset all counts
+                const counts = { awaiting: 0, confirmed: 0, approval: 0, approved: 0 };
+
+                // Tally counts
+                data.forEach(order => {
+                    if (order.status === 'awaiting_confirmation') counts.awaiting++;
+                    else if (order.status === 'pending_payment') counts.confirmed++;
+                    else if (order.status === 'pending_confirmation') counts.approval++;
+                    else if (order.status === 'processing') counts.approved++;
+                });
+
+                // Update UI
+                document.getElementById('awaiting-count').textContent = counts.awaiting;
+                document.getElementById('confirmed-count').textContent = counts.confirmed;
+                document.getElementById('approval-count').textContent = counts.approval;
+                document.getElementById('approved-count').textContent = counts.approved;
+
+            } catch (error) {
+                console.error('Error loading order counts:', error);
+                document.getElementById('awaiting-count').textContent = 'X';
+                document.getElementById('confirmed-count').textContent = 'X';
+                document.getElementById('approval-count').textContent = 'X';
+                document.getElementById('approved-count').textContent = 'X';
+            }
+        }
+
         // Initialize page
         async function initializePage() {
             try {
@@ -1720,6 +1910,9 @@ AutoLab Team 🚗`;
                 }
 
                 updateUserInterface(userDetails);
+                
+                // Load counts for all tabs first
+                await loadAllOrderCounts();
                 
                 // Load initial data for the active tab
                 await loadTabData('admin-approval');
@@ -1751,10 +1944,90 @@ AutoLab Team 🚗`;
         // Make functions available globally
         window.rejectOrder = rejectOrder;
 
+        // NEW: Toggle order details visibility
+        function toggleOrderDetails(orderId) {
+            const detailsSection = document.getElementById(`details-${orderId}`);
+            const orderCard = document.getElementById(`order-card-${orderId}`);
+            const toggleIndicator = orderCard.querySelector('.toggle-indicator');
+            const orderHeader = orderCard.querySelector('.order-header');
+
+            const isExpanded = detailsSection.style.display === 'block';
+            detailsSection.style.display = isExpanded ? 'none' : 'block';
+            orderHeader.classList.toggle('expanded', !isExpanded);
+
+            if (!isExpanded) {
+                const itemsContainer = document.getElementById(`product-details-container-${orderId}`);
+                if (itemsContainer.childElementCount === 0) {
+                     itemsContainer.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading order items...</span>
+                        </div>
+                    `;
+                    fetchOrderItems(orderId);
+                }
+            }
+        }
+
+        // NEW: Fetch and render order items
+        async function fetchOrderItems(orderId) {
+            const itemsContainer = document.getElementById(`product-details-container-${orderId}`);
+            try {
+                const { data: orderItems, error } = await supabase
+                    .from('order_products')
+                    .select('*, products(name, category)')
+                    .eq('order_id', orderId);
+
+                if (error) throw error;
+
+                if (!orderItems || orderItems.length === 0) {
+                    itemsContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 10px;">No products found for this order.</p>';
+                    return;
+                }
+
+                let html = `
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                orderItems.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.products?.name || 'Unknown Product'}</td>
+                            <td>${item.products?.category || 'N/A'}</td>
+                            <td>${item.quantity}</td>
+                            <td>RM ${parseFloat(item.unit_price || 0).toFixed(2)}</td>
+                            <td>RM ${(item.quantity * item.unit_price).toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                itemsContainer.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error fetching order items:', error);
+                itemsContainer.innerHTML = `<p style="color: var(--error-color); text-align: center; padding: 10px;">Error loading products.</p>`;
+            }
+        }
+
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             initializePage();
         });
+
+        // Make functions globally accessible
+        window.rejectOrder = rejectOrder;
+        window.toggleOrderDetails = toggleOrderDetails;
     </script>
 </body>
 </html>

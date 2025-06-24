@@ -291,162 +291,101 @@
 
         /* Order Card Styles */
         .order-card {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #f0f0f0;
         }
 
         .order-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
         }
 
         .order-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            color: #2c3e50;
+        }
+        
+        .toggle-indicator {
+            font-size: 12px;
+            margin-left: 8px;
+            transition: transform 0.3s;
         }
 
-        .order-date {
-            font-size: 14px;
-            color: #777;
-        }
-
-        .order-status-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .order-header.expanded .toggle-indicator {
+            transform: rotate(180deg);
         }
 
         .order-details {
             display: none;
-            margin-top: 20px;
-            border-top: 1px solid #e9ecef;
-            padding-top: 20px;
-        }
-
-        .order-details.expanded {
-            display: block;
+            margin-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
         }
 
         .order-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
-        .meta-item {
-            flex: 1;
-            min-width: 200px;
+        .meta-item .meta-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 4px;
         }
 
-        .meta-label {
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 5px;
-        }
-
-        .meta-value {
-            font-size: 16px;
+        .meta-item .meta-value {
+            font-size: 15px;
             font-weight: 500;
-            color: #2c3e50;
         }
 
         /* Status badges */
         .status-badge {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-right: 3px;
-            transition: all 0.3s;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-
-        .status-badge.processing {
-            background-color: #e6f7ff;
-            color: #1890ff;
-        }
-
-        .status-badge.prepared {
-            background-color: #fff7e6;
-            color: #fa8c16;
-        }
-
-        .status-badge.delivering {
-            background-color: #f2f0ff;
-            color: #531dab;
-        }
-
-        .status-badge.delivered {
-            background-color: #f6ffed;
-            color: #52c41a;
-        }
-
-        .status-badge.cancelled {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
-
-        .status-badge.paid {
-            background-color: #f6ffed;
-            color: #52c41a;
-        }
-
-        .status-badge.unpaid {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
-
-        .status-badge.urgent {
-            background-color: #fff2e8;
-            color: #fa541c;
-        }
+        .status-badge.processing { background-color: #e6f7ff; color: #1890ff; }
+        .status-badge.prepared { background-color: #fffbe6; color: #faad14; }
+        .status-badge.urgent { background-color: #fff1f0; color: #f5222d; }
+        .status-badge.paid { background-color: #f6ffed; color: #52c41a; }
+        .status-badge.unpaid { background-color: #fff1f0; color: #f5222d; }
 
         /* Items Table */
         .items-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 16px;
         }
 
         .items-table th {
             text-align: left;
-            padding: 12px 15px;
-            background-color: #f8f9fa;
+            padding: 10px;
+            background-color: #f7f7f7;
             border-bottom: 1px solid #e9ecef;
             font-weight: 500;
-            color: #555;
+            font-size: 13px;
         }
 
         .items-table td {
-            padding: 15px;
+            padding: 10px;
             border-bottom: 1px solid #e9ecef;
-        }
-
-        .item-name {
-            font-weight: 500;
-            color: #2c3e50;
-        }
-
-        .item-sku {
-            font-size: 13px;
-            color: #777;
-        }
-
-        .item-price {
-            font-weight: 500;
-            color: #e21b1b;
+            font-size: 14px;
         }
 
         /* Order Action Buttons */
         .order-actions {
-            margin-top: 20px;
+            margin-top: 16px;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
@@ -455,31 +394,26 @@
         .btn {
             padding: 8px 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
             font-weight: 500;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            transition: background-color 0.3s;
         }
 
-        .btn-assign {
+        .btn.primary {
             background-color: var(--primary-color);
             color: white;
         }
+        .btn.primary:hover { background-color: #3fa00c; }
 
-        .btn-assign:hover {
-            background-color: #389e0d;
-        }
-
-        .btn-print {
+        .btn.secondary {
             background-color: var(--secondary-color);
             color: white;
         }
-
-        .btn-print:hover {
-            background-color: #096dd9;
-        }
+        .btn.secondary:hover { background-color: #096dd9; }
 
         /* Loading indicator */
         .loading {
@@ -492,7 +426,7 @@
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
-            border-top: 4px solid #e21b1b;
+            border-top: 4px solid var(--primary-color);
             width: 30px;
             height: 30px;
             animation: spin 1s linear infinite;
@@ -500,43 +434,32 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 60px 0;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            background-color: #fafafa;
+            border-radius: var(--border-radius);
         }
 
-        .empty-icon {
-            margin-bottom: 20px;
-            color: #777;
+        .empty-state .icon {
+            font-size: 48px;
+            color: #d9d9d9;
+            margin-bottom: 16px;
         }
 
-        .empty-title {
-            font-size: 22px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
         }
-
-        .empty-message {
-            font-size: 16px;
-            color: #777;
-            margin-bottom: 25px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+        
+        .empty-state p {
+            color: var(--text-light);
         }
 
         /* Staff Assignment Modal */
@@ -549,55 +472,73 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.5);
+            -webkit-animation-name: fadeIn;
+            animation-name: fadeIn;
+            -webkit-animation-duration: 0.4s;
+            animation-duration: 0.4s;
         }
 
         .modal-content {
             background-color: #fefefe;
             margin: 10% auto;
-            padding: 20px;
             border: 1px solid #888;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 700px;
-            position: relative;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: slideIn;
+            -webkit-animation-duration: 0.4s;
+            animation-name: slideIn;
+            animation-duration: 0.4s
         }
 
+        @-webkit-keyframes slideIn { from {bottom: -300px; opacity: 0} to {bottom: 0; opacity: 1} }
+        @keyframes slideIn { from {bottom: -300px; opacity: 0} to {bottom: 0; opacity: 1} }
+        @-webkit-keyframes fadeIn { from {opacity: 0} to {opacity: 1} }
+        @keyframes fadeIn { from {opacity: 0} to {opacity: 1} }
+
         .modal-header {
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
         }
 
         .modal-title {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .modal-close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
             background: none;
             border: none;
-            font-size: 24px;
-            color: #aaa;
-            cursor: pointer;
         }
 
-        .modal-close:hover {
-            color: #333;
+        .modal-body {
+            padding: 20px;
         }
 
         .staff-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: var(--border-radius);
             border: 1px solid #eee;
             margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        .staff-item:hover {
+            background-color: #f5f5f5;
         }
 
         .staff-info {
@@ -606,87 +547,58 @@
 
         .staff-name {
             font-weight: 600;
-            margin-bottom: 5px;
         }
 
         .staff-department {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--text-light);
         }
 
         .staff-load {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-light);
         }
 
         .load-bar {
-            flex: 1;
-            height: 8px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
+            width: 80px;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .load-progress {
             height: 100%;
-            background-color: #52c41a;
-            border-radius: 4px;
-        }
-
-        .load-text {
-            font-size: 12px;
-            color: #666;
-            min-width: 60px;
+            background-color: var(--success-color);
+            border-radius: 3px;
         }
 
         /* Info Box */
         .info-box {
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 15px;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-top: 16px;
             font-size: 14px;
             background-color: #e6f7ff;
-            color: #1890ff;
-            border-left: 4px solid #1890ff;
+            border: 1px solid #91d5ff;
+            color: #0050b3;
         }
 
         /* Responsive Styles */
         @media (max-width: 768px) {
             .main-content {
                 margin-left: 0;
-                padding: 20px;
             }
 
             .sidebar {
                 transform: translateX(-100%);
+                transition: transform 0.3s;
             }
-
-            .order-meta {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .meta-item {
-                min-width: unset;
-            }
-
-            .order-status-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 10% auto;
+             .sidebar.open {
+                transform: translateX(0);
             }
         }
     </style>
@@ -874,7 +786,7 @@
     <div id="assignOrderModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Assign Order to Staff</div>
+                <h2 class="modal-title">Assign Order to Staff</h2>
                 <button class="modal-close" onclick="closeStaffAssignmentModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -967,9 +879,9 @@
                     console.error('Error loading processing orders:', error);
                     container.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-icon">❌</div>
-                            <div class="empty-title">Error Loading Orders</div>
-                            <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                            <div class="icon">❌</div>
+                            <h3>Error Loading Orders</h3>
+                            <p>There was a problem loading the orders. Please try again later.</p>
                         </div>
                     `;
                     return;
@@ -982,9 +894,9 @@
                 console.error('Error in loadProcessingOrders:', err);
                 document.getElementById('processing-orders-container').innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">❌</div>
-                        <div class="empty-title">Error Loading Orders</div>
-                        <div class="empty-message">There was a problem loading the orders. Please try again later.</div>
+                        <div class="icon">❌</div>
+                        <h3>Error Loading Orders</h3>
+                        <p>There was a problem loading the orders. Please try again later.</p>
                     </div>
                 `;
             }
@@ -997,9 +909,9 @@
             if (!orders || orders.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📦</div>
-                        <div class="empty-title">No Processing Orders</div>
-                        <div class="empty-message">There are currently no orders in processing state that need preparation.</div>
+                        <div class="icon">📦</div>
+                        <h3>No Processing Orders</h3>
+                        <p>There are currently no orders in processing state that need preparation.</p>
                     </div>
                 `;
                 return;
@@ -1009,12 +921,10 @@
 
             orders.forEach(order => {
                 const customerName = order.customers ? order.customers.name : 'Unknown Customer';
-                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
+                const approvedDate = new Date(order.approved_at).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    day: 'numeric'
                 });
 
                 html += `
@@ -1022,62 +932,50 @@
                         <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
                             <div>
                                 <div class="order-title">Order #${order.order_id}</div>
-                                <div class="order-date">Approved on ${orderDate}</div>
+                                <div class="meta-value" style="font-size: 13px; color: var(--text-light);">Approved on ${approvedDate}</div>
                             </div>
                             <div class="order-status-container">
-                                <span class="status-badge processing">⚙️ Processing</span>
+                                <span class="status-badge processing">Processing</span>
                                 ${order.is_urgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
                                 <span class="status-badge ${order.payment_status}">${order.payment_status}</span>
                                 <span class="toggle-indicator">▼</span>
                             </div>
                         </div>
 
-                        <div class="order-meta">
-                            <div class="meta-item">
-                                <div class="meta-label">Customer</div>
-                                <div class="meta-value">${customerName}</div>
+                        <div class="order-details" id="details-${order.id}">
+                            <div class="order-meta">
+                                <div class="meta-item">
+                                    <div class="meta-label">Customer</div>
+                                    <div class="meta-value">${customerName}</div>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-label">Delivery Address</div>
+                                    <div class="meta-value">${order.address || 'No address provided'}</div>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-label">Total Amount</div>
+                                    <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
+                                </div>
                             </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Delivery Address</div>
-                                <div class="meta-value">${order.address || 'No address provided'}</div>
-                            </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Total Amount</div>
-                                <div class="meta-value">RM ${order.amount ? order.amount.toFixed(2) : '0.00'}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-details" id="items-${order.id}" style="display: none;">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading order items...</span>
-                            </div>
-                        </div>
 
-                        <div class="info-box">
-                            <p style="margin: 0;">
-                                ⚙️ This order has been approved by admin and is ready for warehouse preparation. Assign to staff to begin preparation process.
-                            </p>
-                        </div>
+                            <div class="items-container" id="items-${order.id}">
+                                <!-- Items will be loaded here -->
+                            </div>
 
-                        <div class="order-actions">
-                            <button class="btn btn-assign" onclick="openStaffAssignmentModal('${order.id}')">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                Assign & Prepare Order
-                            </button>
-                            <button class="btn btn-print" onclick="printInvoice('${order.id}')">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 9V2h12v7"></path>
-                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                                    <rect x="6" y="14" width="12" height="8"></rect>
-                                </svg>
-                                Print Invoice
-                            </button>
+                            <div class="info-box">
+                                This order is ready for warehouse preparation. Assign to staff to begin.
+                            </div>
+
+                            <div class="order-actions">
+                                <button class="btn primary" onclick="openStaffAssignmentModal('${order.id}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    Assign & Prepare
+                                </button>
+                                <button class="btn secondary" onclick="printInvoice('${order.id}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                    Print Invoice
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1088,18 +986,22 @@
 
         // Toggle order details
         function toggleOrderDetails(orderId) {
-            const detailsSection = document.getElementById(`items-${orderId}`);
-            const orderCard = document.getElementById(`order-${orderId}`);
-            const toggleIndicator = orderCard.querySelector('.toggle-indicator');
+            const detailsSection = document.getElementById(`details-${orderId}`);
+            const orderHeader = document.querySelector(`#order-${orderId} .order-header`);
+            
+            const isExpanded = detailsSection.style.display === 'block';
+            detailsSection.style.display = isExpanded ? 'none' : 'block';
+            orderHeader.classList.toggle('expanded', !isExpanded);
 
-            if (detailsSection.style.display === 'block') {
-                detailsSection.style.display = 'none';
-                if (toggleIndicator) toggleIndicator.textContent = '▼';
-            } else {
-                detailsSection.style.display = 'block';
-                if (toggleIndicator) toggleIndicator.textContent = '▲';
-
-                if (detailsSection.querySelector('.loading')) {
+            if (!isExpanded) {
+                const itemsContainer = document.getElementById(`items-${orderId}`);
+                if (itemsContainer.childElementCount === 0) {
+                     itemsContainer.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading order items...</span>
+                        </div>
+                    `;
                     fetchOrderItems(orderId);
                 }
             }
@@ -1117,7 +1019,7 @@
                     
                 if (error) {
                     console.error('Error fetching order items:', error);
-                    itemsContainer.innerHTML = `<p>Error loading order items. Please try again.</p>`;
+                    itemsContainer.innerHTML = `<p style="color: var(--error-color);">Error loading order items.</p>`;
                     return;
                 }
                 
@@ -1127,7 +1029,7 @@
                 }
                 
                 let html = `
-                    <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 18px;">Order Items</h3>
+                    <h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 500;">Order Items</h4>
                     <table class="items-table">
                         <thead>
                             <tr>
@@ -1157,35 +1059,30 @@
                     html += `
                         <tr>
                             <td>
-                                <div class="item-name">${productName}</div>
-                                <div class="item-sku">${productId}</div>
+                                <div style="font-weight: 500;">${productName}</div>
+                                <div style="font-size: 12px; color: var(--text-light);">${productId}</div>
                             </td>
                             <td>${category}</td>
-                            <td class="item-price">RM ${unitPrice.toFixed(2)}</td>
+                            <td>RM ${unitPrice.toFixed(2)}</td>
                             <td>${quantity}</td>
-                            <td>${variations === 'N/A' ? '<span class="na-text">N/A</span>' : variations}</td>
-                            <td class="item-price">RM ${itemTotal.toFixed(2)}</td>
+                            <td>${variations}</td>
+                            <td style="font-weight: 500;">RM ${itemTotal.toFixed(2)}</td>
                         </tr>
                     `;
                 }
 
                 html += `
-                    <tr>
-                        <td colspan="5" style="text-align: right; font-weight: bold;">Order Total:</td>
-                        <td class="item-price" style="font-weight: bold;">RM ${orderTotal.toFixed(2)}</td>
-                    </tr>
-                </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 `;
                 
                 itemsContainer.innerHTML = html;
-                itemsContainer.style.display = 'block';
                 
             } catch (err) {
                 console.error('Error in fetchOrderItems:', err);
                 const container = document.getElementById(`items-${orderId}`);
                 if (container) {
-                    container.innerHTML = `<p>Error loading order items. Please try again.</p>`;
+                    container.innerHTML = `<p style="color: var(--error-color);">Error loading order items.</p>`;
                 }
             }
         }
@@ -1273,14 +1170,12 @@
                             <div class="staff-info">
                                 <div class="staff-name">${staff.first_name} ${staff.last_name}</div>
                                 <div class="staff-department">${staff.department || staff.position || 'Warehouse Staff'}</div>
-                                <div class="staff-load">
-                                    <div class="load-bar">
-                                        <div class="load-progress" style="width: ${currentLoad}%"></div>
-                                    </div>
-                                    <span class="load-text">${currentLoad}% Load</span>
-                                </div>
                             </div>
-                            <button class="btn btn-assign" onclick="assignOrderToStaff('${orderId}', '${staff.id}')">Select</button>
+                             <div class="staff-load">
+                                <div class="load-bar"><div class="load-progress" style="width: ${currentLoad}%"></div></div>
+                                <span>${currentLoad}% Load</span>
+                            </div>
+                            <button class="btn primary" onclick="assignOrderToStaff('${orderId}', '${staff.id}')">Select</button>
                         </div>
                     `;
                 });

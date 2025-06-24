@@ -937,6 +937,45 @@
             height: auto;
         }
 
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #invoiceModal,
+            #invoiceModal * {
+                visibility: visible;
+            }
+
+            #invoiceModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .invoice-content {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 20px;
+                border: none;
+                box-shadow: none;
+            }
+
+            #printInvoiceBtn,
+            #closeInvoiceBtn,
+            #downloadInvoiceBtn,
+            #closeInvoiceModal,
+            .modal-footer {
+                display: none;
+            }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 1200px) {
             .dashboard-overview {
@@ -1205,12 +1244,6 @@
                     <div class="tabs" id="statusTabs">
                         <div class="tab active" data-status="all">All Orders <span class="tab-badge"
                                 id="allOrdersCount">-</span></div>
-                        <div class="tab" data-status="awaiting_confirmation">📱 Awaiting Confirmation <span class="tab-badge"
-                                id="awaitingConfirmationOrdersCount">-</span></div>
-                        <div class="tab" data-status="pending_payment">💳 Pending Payment <span class="tab-badge"
-                                id="pendingPaymentOrdersCount">-</span></div>
-                        <div class="tab" data-status="pending_confirmation">⏳ Pending Admin Approval <span class="tab-badge"
-                                id="pendingConfirmationOrdersCount">-</span></div>
                         <div class="tab" data-status="processing">⚙️ Processing <span class="tab-badge"
                                 id="processingOrdersCount">-</span></div>
                         <div class="tab" data-status="prepared">📦 Prepared <span class="tab-badge"
@@ -1240,9 +1273,6 @@
                                 <span class="filter-label">Status:</span>
                                 <select class="filter-select" id="statusFilter">
                                     <option value="all">All Statuses</option>
-                                    <option value="awaiting_confirmation">📱 Awaiting Confirmation</option>
-                                    <option value="pending_payment">💳 Pending Payment</option>
-                                    <option value="pending_confirmation">⏳ Pending Admin Approval</option>
                                     <option value="processing">⚙️ Processing</option>
                                     <option value="prepared">📦 Prepared</option>
                                     <option value="delivering">🚚 Delivering</option>
@@ -1307,6 +1337,16 @@
 
     <!-- Mobile Menu Toggle -->
     <div class="mobile-toggle">☰</div>
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" id="closeInvoiceModal">&times;</span>
+            <div id="invoice-content" style="padding: 20px;">
+                <!-- Invoice content will be dynamically generated here -->
+            </div>
+        </div>
+    </div>
 
     <!-- Edit Order Modal -->
     <div id="editOrderModal" class="modal">
@@ -1570,9 +1610,6 @@
         function countOrdersByStatus() {
             statusCounts = {
                 'all': 0,
-                'awaiting_confirmation': 0,
-                'pending_payment': 0,
-                'pending_confirmation': 0,
                 'processing': 0,
                 'prepared': 0,
                 'delivering': 0,
@@ -1595,9 +1632,6 @@
 
             // Update tab badges
             document.getElementById('allOrdersCount').textContent = statusCounts['all'];
-            document.getElementById('awaitingConfirmationOrdersCount').textContent = statusCounts['awaiting_confirmation'];
-            document.getElementById('pendingPaymentOrdersCount').textContent = statusCounts['pending_payment'];
-            document.getElementById('pendingConfirmationOrdersCount').textContent = statusCounts['pending_confirmation'];
             document.getElementById('processingOrdersCount').textContent = statusCounts['processing'];
             document.getElementById('preparedOrdersCount').textContent = statusCounts['prepared'];
             document.getElementById('deliveringOrdersCount').textContent = statusCounts['delivering'];
@@ -1980,7 +2014,7 @@
                     e.stopPropagation();
 
                     const orderId = this.getAttribute('data-id');
-                    alert('Print invoice functionality for order: ' + orderId);
+                    openInvoiceModal(orderId);
                 });
             });
 
@@ -2303,6 +2337,7 @@
             // Modal buttons
             document.getElementById('closeEditModal').addEventListener('click', closeEditOrderModal);
             document.getElementById('cancelEditBtn').addEventListener('click', closeEditOrderModal);
+            document.getElementById('closeInvoiceModal').addEventListener('click', closeInvoiceModal);
 
             // Form submissions
             document.getElementById('editOrderForm').addEventListener('submit', submitEditOrderForm);
@@ -2361,6 +2396,209 @@
                 console.error('Error deleting order:', err);
                 alert('Error deleting order: ' + err.message);
             }
+        }
+
+        // Open invoice modal - REPLACED WITH MYORDER.HTML LOGIC
+        async function openInvoiceModal(orderId) {
+             try {
+                const invoiceModal = document.getElementById('invoiceModal');
+                const invoiceContent = document.getElementById('invoice-content');
+                if (!invoiceModal || !invoiceContent) {
+                    console.error('Invoice modal elements not found');
+                    return;
+                }
+
+                invoiceContent.innerHTML = `<div style="text-align: center; padding: 30px;">Loading...</div>`;
+                invoiceModal.style.display = 'block';
+
+                const { data: order, error: orderError } = await supabase
+                    .from('orders')
+                    .select('*, customers(*)')
+                    .eq('id', orderId)
+                    .single();
+
+                if (orderError) throw orderError;
+
+                const { data: orderItems, error: itemsError } = await supabase
+                    .from('order_products')
+                    .select('*, products(name, product_id)')
+                    .eq('order_id', orderId);
+
+                if (itemsError) throw itemsError;
+
+                const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+                
+                const paymentTerms = order.payment_status === 'paid' 
+                    ? '<strong>Term: </strong>Cash / <span style="text-decoration: line-through;">Credit</span>' 
+                    : '<strong>Term: </strong><span style="text-decoration: line-through;">Cash</span> / Credit';
+
+                let itemsHtml = '';
+                let orderTotal = 0;
+                let counter = 1;
+
+                orderItems.forEach(item => {
+                    const productName = item.products ? item.products.name : 'Unknown Product';
+                    const productId = item.products ? item.products.product_id : 'Unknown ID';
+                    const unitPrice = item.unit_price || 0;
+                    const quantity = item.quantity || 0;
+                    const itemTotal = unitPrice * quantity;
+                    orderTotal += itemTotal;
+                    const variations = 'N/A';
+
+                    itemsHtml += `
+                        <tr>
+                            <td style="font-size: 9px; padding: 2px 3px;">${counter}</td>
+                            <td style="font-size: 9px; padding: 2px 3px;">${productId}</td>
+                            <td style="font-size: 9px; padding: 2px 3px;">${productName}</td>
+                            <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${quantity}</td>
+                            <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${variations}</td>
+                            <td style="font-size: 9px; text-align: right; padding: 2px 3px;">RM ${unitPrice.toFixed(2)}</td>
+                            <td style="font-size: 9px; text-align: center; padding: 2px 3px;"></td>
+                            <td style="font-size: 9px; text-align: right; padding: 2px 3px;">RM ${itemTotal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                    counter++;
+                });
+
+                const fillerRows = Math.max(0, 12 - orderItems.length);
+                for (let i = 0; i < fillerRows; i++) {
+                    itemsHtml += `<tr><td colspan="8" style="font-size: 9px; padding: 2px 3px;">&nbsp;</td></tr>`;
+                }
+
+                function convertToWords(num) {
+                    const ones = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+                    const tens = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+                    if (num === 0) return 'ZERO';
+                    function convertLessThanOneThousand(n) {
+                        if (n === 0) return '';
+                        if (n < 20) return ones[n];
+                        const digit = n % 10;
+                        if (n < 100) return tens[Math.floor(n / 10)] + (digit ? '-' + ones[digit] : '');
+                        return ones[Math.floor(n / 100)] + ' HUNDRED' + (n % 100 ? ' AND ' + convertLessThanOneThousand(n % 100) : '');
+                    }
+                    let fullNum = Math.floor(num);
+                    let decimalPart = Math.round((num - fullNum) * 100);
+                    let result = '';
+                    if (fullNum > 0) {
+                        if (fullNum >= 1000000) { result += convertLessThanOneThousand(Math.floor(fullNum / 1000000)) + ' MILLION '; fullNum %= 1000000; }
+                        if (fullNum >= 1000) { result += convertLessThanOneThousand(Math.floor(fullNum / 1000)) + ' THOUSAND '; fullNum %= 1000; }
+                        if (fullNum > 0) { result += convertLessThanOneThousand(fullNum); }
+                    }
+                    if (decimalPart > 0) { result += ' AND ' + decimalPart + '/100'; }
+                    return result.trim();
+                }
+
+                const invoiceHtml = `
+                    <div style="padding: 10px; font-family: Arial, sans-serif; width: 100%; height: 99vh; margin: 0 auto; font-size: 9px; display: flex; flex-direction: column;">
+                        <!-- Top Section -->
+                        <div style="flex: 0 0 auto;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <div>
+                                    <h2 style="margin: 0; font-size: 16px;">AUTO LABS SDN BHD</h2>
+                                    <p style="margin: 2px 0; font-size: 9px;">No. 12, Jalan UTM</p>
+                                    <p style="margin: 2px 0; font-size: 9px;">Skudai, Johor, 77998</p>
+                                    <p style="margin: 2px 0; font-size: 9px;">Tel: 07-5550-1735</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="border: 1px solid #000; padding: 5px 15px; display: inline-block;">
+                                        <h2 style="margin: 0; text-align: center; font-size: 14px;">INVOICE</h2>
+                                        <p style="margin: 3px 0; font-size: 9px;"><strong>No: </strong>INV-${order.order_id.replace('ORD', '')}</p>
+                                    </div>
+                                    <p style="margin: 5px 0 2px; font-size: 9px;"><strong>Date: </strong>${orderDate}</p>
+                                    <p style="margin: 2px 0; font-size: 9px;"><strong>A/C Code: </strong>DMKT78C</p>
+                                    <p style="margin: 2px 0; font-size: 9px;">${paymentTerms}</p>
+                                    <p style="margin: 2px 0; font-size: 9px;"><strong>Salesman: </strong>TECH</p>
+                                    <p style="margin: 2px 0; font-size: 9px;"><strong>Served By: </strong>HTL</p>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <p style="margin: 2px 0; font-size: 9px;"><strong>Bill To: </strong>${order.customers ? order.customers.name : 'Customer'}</p>
+                                <p style="margin: 2px 0; font-size: 9px;">${order.address || 'No address provided'}</p>
+                                <p style="margin: 2px 0; font-size: 9px;"><strong>Attention: </strong>${order.customers ? order.customers.name : 'Customer'}</p>
+                                <p style="margin: 2px 0; font-size: 9px;"><strong>Tel: </strong>${order.customers.phone || 'N/A'}</p>
+                            </div>
+                        </div>
+                        <!-- Middle Section (Table) -->
+                        <div style="flex: 1 1 auto; display: flex; flex-direction: column;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
+                                <thead>
+                                    <tr><td colspan="8" style="border-top: 1px solid #000; padding: 0;"></td></tr>
+                                    <tr>
+                                        <th style="padding: 3px; text-align: left; font-size: 9px; font-weight: bold;">No.</th>
+                                        <th style="padding: 3px; text-align: left; font-size: 9px; font-weight: bold;">Stock Code</th>
+                                        <th style="padding: 3px; text-align: left; font-size: 9px; font-weight: bold;">Description</th>
+                                        <th style="padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">Qty</th>
+                                        <th style="padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">U.O.M</th>
+                                        <th style="padding: 3px; text-align: right; font-size: 9px; font-weight: bold;">Unit Price</th>
+                                        <th style="padding: 3px; text-align: right; font-size: 9px; font-weight: bold;">Discount</th>
+                                        <th style="padding: 3px; text-align: right; font-size: 9px; font-weight: bold;">Amount</th>
+                                    </tr>
+                                    <tr><td colspan="8" style="border-bottom: 1px solid #000; padding: 0;"></td></tr>
+                                </thead>
+                                <tbody>${itemsHtml}</tbody>
+                            </table>
+                        </div>
+                        <!-- Bottom Section -->
+                        <div style="flex: 0 0 auto;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
+                                <tr>
+                                    <td colspan="7" style="text-align: right; padding: 3px; font-size: 9px; font-weight: bold;">TOTAL</td>
+                                    <td style="text-align: right; padding: 3px; font-size: 9px; font-weight: bold; border-top: 1px solid #000;">RM ${orderTotal.toFixed(2)}</td>
+                                </tr>
+                            </table>
+                            <div style="margin-top: 5px;">
+                                <hr style="border-top: 1px solid #000; border-bottom: none; margin: 0;">
+                                <p style="font-size: 10px; margin: 5px 0; font-weight: bold;">RINGGIT MALAYSIA ${convertToWords(orderTotal)} ONLY</p>
+                                <p style="font-size: 9px; margin-top: 5px;">Note:</p>
+                                <ol style="margin: 0; padding-left: 20px; font-size: 8px;">
+                                    <li>Please issue all payment in the name of <strong>AUTO LABS SDN BHD</strong></li>
+                                    <li>All items remain the property of the company until fully paid</li>
+                                    <li>No return or exchange of goods after inspection</li>
+                                    <li>All prices are subject to 10% service tax</li>
+                                    <li>Stock borrowed for more than seven (7) days will be billed in full of <strong>AUTO LABS SDN BHD</strong></li>
+                                </ol>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                                <div><p style="border-top: 1px solid #000; display: inline-block; padding-top: 3px; font-size: 9px;">Received By</p></div>
+                                <div><p style="border-top: 1px solid #000; display: inline-block; padding-top: 3px; font-size: 9px;">Company Chop & Signature</p></div>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; font-style: italic; font-size: 8px;">
+                                <p>This is a computer generated copy.<br>No signature is required.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; display: flex; justify-content: center; gap: 10px;" class="modal-footer">
+                        <button id="printInvoiceBtn" class="button primary">Print Invoice</button>
+                        <button id="downloadInvoiceBtn" class="button outline">Download PDF</button>
+                        <button id="closeInvoiceBtn" class="button outline">Close</button>
+                    </div>
+                `;
+
+                invoiceContent.innerHTML = invoiceHtml;
+                
+                document.getElementById('closeInvoiceBtn').addEventListener('click', closeInvoiceModal);
+                document.getElementById('printInvoiceBtn').addEventListener('click', printInvoiceAction);
+                document.getElementById('downloadInvoiceBtn').addEventListener('click', () => alert('Download PDF functionality is not implemented.'));
+
+            } catch (error) {
+                console.error('Error generating invoice:', error);
+                document.getElementById('invoice-content').innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
+            }
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoiceModal').style.display = 'none';
+        }
+
+        function printInvoiceAction() {
+            window.print();
+        }
+
+        // Close edit order modal
+        function closeEditOrderModal() {
+            document.getElementById('editOrderModal').style.display = 'none';
         }
     </script>
 </body>
