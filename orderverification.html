@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Order Verification - AutoLab</title>
     <style>
         :root {
@@ -560,6 +561,28 @@
             justify-content: center;
             font-weight: bold;
             font-size: 14px;
+        }
+
+        .btn-delete-small {
+            background-color: transparent;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            padding: 0;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .btn-delete-small:hover {
+            background-color: var(--error-color);
+            color: white;
         }
 
         /* Loading indicator */
@@ -1187,6 +1210,9 @@
                             <div class="order-status" style="color: #52c41a; background: #f6ffed; border: 1px solid #b7eb8f;">
                                 ${priorityBadge.text} - PROCESSING
                             </div>
+                            <button class="btn-delete-small" onclick="deleteOrder(event, '${order.id}', '${order.order_id}')" title="Delete Order">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                             <span class="toggle-indicator">▼</span>
                         </div>
                     </div>
@@ -1283,6 +1309,9 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div class="order-status" style="color: ${status.color};">${status.text}</div>
+                             <button class="btn-delete-small" onclick="deleteOrder(event, '${order.id}', '${order.order_id}')" title="Delete Order">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                              <span class="toggle-indicator">▼</span>
                         </div>
                     </div>
@@ -1354,6 +1383,9 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div class="order-status status-processing">⏳ Pending Admin Approval</div>
+                            <button class="btn-delete-small" onclick="deleteOrder(event, '${order.id}', '${order.order_id}')" title="Delete Order">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                             <span class="toggle-indicator">▼</span>
                         </div>
                     </div>
@@ -2020,6 +2052,52 @@ AutoLab Team 🚗`;
             }
         }
 
+        // NEW: Delete order function
+        async function deleteOrder(event, orderDbId, orderId) {
+            event.stopPropagation(); // Prevent card from expanding
+
+            if (!confirm(`Are you sure you want to permanently delete order ${orderId}? This action is irreversible.`)) {
+                return;
+            }
+
+            try {
+                // First, delete related records in order_products
+                const { error: productsError } = await supabase
+                    .from('order_products')
+                    .delete()
+                    .eq('order_id', orderDbId);
+
+                if (productsError) {
+                    throw new Error(`Failed to delete order items: ${productsError.message}`);
+                }
+
+                // Then, delete the order itself
+                const { error: orderError } = await supabase
+                    .from('orders')
+                    .delete()
+                    .eq('id', orderDbId);
+
+                if (orderError) {
+                    throw new Error(`Failed to delete order: ${orderError.message}`);
+                }
+
+                showSuccessNotification(`Order ${orderId} has been successfully deleted.`);
+
+                // Remove the card from the UI
+                const orderCard = document.getElementById(`order-card-${orderDbId}`);
+                if (orderCard) {
+                    orderCard.remove();
+                }
+
+                // Refresh counts
+                await loadAllOrderCounts();
+
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                alert('Error deleting order: ' + error.message);
+            }
+        }
+
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             initializePage();
@@ -2028,6 +2106,7 @@ AutoLab Team 🚗`;
         // Make functions globally accessible
         window.rejectOrder = rejectOrder;
         window.toggleOrderDetails = toggleOrderDetails;
+        window.deleteOrder = deleteOrder;
     </script>
 </body>
 </html>
