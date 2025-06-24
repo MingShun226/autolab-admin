@@ -1240,7 +1240,11 @@
                                 <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
                             </div>
                             <div class="meta-item">
-                                <div class="meta-label">Driver</div>
+                                <div class="meta-label">Delivery Method</div>
+                                <div class="meta-value">${order.driver || 'Not specified'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Assigned Driver</div>
                                 <div class="meta-value">${order.assigned_driver || 'Not assigned'}</div>
                             </div>
                             <div class="meta-item">
@@ -1338,6 +1342,10 @@
                                 <div class="meta-label">Amount</div>
                                 <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
                             </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery Method</div>
+                                <div class="meta-value">${order.driver || 'Not specified'}</div>
+                            </div>
                         </div>
                         <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
                     </div>
@@ -1411,6 +1419,10 @@
                             <div class="meta-item">
                                 <div class="meta-label">Amount</div>
                                 <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery Method</div>
+                                <div class="meta-value">${order.driver || 'Not specified'}</div>
                             </div>
                         </div>
                         <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
