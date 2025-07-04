@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Payment - AutoLab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #e21b1b;
+            --primary-dark: #c91818;
+            --secondary: #f8f9fa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --radius-sm: 6px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            min-height: 600px;
+        }
+
+        @media (max-width: 768px) {
+            .payment-container {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+            .order-summary {
+                order: -1;
+            }
+        }
+
+        /* Left Panel - Payment Methods */
+        .payment-panel {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .payment-subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .payment-methods {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .payment-method {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: #fef2f2;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .method-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 16px;
+            color: white;
+        }
+
+        .method-details h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .method-details p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .payment-instructions {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .payment-instructions.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .instructions-title {
+            font-weight: 600;
+            color: #0c4a6e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bank-details {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid #e0f2fe;
+        }
+
+        .bank-details div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .bank-details div:last-child {
+            margin-bottom: 0;
+        }
+
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .payment-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .payment-steps li {
+            counter-increment: step-counter;
+            margin-bottom: 8px;
+            padding-left: 24px;
+            position: relative;
+            color: #0c4a6e;
+            font-size: 14px;
+        }
+
+        .payment-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--primary);
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Right Panel - Order Summary */
+        .order-summary {
+            background: #f8fafc;
+            padding: 40px 30px;
+            border-left: 1px solid var(--border);
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .summary-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .order-id {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .order-details {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+            margin-top: 12px;
+            padding-top: 16px;
+            border-top: 2px solid var(--primary);
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .item-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .item-meta {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .item-price {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            transform: translateY(-1px);
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .alert.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        .alert.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="payment-container">
+        <!-- Left Panel - Payment Methods -->
+        <div class="payment-panel">
+            <div class="payment-header">
+                <h1 class="payment-title">Complete Payment</h1>
+                <p class="payment-subtitle">Choose your preferred payment method</p>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading order details...</p>
+            </div>
+
+            <div id="alert" class="alert">
+                <span id="alert-message"></span>
+            </div>
+
+            <div id="payment-content" style="display: none;">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>Payment Required</span>
+                </div>
+
+                <div class="payment-methods">
+                    <!-- Online Banking -->
+                    <div class="payment-method" data-method="online-banking">
+                        <div class="method-header">
+                            <div class="method-icon">🏦</div>
+                            <div class="method-details">
+                                <h3>Online Banking</h3>
+                                <p>Transfer via internet or mobile banking</p>
+                            </div>
+                        </div>
+                        <div class="payment-instructions">
+                            <div class="instructions-title">
+                                💳 Bank Transfer Instructions
+                            </div>
+                            <div class="bank-details">
+                                <div>
+                                    <strong>Bank:</strong>
+                                    <button class="copy-btn" onclick="copyText('Public Bank Berhad')">Copy</button>
+                                    <span>Public Bank Berhad</span>
+                                </div>
+                                <div>
+                                    <strong>Account:</strong>
+                                    <button class="copy-btn" onclick="copyText('AutoLab Sdn Bhd')">Copy</button>
+                                    <span>AutoLab Sdn Bhd</span>
+                                </div>
+                                <div>
+                                    <strong>Number:</strong>
+                                    <button class="copy-btn" onclick="copyText('4566-xxxx-xxxx')">Copy</button>
+                                    <span>4566-xxxx-xxxx</span>
+                                </div>
+                                <div>
+                                    <strong>Reference:</strong>
+                                    <button class="copy-btn" onclick="copyText(window.currentOrderId)">Copy</button>
+                                    <span id="ref-banking">-</span>
+                                </div>
+                            </div>
+                            <ol class="payment-steps">
+                                <li>Login to your online banking</li>
+                                <li>Add AutoLab as payee using above details</li>
+                                <li>Transfer the exact amount shown</li>
+                                <li>Use Order ID as reference</li>
+                                <li>Take screenshot of successful transfer</li>
+                                <li>Click "I've Made Payment" below</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- QR Code Payment -->
+                    <div class="payment-method" data-method="qr-code">
+                        <div class="method-header">
+                            <div class="method-icon">📱</div>
+                            <div class="method-details">
+                                <h3>QR Code Payment</h3>
+                                <p>Scan with banking app (DuitNow QR)</p>
+                            </div>
+                        </div>
+                        <div class="payment-instructions">
+                            <div class="instructions-title">
+                                📱 DuitNow QR Instructions
+                            </div>
+                            <div style="text-align: center; margin: 20px 0;">
+                                <div style="width: 150px; height: 150px; border: 2px dashed #94a3b8; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: #f8fafc;">
+                                    <div style="text-align: center; color: #64748b;">
+                                        <div style="font-size: 24px; margin-bottom: 8px;">📱</div>
+                                        <div style="font-size: 12px;">QR Code</div>
+                                        <div style="font-size: 10px;">Contact admin</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ol class="payment-steps">
+                                <li>Open your banking app</li>
+                                <li>Select "Scan QR" or "DuitNow QR"</li>
+                                <li>Scan the QR code above</li>
+                                <li>Verify amount and add reference</li>
+                                <li>Complete the payment</li>
+                                <li>Click "I've Made Payment" below</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Touch 'n Go eWallet -->
+                    <div class="payment-method" data-method="tng">
+                        <div class="method-header">
+                            <div class="method-icon">💙</div>
+                            <div class="method-details">
+                                <h3>Touch 'n Go eWallet</h3>
+                                <p>Transfer via TnG eWallet app</p>
+                            </div>
+                        </div>
+                        <div class="payment-instructions">
+                            <div class="instructions-title">
+                                💙 Touch 'n Go eWallet Instructions
+                            </div>
+                            <div class="bank-details">
+                                <div>
+                                    <strong>Phone:</strong>
+                                    <button class="copy-btn" onclick="copyText('+60123456789')">Copy</button>
+                                    <span>+60123456789</span>
+                                </div>
+                                <div>
+                                    <strong>Name:</strong>
+                                    <button class="copy-btn" onclick="copyText('AutoLab Sdn Bhd')">Copy</button>
+                                    <span>AutoLab Sdn Bhd</span>
+                                </div>
+                                <div>
+                                    <strong>Reference:</strong>
+                                    <button class="copy-btn" onclick="copyText(window.currentOrderId)">Copy</button>
+                                    <span id="ref-tng">-</span>
+                                </div>
+                            </div>
+                            <ol class="payment-steps">
+                                <li>Open Touch 'n Go eWallet app</li>
+                                <li>Select "Transfer" or "Send Money"</li>
+                                <li>Enter the phone number above</li>
+                                <li>Enter the exact amount</li>
+                                <li>Add Order ID as reference</li>
+                                <li>Complete transfer and screenshot</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- GrabPay -->
+                    <div class="payment-method" data-method="grabpay">
+                        <div class="method-header">
+                            <div class="method-icon">🚗</div>
+                            <div class="method-details">
+                                <h3>GrabPay</h3>
+                                <p>Pay using GrabPay wallet</p>
+                            </div>
+                        </div>
+                        <div class="payment-instructions">
+                            <div class="instructions-title">
+                                🚗 GrabPay Instructions
+                            </div>
+                            <div class="bank-details">
+                                <div>
+                                    <strong>Phone:</strong>
+                                    <button class="copy-btn" onclick="copyText('+60123456789')">Copy</button>
+                                    <span>+60123456789</span>
+                                </div>
+                                <div>
+                                    <strong>Name:</strong>
+                                    <button class="copy-btn" onclick="copyText('AutoLab Sdn Bhd')">Copy</button>
+                                    <span>AutoLab Sdn Bhd</span>
+                                </div>
+                                <div>
+                                    <strong>Reference:</strong>
+                                    <button class="copy-btn" onclick="copyText(window.currentOrderId)">Copy</button>
+                                    <span id="ref-grabpay">-</span>
+                                </div>
+                            </div>
+                            <ol class="payment-steps">
+                                <li>Open Grab app</li>
+                                <li>Go to GrabPay section</li>
+                                <li>Select "Send Money"</li>
+                                <li>Enter the phone number above</li>
+                                <li>Enter the exact amount</li>
+                                <li>Add Order ID as reference</li>
+                                <li>Complete payment and screenshot</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="catalog.html" class="btn btn-secondary">
+                        ← Back to Shop
+                    </a>
+                    <button id="payment-complete-btn" class="btn btn-primary" disabled>
+                        ✓ I've Made Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Order Summary -->
+        <div class="order-summary">
+            <div class="summary-header">
+                <h2 class="summary-title">Order Summary</h2>
+                <div class="order-id" id="order-id-display">Loading...</div>
+            </div>
+
+            <div class="order-details" id="order-details">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading order...</p>
+                </div>
+            </div>
+
+            <div id="payment-info" style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: none;">
+                <h3 style="margin-bottom: 12px; color: #374151;">💳 Payment Information</h3>
+                <div style="font-size: 14px; color: #6b7280; line-height: 1.5;">
+                    <p style="margin-bottom: 8px;">• Payment must be completed within 24 hours</p>
+                    <p style="margin-bottom: 8px;">• Order will be auto-cancelled if payment is not received</p>
+                    <p style="margin-bottom: 8px;">• Admin will verify payment within 2-4 hours</p>
+                    <p>• You'll receive WhatsApp updates on order status</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Global variables
+        let orderData = null;
+        let selectedPaymentMethod = null;
+        window.currentOrderId = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupPaymentMethodSelection();
+            loadOrderData();
+        });
+
+        // Get order ID from URL
+        function getOrderIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('order_id');
+        }
+
+        // Load order data
+        async function loadOrderData() {
+            const orderId = getOrderIdFromUrl();
+            if (!orderId) {
+                showAlert('No order ID provided. Please check your payment link.', 'error');
+                return;
+            }
+
+            window.currentOrderId = orderId;
+
+            try {
+                showLoading(true);
+
+                // Get order details
+                const { data: order, error: orderError } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('order_id', orderId)
+                    .single();
+
+                if (orderError || !order) {
+                    throw new Error('Order not found');
+                }
+
+                // Get order items
+                const { data: orderItems, error: itemsError } = await supabase
+                    .from('order_products')
+                    .select('*, products(name, price, product_id)')
+                    .eq('order_id', order.id);
+
+                if (itemsError) {
+                    throw new Error('Error loading order items');
+                }
+
+                orderData = { ...order, items: orderItems };
+                displayOrderData();
+                showLoading(false);
+
+            } catch (error) {
+                console.error('Error loading order:', error);
+                showAlert('Error loading order: ' + error.message, 'error');
+                showLoading(false);
+            }
+        }
+
+        // Display order data
+        function displayOrderData() {
+            if (!orderData) return;
+
+            // Update order ID display
+            document.getElementById('order-id-display').textContent = orderData.order_id;
+
+            // Update reference fields
+            document.getElementById('ref-banking').textContent = orderData.order_id;
+            document.getElementById('ref-tng').textContent = orderData.order_id;
+            document.getElementById('ref-grabpay').textContent = orderData.order_id;
+
+            // Build order details
+            let orderDetailsHtml = '';
+            let totalAmount = 0;
+
+            // Add order items
+            orderData.items.forEach(item => {
+                const product = item.products;
+                const itemTotal = product.price * item.quantity;
+                totalAmount += itemTotal;
+
+                orderDetailsHtml += `
+                    <div class="order-item">
+                        <div class="item-details">
+                            <h4>${product.name}</h4>
+                            <div class="item-meta">SKU: ${product.product_id} • Qty: ${item.quantity}</div>
+                        </div>
+                        <div class="item-price">RM ${itemTotal.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+
+            // Add total
+            orderDetailsHtml += `
+                <div class="order-item">
+                    <div class="item-details">
+                        <h4>Total Amount</h4>
+                    </div>
+                    <div class="item-price">RM ${totalAmount.toFixed(2)}</div>
+                </div>
+            `;
+
+            document.getElementById('order-details').innerHTML = orderDetailsHtml;
+            document.getElementById('payment-info').style.display = 'block';
+        }
+
+        // Setup payment method selection
+        function setupPaymentMethodSelection() {
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const paymentCompleteBtn = document.getElementById('payment-complete-btn');
+
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    // Remove selected class from all methods
+                    paymentMethods.forEach(m => {
+                        m.classList.remove('selected');
+                        m.querySelector('.payment-instructions').classList.remove('active');
+                    });
+
+                    // Add selected class to clicked method
+                    this.classList.add('selected');
+                    this.querySelector('.payment-instructions').classList.add('active');
+                    
+                    selectedPaymentMethod = this.getAttribute('data-method');
+                    paymentCompleteBtn.disabled = false;
+                });
+            });
+
+            // Payment complete button
+            paymentCompleteBtn.addEventListener('click', confirmPayment);
+        }
+
+        // Confirm payment
+        async function confirmPayment() {
+            if (!selectedPaymentMethod || !orderData) {
+                showAlert('Please select a payment method', 'error');
+                return;
+            }
+
+            const paymentBtn = document.getElementById('payment-complete-btn');
+            const originalText = paymentBtn.innerHTML;
+            
+            try {
+                paymentBtn.disabled = true;
+                paymentBtn.innerHTML = '⏳ Processing...';
+
+                // Update order status to payment_done
+                const { error: updateError } = await supabase
+                    .from('orders')
+                    .update({
+                        status: 'payment_done',
+                        payment_method: selectedPaymentMethod,
+                        payment_done_at: new Date().toISOString()
+                    })
+                    .eq('id', orderData.id);
+
+                if (updateError) {
+                    throw updateError;
+                }
+
+                // Show success message
+                showAlert('Payment submitted successfully! Our admin will verify your payment within 2-4 hours. You will receive a WhatsApp confirmation once verified.', 'success');
+                
+                // Update UI
+                document.querySelector('.status-badge').innerHTML = `
+                    <span class="status-dot" style="background: #10b981;"></span>
+                    <span style="color: #065f46;">Payment Submitted</span>
+                `;
+                document.querySelector('.status-badge').style.background = '#d1fae5';
+
+                paymentBtn.innerHTML = '✅ Payment Submitted';
+                paymentBtn.style.background = '#10b981';
+
+                // Send notification to admin (via n8n webhook)
+                sendPaymentNotification();
+
+            } catch (error) {
+                console.error('Error confirming payment:', error);
+                showAlert('Error submitting payment. Please try again.', 'error');
+                paymentBtn.disabled = false;
+                paymentBtn.innerHTML = originalText;
+            }
+        }
+
+        // Send payment notification
+        async function sendPaymentNotification() {
+            try {
+                const webhookUrl = 'https://subapipie.app.n8n.cloud/webhook-test/order-placed';
+                
+                const payload = {
+                    messages: [{
+                        text: {
+                            body: `PAYMENT_SUBMITTED:${JSON.stringify({
+                                orderId: orderData.order_id,
+                                amount: orderData.amount,
+                                paymentMethod: selectedPaymentMethod,
+                                customerPhone: orderData.customer_phone,
+                                submittedAt: new Date().toISOString(),
+                                status: 'payment_done'
+                            })}`
+                        }
+                    }]
+                };
+
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+            } catch (error) {
+                console.warn('Could not send admin notification:', error);
+            }
+        }
+
+        // Copy text to clipboard
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                event.target.textContent = 'Copied!';
+                setTimeout(() => {
+                    event.target.textContent = 'Copy';
+                }, 1500);
+            });
+        }
+
+        // Show/hide loading
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+            document.getElementById('payment-content').style.display = show ? 'none' : 'block';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            const alertMessage = document.getElementById('alert-message');
+            
+            alert.className = `alert ${type}`;
+            alertMessage.textContent = message;
+            alert.classList.add('active');
+
+            // Auto-hide after 8 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.classList.remove('active');
+                }, 8000);
+            }
+        }
+    </script>
+</body>
+</html>
