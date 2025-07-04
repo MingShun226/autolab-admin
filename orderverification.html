@@ -445,11 +445,24 @@
             color: #856404;
         }
 
+        .status-payment-submitted {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
         .approval-form {
             background: #f8f9fa;
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
+        }
+
+        .payment-verification-form {
+            background: #e8f5e8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #c8e6c9;
         }
 
         .form-grid {
@@ -507,6 +520,15 @@
 
         .btn-approve:hover {
             background: #218838;
+        }
+
+        .btn-verify {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-verify:hover {
+            background: #0056b3;
         }
 
         .btn-reject {
@@ -631,11 +653,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         .toggle-indicator {
             font-size: 12px;
             margin-left: 8px;
@@ -671,6 +688,24 @@
             padding: 10px;
             border-bottom: 1px solid #e9ecef;
             font-size: 14px;
+        }
+
+        .payment-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #007bff;
+        }
+
+        .payment-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #0d47a1;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -828,6 +863,10 @@
                             💳 Confirmed - Pending Payment
                             <span class="tab-badge" id="confirmed-count">0</span>
                         </div>
+                        <div class="tab" data-tab="payment-submitted">
+                            💰 Payment Submitted
+                            <span class="tab-badge" id="payment-submitted-count">0</span>
+                        </div>
                         <div class="tab active" data-tab="admin-approval">
                             ⏳ Pending Admin Approval
                             <span class="tab-badge" id="approval-count">0</span>
@@ -855,6 +894,16 @@
                                 <div class="loading">
                                     <div class="loading-spinner"></div>
                                     <span>Loading confirmed orders...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Payment Submitted Tab -->
+                        <div class="tab-panel" id="payment-submitted-panel">
+                            <div id="payment-submitted-orders-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading payment submitted orders...</span>
                                 </div>
                             </div>
                         </div>
@@ -887,7 +936,7 @@
     <!-- Success notification -->
     <div class="success-notification" id="successNotification">
         <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
-        <span id="notificationMessage">Order approved successfully!</span>
+        <span id="notificationMessage">Action completed successfully!</span>
     </div>
 
     <script>
@@ -905,6 +954,7 @@
         let orderCounts = {
             awaiting: 0,
             confirmed: 0,
+            paymentSubmitted: 0,
             approval: 0,
             approved: 0
         };
@@ -998,6 +1048,9 @@
                     case 'confirmed':
                         await loadConfirmedOrders();
                         break;
+                    case 'payment-submitted':
+                        await loadPaymentSubmittedOrders();
+                        break;
                     case 'admin-approval':
                         await loadAdminApprovalOrders();
                         break;
@@ -1090,7 +1143,47 @@
             }
         }
 
-        // Load orders needing admin approval (MAIN FUNCTION - UPDATED)
+        // NEW: Load orders with payment submitted (awaiting verification)
+        async function loadPaymentSubmittedOrders() {
+            const container = document.getElementById('payment-submitted-orders-container');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Loading payment submitted orders...</span>
+                </div>
+            `;
+
+            try {
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*, customers(name)')
+                    .eq('status', 'payment_submitted')
+                    .order('payment_done_at', { ascending: false });
+
+                if (error) throw error;
+
+                orderCounts.paymentSubmitted = orders?.length || 0;
+                document.getElementById('payment-submitted-count').textContent = orderCounts.paymentSubmitted;
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-credit-card"></i>
+                            <h3>No Payment Submitted Orders</h3>
+                            <p>Orders with submitted payments awaiting verification will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = orders.map(order => createPaymentVerificationCard(order)).join('');
+            } catch (error) {
+                console.error('Error loading payment submitted orders:', error);
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading orders</p></div>`;
+            }
+        }
+
+        // Load orders needing admin approval (payment verified)
         async function loadAdminApprovalOrders() {
             const container = document.getElementById('approval-orders-container');
             container.innerHTML = `
@@ -1101,12 +1194,11 @@
             `;
 
             try {
-                // UPDATED: Now looks for 'pending_confirmation' status (paid orders waiting for admin approval)
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
                     .eq('status', 'pending_confirmation')
-                    .order('paid_at', { ascending: false });
+                    .order('payment_verified_at', { ascending: false });
 
                 if (error) throw error;
 
@@ -1118,7 +1210,7 @@
                         <div class="empty-state">
                             <i class="fas fa-check-circle"></i>
                             <h3>No Orders Need Admin Approval</h3>
-                            <p>All paid orders have been processed or there are no paid orders.</p>
+                            <p>All verified payment orders have been processed or there are no verified orders.</p>
                         </div>
                     `;
                     return;
@@ -1131,7 +1223,7 @@
             }
         }
 
-        // Load approved orders (UPDATED - show detailed info)
+        // Load approved orders
         async function loadApprovedOrders() {
             const container = document.getElementById('approved-orders-container');
             container.innerHTML = `
@@ -1142,7 +1234,6 @@
             `;
 
             try {
-                // UPDATED: Now looks for 'processing' status (approved orders)
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*, customers(name)')
@@ -1172,44 +1263,31 @@
             }
         }
 
-        // NEW: Create detailed approved order card showing processing information
-        function createDetailedApprovedOrderCard(order) {
+        // NEW: Create payment verification card
+        function createPaymentVerificationCard(order) {
             const customerName = order.customers ? order.customers.name : 'Unknown Customer';
-            const approvedDate = order.approved_at ? new Date(order.approved_at).toLocaleDateString('en-US', {
+            const paymentDate = order.payment_done_at ? new Date(order.payment_done_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-            }) : 'Unknown';
+            }) : 'Just submitted';
 
-            const deliveryDate = order.estimated_delivery_date ? new Date(order.estimated_delivery_date).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }) : 'Not set';
-
-            const priorityBadge = {
-                'urgent': { color: '#dc3545', text: 'URGENT' },
-                'high': { color: '#fd7e14', text: 'HIGH' },
-                'normal': { color: '#28a745', text: 'NORMAL' },
-                'low': { color: '#6c757d', text: 'LOW' }
-            }[order.processing_priority] || { color: '#28a745', text: 'NORMAL' };
+            const hoursWaiting = order.payment_done_at ? 
+                Math.round((new Date() - new Date(order.payment_done_at)) / (1000 * 60 * 60)) : 0;
 
             return `
                 <div class="order-card" id="order-card-${order.id}">
                     <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
                         <div>
                             <div class="order-id">
-                                <span class="priority-indicator" style="background: ${priorityBadge.color};"></span>
-                                ✅ ${order.order_id}
+                                💰 ${order.order_id}
+                                <span class="payment-badge">Payment Submitted</span>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <div class="order-status" style="color: #52c41a; background: #f6ffed; border: 1px solid #b7eb8f;">
-                                ${priorityBadge.text} - PROCESSING
-                            </div>
+                            <div class="order-status status-payment-submitted">Payment Verification Required</div>
                             <button class="btn-delete-small" onclick="deleteOrder(event, '${order.id}', '${order.order_id}')" title="Delete Order">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -1220,10 +1298,10 @@
                     <div class="order-details" id="details-${order.id}" style="display: none;">
                         <div class="order-meta">
                             <div class="meta-item">
-                                <div class="meta-label">Approved</div>
-                                <div class="meta-value">${approvedDate}</div>
+                                <div class="meta-label">Payment Submitted</div>
+                                <div class="meta-value">${paymentDate} (${hoursWaiting}h ago)</div>
                             </div>
-                             <div class="meta-item">
+                            <div class="meta-item">
                                 <div class="meta-label">Customer</div>
                                 <div class="meta-value">${customerName}</div>
                             </div>
@@ -1243,47 +1321,230 @@
                                 <div class="meta-label">Delivery Method</div>
                                 <div class="meta-value">${order.driver || 'Not specified'}</div>
                             </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Assigned Driver</div>
-                                <div class="meta-value">${order.assigned_driver || 'Not assigned'}</div>
-                            </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Delivery</div>
-                                <div class="meta-value">${deliveryDate} at ${order.estimated_delivery_time || 'Not set'}</div>
-                            </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Installation</div>
-                                <div class="meta-value">${order.requires_installation ? 'Required' : 'Not required'}</div>
-                            </div>
                         </div>
+
+                        ${order.payment_notes ? `
+                            <div class="payment-info">
+                                <h4><i class="fas fa-sticky-note"></i> Customer Payment Notes</h4>
+                                <p>${order.payment_notes}</p>
+                            </div>
+                        ` : ''}
 
                         <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
 
-                        ${order.delivery_instructions || order.installation_instructions || order.admin_notes ? `
-                            <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                ${order.delivery_instructions ? `
-                                    <div style="margin-bottom: 10px;">
-                                        <strong><i class="fas fa-clipboard-list"></i> Delivery Instructions:</strong>
-                                        <div style="margin-top: 5px; color: #666;">${order.delivery_instructions}</div>
+                        <div class="payment-verification-form">
+                            <h4><i class="fas fa-credit-card"></i> Payment Verification</h4>
+                            
+                            <form class="payment-verification-form-content" data-order-id="${order.order_id}" data-order-db-id="${order.id}">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="payment-method-${order.order_id}">
+                                            <i class="fas fa-credit-card"></i> Payment Method Used
+                                        </label>
+                                        <select id="payment-method-${order.order_id}" name="payment_method">
+                                            <option value="">Select Payment Method</option>
+                                            <option value="online_banking">Online Banking</option>
+                                            <option value="qr_code">QR Code (DuitNow)</option>
+                                            <option value="ewallet">Touch 'n Go eWallet</option>
+                                            <option value="grabpay">GrabPay</option>
+                                            <option value="cash">Cash Payment</option>
+                                        </select>
                                     </div>
-                                ` : ''}
-                                ${order.installation_instructions ? `
-                                    <div style="margin-bottom: 10px;">
-                                        <strong><i class="fas fa-wrench"></i> Installation Instructions:</strong>
-                                        <div style="margin-top: 5px; color: #666;">${order.installation_instructions}</div>
+                                    
+                                    <div class="form-group">
+                                        <label for="payment-reference-${order.order_id}">
+                                            <i class="fas fa-hashtag"></i> Payment Reference Number
+                                        </label>
+                                        <input type="text" id="payment-reference-${order.order_id}" 
+                                               name="payment_reference" 
+                                               placeholder="Transaction/Reference number">
                                     </div>
-                                ` : ''}
-                                ${order.admin_notes ? `
-                                    <div>
-                                        <strong><i class="fas fa-sticky-note"></i> Admin Notes:</strong>
-                                        <div style="margin-top: 5px; color: #666;">${order.admin_notes}</div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        ` : ''}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="verification-notes-${order.order_id}">
+                                        <i class="fas fa-clipboard-check"></i> Verification Notes
+                                    </label>
+                                    <textarea id="verification-notes-${order.order_id}" 
+                                              name="verification_notes" 
+                                              placeholder="Any notes about the payment verification process"></textarea>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-reject" onclick="rejectPayment('${order.order_id}', '${order.id}')">
+                                        <i class="fas fa-times"></i> Reject Payment
+                                    </button>
+                                    <button type="submit" class="btn btn-verify">
+                                        <i class="fas fa-check"></i> Verify & Approve Payment
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             `;
+        }
+
+        // Handle payment verification form submission
+        document.addEventListener('submit', async (e) => {
+            if (e.target.classList.contains('payment-verification-form-content')) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const orderId = e.target.dataset.orderId;
+                const orderDbId = e.target.dataset.orderDbId;
+                
+                const submitButton = e.target.querySelector('.btn-verify');
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+                submitButton.disabled = true;
+                
+                try {
+                    // Prepare verification data
+                    const verificationData = {
+                        payment_method: formData.get('payment_method'),
+                        payment_reference: formData.get('payment_reference'),
+                        payment_verified_at: new Date().toISOString(),
+                        payment_verified_by: currentUserDetails?.id,
+                        status: 'pending_confirmation',
+                        admin_notes: formData.get('verification_notes')
+                    };
+                    
+                    // Update order in database
+                    const { error: updateError } = await supabase
+                        .from('orders')
+                        .update(verificationData)
+                        .eq('id', orderDbId);
+                    
+                    if (updateError) {
+                        throw new Error('Failed to verify payment: ' + updateError.message);
+                    }
+                    
+                    showSuccessNotification('Payment verified successfully! Order moved to admin approval.');
+                    
+                    // Refresh the payment submitted orders list
+                    await loadPaymentSubmittedOrders();
+                    
+                    // Also refresh admin approval orders to show the newly verified order
+                    await loadAdminApprovalOrders();
+                    
+                    // Refresh all counts
+                    await loadAllOrderCounts();
+                    
+                } catch (error) {
+                    console.error('Error verifying payment:', error);
+                    alert('Error verifying payment: ' + error.message);
+                    
+                    submitButton.innerHTML = originalText;
+                    submitButton.disabled = false;
+                }
+            }
+
+            // Handle order approval form submission (existing functionality)
+            if (e.target.classList.contains('approval-form-content')) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const orderId = e.target.dataset.orderId;
+                const orderDbId = e.target.dataset.orderDbId;
+                
+                const submitButton = e.target.querySelector('.btn-approve');
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitButton.disabled = true;
+                
+                try {
+                    // Prepare approval data
+                    const approvalData = {
+                        assigned_driver: formData.get('assigned_driver'),
+                        estimated_delivery_date: formData.get('estimated_delivery_date'),
+                        estimated_delivery_time: formData.get('estimated_delivery_time'),
+                        processing_priority: formData.get('processing_priority'),
+                        requires_installation: formData.get('requires_installation') === 'true',
+                        preparation_hours: parseInt(formData.get('preparation_hours')),
+                        delivery_instructions: formData.get('delivery_instructions'),
+                        installation_instructions: formData.get('installation_instructions'),
+                        admin_notes: formData.get('admin_notes'),
+                        status: 'processing',
+                        approved_at: new Date().toISOString(),
+                        approved_by: currentUserDetails?.id
+                    };
+                    
+                    // Update order in database
+                    const { error: updateError } = await supabase
+                        .from('orders')
+                        .update(approvalData)
+                        .eq('id', orderDbId);
+                    
+                    if (updateError) {
+                        throw new Error('Failed to update order: ' + updateError.message);
+                    }
+                    
+                    // Send detailed WhatsApp notification (reusing existing function)
+                    const { data: fullOrder, error: orderError } = await supabase
+                        .from('orders')
+                        .select('*, customers(name, phone)')
+                        .eq('id', orderDbId)
+                        .single();
+                    
+                    if (!orderError && fullOrder) {
+                        await sendDetailedApprovalNotification(fullOrder, approvalData);
+                    }
+                    
+                    showSuccessNotification('Order approved successfully! Customer has been notified via WhatsApp.');
+                    
+                    // Refresh the approval orders list
+                    await loadAdminApprovalOrders();
+                    
+                    // Also refresh approved orders to show the newly approved order
+                    await loadApprovedOrders();
+                    
+                    // Refresh all counts
+                    await loadAllOrderCounts();
+                    
+                } catch (error) {
+                    console.error('Error approving order:', error);
+                    alert('Error approving order: ' + error.message);
+                    
+                    submitButton.innerHTML = originalText;
+                    submitButton.disabled = false;
+                }
+            }
+        });
+
+        // NEW: Reject payment function
+        async function rejectPayment(orderId, orderDbId) {
+            if (!confirm('Are you sure you want to reject this payment? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const rejectionReason = prompt('Please provide a reason for payment rejection:');
+                if (!rejectionReason) return;
+
+                const { error } = await supabase
+                    .from('orders')
+                    .update({
+                        status: 'pending_payment',
+                        admin_notes: `Payment rejected by admin: ${rejectionReason}`,
+                        payment_verified_at: null,
+                        payment_verified_by: null
+                    })
+                    .eq('id', orderDbId);
+
+                if (error) {
+                    throw new Error('Failed to reject payment: ' + error.message);
+                }
+
+                showSuccessNotification('Payment has been rejected. Order moved back to pending payment.');
+                await loadPaymentSubmittedOrders();
+                await loadConfirmedOrders();
+                await loadAllOrderCounts();
+
+            } catch (error) {
+                console.error('Error rejecting payment:', error);
+                alert('Error rejecting payment: ' + error.message);
+            }
         }
 
         // Create simple order card for display-only tabs
@@ -1353,7 +1614,7 @@
             `;
         }
 
-        // Create detailed order approval card (MAIN APPROVAL FUNCTIONALITY - ENHANCED)
+        // Create detailed order approval card (existing functionality)
         function createOrderApprovalCard(order) {
             const customerName = order.customers ? order.customers.name : 'Unknown Customer';
             const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
@@ -1364,16 +1625,16 @@
                 minute: '2-digit'
             });
 
-            const paidDate = order.paid_at ? new Date(order.paid_at).toLocaleDateString('en-US', {
+            const verifiedDate = order.payment_verified_at ? new Date(order.payment_verified_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-            }) : 'Just now';
+            }) : 'Recently verified';
 
-            const hoursWaiting = order.paid_at ? 
-                Math.round((new Date() - new Date(order.paid_at)) / (1000 * 60 * 60)) : 0;
+            const hoursWaiting = order.payment_verified_at ? 
+                Math.round((new Date() - new Date(order.payment_verified_at)) / (1000 * 60 * 60)) : 0;
 
             // Set default delivery date (tomorrow)
             const tomorrow = new Date();
@@ -1401,8 +1662,8 @@
                     <div class="order-details" id="details-${order.id}" style="display: none;">
                          <div class="order-meta">
                              <div class="meta-item">
-                                <div class="meta-label">Paid</div>
-                                <div class="meta-value">${paidDate} (${hoursWaiting}h ago)</div>
+                                <div class="meta-label">Payment Verified</div>
+                                <div class="meta-value">${verifiedDate} (${hoursWaiting}h ago)</div>
                             </div>
                             <div class="meta-item">
                                 <div class="meta-label">Customer</div>
@@ -1552,131 +1813,121 @@
             `;
         }
 
-        // ENHANCED: Handle approval form submission with detailed WhatsApp notification
-        document.addEventListener('submit', async (e) => {
-            if (e.target.classList.contains('approval-form-content')) {
-                e.preventDefault();
-                
-                const formData = new FormData(e.target);
-                const orderId = e.target.dataset.orderId;
-                const orderDbId = e.target.dataset.orderDbId;
-                
-                const submitButton = e.target.querySelector('.btn-approve');
-                const originalText = submitButton.innerHTML;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                submitButton.disabled = true;
-                
-                try {
-                    // Prepare approval data
-                    const approvalData = {
-                        assigned_driver: formData.get('assigned_driver'),
-                        estimated_delivery_date: formData.get('estimated_delivery_date'),
-                        estimated_delivery_time: formData.get('estimated_delivery_time'),
-                        processing_priority: formData.get('processing_priority'),
-                        requires_installation: formData.get('requires_installation') === 'true',
-                        preparation_hours: parseInt(formData.get('preparation_hours')),
-                        delivery_instructions: formData.get('delivery_instructions'),
-                        installation_instructions: formData.get('installation_instructions'),
-                        admin_notes: formData.get('admin_notes'),
-                        status: 'processing', // UPDATED: Changes from pending_confirmation to processing
-                        approved_at: new Date().toISOString(),
-                        approved_by: currentUserDetails?.id,
-                        prepared_at: null // Will be set later in warehouse
-                    };
-                    
-                    // Update order in database
-                    const { error: updateError } = await supabase
-                        .from('orders')
-                        .update(approvalData)
-                        .eq('id', orderDbId);
-                    
-                    if (updateError) {
-                        throw new Error('Failed to update order: ' + updateError.message);
-                    }
-                    
-                    // Get full order details for WhatsApp notification
-                    const { data: fullOrder, error: orderError } = await supabase
-                        .from('orders')
-                        .select('*, customers(name, phone)')
-                        .eq('id', orderDbId)
-                        .single();
-                    
-                    if (orderError) {
-                        console.error('Error fetching order details:', orderError);
-                    }
-                    
-                    // ENHANCED: Send detailed WhatsApp notification
-                    if (fullOrder) {
-                        const notificationSent = await sendDetailedApprovalNotification(fullOrder, approvalData);
-                        
-                        if (notificationSent) {
-                            showSuccessNotification('Order approved successfully! Customer has been notified via WhatsApp.');
-                        } else {
-                            showSuccessNotification('Order approved successfully! (WhatsApp notification failed - please contact customer manually)');
-                        }
-                    } else {
-                        showSuccessNotification('Order approved successfully!');
-                    }
-                    
-                    // Refresh the approval orders list
-                    await loadAdminApprovalOrders();
-                    
-                    // Also refresh approved orders to show the newly approved order
-                    await loadApprovedOrders();
-                    
-                    // Refresh all counts
-                    await loadAllOrderCounts();
-                    
-                } catch (error) {
-                    console.error('Error approving order:', error);
-                    alert('Error approving order: ' + error.message);
-                    
-                    submitButton.innerHTML = originalText;
-                    submitButton.disabled = false;
-                }
-            }
-        });
+        // Create detailed approved order card
+        function createDetailedApprovedOrderCard(order) {
+            const customerName = order.customers ? order.customers.name : 'Unknown Customer';
+            const approvedDate = order.approved_at ? new Date(order.approved_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'Unknown';
 
-        // TEST FUNCTION - Add this temporarily to test n8n connection
-        async function testN8nConnection() {
-            try {
-                console.log('🧪 Testing n8n connection...');
-                console.log('🔗 Webhook URL:', N8N_WEBHOOK_URL);
-                
-                const testPayload = {
-                    test: true,
-                    message: 'Test from admin panel',
-                    timestamp: new Date().toISOString()
-                };
+            const deliveryDate = order.estimated_delivery_date ? new Date(order.estimated_delivery_date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) : 'Not set';
 
-                const response = await fetch(N8N_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(testPayload)
-                });
+            const priorityBadge = {
+                'urgent': { color: '#dc3545', text: 'URGENT' },
+                'high': { color: '#fd7e14', text: 'HIGH' },
+                'normal': { color: '#28a745', text: 'NORMAL' },
+                'low': { color: '#6c757d', text: 'LOW' }
+            }[order.processing_priority] || { color: '#28a745', text: 'NORMAL' };
 
-                console.log('📡 Response status:', response.status);
-                console.log('📡 Response headers:', [...response.headers.entries()]);
-                
-                if (response.ok) {
-                    const responseText = await response.text();
-                    console.log('✅ n8n test successful. Response:', responseText);
-                    alert('✅ n8n connection successful!');
-                } else {
-                    const errorText = await response.text();
-                    console.error('❌ n8n test failed:', response.status, errorText);
-                    alert(`❌ n8n connection failed: ${response.status} - ${errorText}`);
-                }
+            return `
+                <div class="order-card" id="order-card-${order.id}">
+                    <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
+                        <div>
+                            <div class="order-id">
+                                <span class="priority-indicator" style="background: ${priorityBadge.color};"></span>
+                                ✅ ${order.order_id}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="order-status" style="color: #52c41a; background: #f6ffed; border: 1px solid #b7eb8f;">
+                                ${priorityBadge.text} - PROCESSING
+                            </div>
+                            <button class="btn-delete-small" onclick="deleteOrder(event, '${order.id}', '${order.order_id}')" title="Delete Order">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <span class="toggle-indicator">▼</span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-details" id="details-${order.id}" style="display: none;">
+                        <div class="order-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Approved</div>
+                                <div class="meta-value">${approvedDate}</div>
+                            </div>
+                             <div class="meta-item">
+                                <div class="meta-label">Customer</div>
+                                <div class="meta-value">${customerName}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Phone</div>
+                                <div class="meta-value">${order.customer_phone || 'N/A'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Address</div>
+                                <div class="meta-value">${order.address || 'Address not provided'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Amount</div>
+                                <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery Method</div>
+                                <div class="meta-value">${order.driver || 'Not specified'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Assigned Driver</div>
+                                <div class="meta-value">${order.assigned_driver || 'Not assigned'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Delivery</div>
+                                <div class="meta-value">${deliveryDate} at ${order.estimated_delivery_time || 'Not set'}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Installation</div>
+                                <div class="meta-value">${order.requires_installation ? 'Required' : 'Not required'}</div>
+                            </div>
+                        </div>
 
-            } catch (error) {
-                console.error('🔥 Network error testing n8n:', error);
-                alert(`🔥 Network error: ${error.message}`);
-            }
+                        <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
+
+                        ${order.delivery_instructions || order.installation_instructions || order.admin_notes ? `
+                            <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                ${order.delivery_instructions ? `
+                                    <div style="margin-bottom: 10px;">
+                                        <strong><i class="fas fa-clipboard-list"></i> Delivery Instructions:</strong>
+                                        <div style="margin-top: 5px; color: #666;">${order.delivery_instructions}</div>
+                                    </div>
+                                ` : ''}
+                                ${order.installation_instructions ? `
+                                    <div style="margin-bottom: 10px;">
+                                        <strong><i class="fas fa-wrench"></i> Installation Instructions:</strong>
+                                        <div style="margin-top: 5px; color: #666;">${order.installation_instructions}</div>
+                                    </div>
+                                ` : ''}
+                                ${order.admin_notes ? `
+                                    <div>
+                                        <strong><i class="fas fa-sticky-note"></i> Admin Notes:</strong>
+                                        <div style="margin-top: 5px; color: #666;">${order.admin_notes}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
         }
 
-        // ENHANCED: Send detailed WhatsApp notification via n8n (bypassing routing)
+        // Send detailed approval notification via n8n
         async function sendDetailedApprovalNotification(order, approvalData) {
             try {
                 const customerPhone = order.customers?.phone || order.customer_phone;
@@ -1752,7 +2003,7 @@ Thank you for choosing AutoLab! 🚗✨
 
 *Estimated delivery: ${deliveryDate} at ${deliveryTime}*`;
 
-                // Send via n8n but with special format that bypasses message routing
+                // Send via n8n
                 const payload = {
                     action: 'direct_whatsapp_send',
                     source: 'admin_approval',
@@ -1771,8 +2022,6 @@ Thank you for choosing AutoLab! 🚗✨
                 };
 
                 console.log('🚀 Sending detailed approval notification via n8n...');
-                console.log('📱 Customer phone:', customerPhone);
-                console.log('📋 Order ID:', order.order_id);
 
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
@@ -1809,7 +2058,7 @@ Thank you for choosing AutoLab! 🚗✨
             }, 5000);
         }
 
-        // Reject order function (ENHANCED)
+        // Reject order function
         async function rejectOrder(orderId, orderDbId) {
             if (!confirm('Are you sure you want to reject this order? This action cannot be undone.')) {
                 return;
@@ -1833,9 +2082,6 @@ Thank you for choosing AutoLab! 🚗✨
                     throw new Error('Failed to reject order: ' + error.message);
                 }
 
-                // Send rejection notification to customer
-                await sendRejectionNotification(orderId, rejectionReason);
-
                 showSuccessNotification('Order has been rejected and customer will be notified.');
                 await loadAdminApprovalOrders();
                 await loadAllOrderCounts();
@@ -1846,81 +2092,24 @@ Thank you for choosing AutoLab! 🚗✨
             }
         }
 
-        // Send rejection notification
-        async function sendRejectionNotification(orderId, reason) {
-            try {
-                const { data: order, error } = await supabase
-                    .from('orders')
-                    .select('customer_phone, customers(phone)')
-                    .eq('order_id', orderId)
-                    .single();
-
-                if (error || !order) return;
-
-                const customerPhone = order.customers?.phone || order.customer_phone;
-                if (!customerPhone) return;
-
-                const rejectionMessage = `❌ *Order ${orderId} Rejected*
-
-We regret to inform you that your order has been rejected.
-
-📝 *Reason:* ${reason}
-
-💰 *Refund Information:*
-If payment was made, a full refund will be processed within 3-5 business days.
-
-🛒 *Place a New Order:*
-You can place a new order anytime at:
-https://autolab-user.vercel.app/catalog.html
-
-📞 *Need Assistance?*
-Contact our customer service for any questions.
-
-We apologize for any inconvenience caused.
-
-AutoLab Team 🚗`;
-
-                const payload = {
-                    messages: [{
-                        from: customerPhone,
-                        text: { body: rejectionMessage }
-                    }],
-                    _metadata: {
-                        source: 'admin_rejection',
-                        timestamp: new Date().toISOString(),
-                        order_id: orderId,
-                        rejected_by: currentUserDetails?.id
-                    }
-                };
-
-                await fetch(N8N_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-            } catch (error) {
-                console.error('Error sending rejection notification:', error);
-            }
-        }
-
-        // NEW: Load counts for all tabs on page load
+        // Load counts for all tabs on page load
         async function loadAllOrderCounts() {
             try {
                 const { data, error } = await supabase
                     .from('orders')
                     .select('status')
-                    .in('status', ['awaiting_confirmation', 'pending_payment', 'pending_confirmation', 'processing']);
+                    .in('status', ['awaiting_confirmation', 'pending_payment', 'payment_submitted', 'pending_confirmation', 'processing']);
 
                 if (error) throw error;
 
                 // Reset all counts
-                const counts = { awaiting: 0, confirmed: 0, approval: 0, approved: 0 };
+                const counts = { awaiting: 0, confirmed: 0, paymentSubmitted: 0, approval: 0, approved: 0 };
 
                 // Tally counts
                 data.forEach(order => {
                     if (order.status === 'awaiting_confirmation') counts.awaiting++;
                     else if (order.status === 'pending_payment') counts.confirmed++;
+                    else if (order.status === 'payment_submitted') counts.paymentSubmitted++;
                     else if (order.status === 'pending_confirmation') counts.approval++;
                     else if (order.status === 'processing') counts.approved++;
                 });
@@ -1928,6 +2117,7 @@ AutoLab Team 🚗`;
                 // Update UI
                 document.getElementById('awaiting-count').textContent = counts.awaiting;
                 document.getElementById('confirmed-count').textContent = counts.confirmed;
+                document.getElementById('payment-submitted-count').textContent = counts.paymentSubmitted;
                 document.getElementById('approval-count').textContent = counts.approval;
                 document.getElementById('approved-count').textContent = counts.approved;
 
@@ -1935,60 +2125,13 @@ AutoLab Team 🚗`;
                 console.error('Error loading order counts:', error);
                 document.getElementById('awaiting-count').textContent = 'X';
                 document.getElementById('confirmed-count').textContent = 'X';
+                document.getElementById('payment-submitted-count').textContent = 'X';
                 document.getElementById('approval-count').textContent = 'X';
                 document.getElementById('approved-count').textContent = 'X';
             }
         }
 
-        // Initialize page
-        async function initializePage() {
-            try {
-                const user = await checkAuth();
-                if (!user) return;
-
-                const userDetails = await getUserDetails(user.id);
-                if (!userDetails) {
-                    console.error('Unable to load user details');
-                    logout();
-                    return;
-                }
-
-                updateUserInterface(userDetails);
-                
-                // Load counts for all tabs first
-                await loadAllOrderCounts();
-                
-                // Load initial data for the active tab
-                await loadTabData('admin-approval');
-                
-                setupEventListeners();
-
-            } catch (err) {
-                console.error('Error initializing page:', err);
-                alert('Error loading page. Please try again.');
-            }
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
-
-            document.addEventListener('click', function (e) {
-                const dropdown = document.getElementById('userDropdown');
-                const avatar = document.getElementById('userAvatar');
-
-                if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-            document.getElementById('logoutButton').addEventListener('click', logout);
-        }
-
-        // Make functions available globally
-        window.rejectOrder = rejectOrder;
-
-        // NEW: Toggle order details visibility
+        // Toggle order details visibility
         function toggleOrderDetails(orderId) {
             const detailsSection = document.getElementById(`details-${orderId}`);
             const orderCard = document.getElementById(`order-card-${orderId}`);
@@ -2013,7 +2156,7 @@ AutoLab Team 🚗`;
             }
         }
 
-        // NEW: Fetch and render order items
+        // Fetch and render order items
         async function fetchOrderItems(orderId) {
             const itemsContainer = document.getElementById(`product-details-container-${orderId}`);
             try {
@@ -2064,7 +2207,7 @@ AutoLab Team 🚗`;
             }
         }
 
-        // NEW: Delete order function
+        // Delete order function
         async function deleteOrder(event, orderDbId, orderId) {
             event.stopPropagation(); // Prevent card from expanding
 
@@ -2110,6 +2253,51 @@ AutoLab Team 🚗`;
             }
         }
 
+        // Initialize page
+        async function initializePage() {
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+
+                const userDetails = await getUserDetails(user.id);
+                if (!userDetails) {
+                    console.error('Unable to load user details');
+                    logout();
+                    return;
+                }
+
+                updateUserInterface(userDetails);
+                
+                // Load counts for all tabs first
+                await loadAllOrderCounts();
+                
+                // Load initial data for the active tab
+                await loadTabData('admin-approval');
+                
+                setupEventListeners();
+
+            } catch (err) {
+                console.error('Error initializing page:', err);
+                alert('Error loading page. Please try again.');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
+
+            document.addEventListener('click', function (e) {
+                const dropdown = document.getElementById('userDropdown');
+                const avatar = document.getElementById('userAvatar');
+
+                if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            document.getElementById('logoutButton').addEventListener('click', logout);
+        }
+
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             initializePage();
@@ -2117,6 +2305,7 @@ AutoLab Team 🚗`;
 
         // Make functions globally accessible
         window.rejectOrder = rejectOrder;
+        window.rejectPayment = rejectPayment;
         window.toggleOrderDetails = toggleOrderDetails;
         window.deleteOrder = deleteOrder;
     </script>
