@@ -707,6 +707,27 @@
             font-size: 12px;
             font-weight: 500;
         }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .badge-danger {
+            background: #fff2f0;
+            color: #f5222d;
+            border: 1px solid #ffccc7;
+        }
     </style>
 </head>
 <body>
@@ -946,7 +967,8 @@
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // n8n Webhook Configuration for approval notifications
-        const N8N_WEBHOOK_URL = 'https://apipietech.app.n8n.cloud/webhook-test/unified-whatsapp';
+        const N8N_WEBHOOK_URL = 'https://apipietech.app.n8n.cloud/webhook/unified-whatsapp';
+        const N8N_ADMIN_VERIFICATION_WEBHOOK = 'https://apipietech.app.n8n.cloud/webhook/admin-verification';
 
         // Global variables
         let currentUserDetails = null;
@@ -967,6 +989,86 @@
             { id: 'driver4', name: 'Fatimah Ali', phone: '0123456786', status: 'available' },
             { id: 'lalamove', name: 'Lalamove (External)', phone: 'External', status: 'available' }
         ];
+
+        // Helper functions for enhanced notifications
+        function showErrorMessage(message) {
+            // Create and show error notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-danger';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #dc3545;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                max-width: 400px;
+            `;
+            notification.innerHTML = message;
+            document.body.appendChild(notification);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => notification.remove(), 8000);
+        }
+
+        function showWarningMessage(message) {
+            // Create and show warning notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-warning';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ffc107;
+                color: #212529;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                max-width: 400px;
+            `;
+            notification.innerHTML = message;
+            document.body.appendChild(notification);
+            
+            // Auto-hide after 6 seconds
+            setTimeout(() => notification.remove(), 6000);
+        }
+
+        // Helper function to update order status UI
+        function updateOrderStatusUI(orderDbId, status) {
+            const orderCard = document.getElementById(`order-card-${orderDbId}`);
+            if (!orderCard) return;
+            
+            const statusElement = orderCard.querySelector('.order-status');
+            const actionButtons = orderCard.querySelector('.action-buttons');
+            
+            if (status === 'verified') {
+                if (statusElement) {
+                    statusElement.innerHTML = '✅ Payment Verified';
+                    statusElement.className = 'order-status';
+                    statusElement.style.color = '#52c41a';
+                    statusElement.style.background = '#f6ffed';
+                    statusElement.style.border = '1px solid #b7eb8f';
+                }
+                if (actionButtons) {
+                    actionButtons.innerHTML = '<span class="badge badge-success">✅ Verified & Approved</span>';
+                }
+            } else if (status === 'rejected') {
+                if (statusElement) {
+                    statusElement.innerHTML = '❌ Payment Rejected';
+                    statusElement.className = 'order-status';
+                    statusElement.style.color = '#f5222d';
+                    statusElement.style.background = '#fff2f0';
+                    statusElement.style.border = '1px solid #ffccc7';
+                }
+                if (actionButtons) {
+                    actionButtons.innerHTML = '<span class="badge badge-danger">❌ Payment Rejected</span>';
+                }
+            }
+        }
 
         // Check if user is authenticated
         async function checkAuth() {
@@ -1262,7 +1364,7 @@
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading orders</p></div>`;
             }
         }
-
+        
         // NEW: Create payment verification card
         function createPaymentVerificationCard(order) {
             const customerName = order.customers ? order.customers.name : 'Unknown Customer';
@@ -1371,10 +1473,10 @@
                                 </div>
                                 
                                 <div class="action-buttons">
-                                    <button type="button" class="btn btn-reject" onclick="rejectPayment('${order.order_id}', '${order.id}')">
+                                    <button type="button" class="btn btn-reject" onclick="rejectPaymentWithWebhook('${order.order_id}', '${order.id}')">
                                         <i class="fas fa-times"></i> Reject Payment
                                     </button>
-                                    <button type="submit" class="btn btn-verify">
+                                    <button type="button" class="btn btn-verify" onclick="verifyPaymentWithWebhook('${order.order_id}', '${order.id}')">
                                         <i class="fas fa-check"></i> Verify & Approve Payment
                                     </button>
                                 </div>
@@ -1385,60 +1487,195 @@
             `;
         }
 
-        // Handle payment verification form submission
-        document.addEventListener('submit', async (e) => {
-            if (e.target.classList.contains('payment-verification-form-content')) {
-                e.preventDefault();
-                
-                const formData = new FormData(e.target);
-                const orderId = e.target.dataset.orderId;
-                const orderDbId = e.target.dataset.orderDbId;
-                
-                const submitButton = e.target.querySelector('.btn-verify');
-                const originalText = submitButton.innerHTML;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-                submitButton.disabled = true;
-                
-                try {
-                    // Prepare verification data
-                    const verificationData = {
-                        payment_method: formData.get('payment_method'),
-                        payment_reference: formData.get('payment_reference'),
-                        payment_verified_at: new Date().toISOString(),
-                        payment_verified_by: currentUserDetails?.id,
-                        status: 'pending_confirmation',
-                        admin_notes: formData.get('verification_notes')
-                    };
-                    
-                    // Update order in database
-                    const { error: updateError } = await supabase
-                        .from('orders')
-                        .update(verificationData)
-                        .eq('id', orderDbId);
-                    
-                    if (updateError) {
-                        throw new Error('Failed to verify payment: ' + updateError.message);
-                    }
-                    
-                    showSuccessNotification('Payment verified successfully! Order moved to admin approval.');
-                    
-                    // Refresh the payment submitted orders list
-                    await loadPaymentSubmittedOrders();
-                    
-                    // Also refresh admin approval orders to show the newly verified order
-                    await loadAdminApprovalOrders();
-                    
-                    // Refresh all counts
-                    await loadAllOrderCounts();
-                    
-                } catch (error) {
-                    console.error('Error verifying payment:', error);
-                    alert('Error verifying payment: ' + error.message);
-                    
-                    submitButton.innerHTML = originalText;
-                    submitButton.disabled = false;
-                }
+        // Enhanced verify payment function with webhook integration
+        async function verifyPaymentWithWebhook(orderId, orderDbId) {
+            const form = document.querySelector(`[data-order-id="${orderId}"]`);
+            const paymentMethod = form.querySelector(`#payment-method-${orderId}`).value;
+            const referenceNumber = form.querySelector(`#payment-reference-${orderId}`).value;
+            const notes = form.querySelector(`#verification-notes-${orderId}`).value;
+            
+            // Validate required fields
+            if (!paymentMethod) {
+                showErrorMessage('Please select a payment method');
+                return false;
             }
+            
+            // Show loading state
+            const verifyBtn = form.querySelector('.btn-verify');
+            const rejectBtn = form.querySelector('.btn-reject');
+            const originalText = verifyBtn.innerHTML;
+            
+            verifyBtn.disabled = true;
+            rejectBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            
+            try {
+                // 1. Update database first (your existing logic)
+                const verificationData = {
+                    payment_method: paymentMethod,
+                    payment_reference: referenceNumber,
+                    payment_verified_at: new Date().toISOString(),
+                    payment_verified_by: currentUserDetails?.id,
+                    status: 'pending_confirmation',
+                    admin_notes: notes
+                };
+                
+                const { error: updateError } = await supabase
+                    .from('orders')
+                    .update(verificationData)
+                    .eq('id', orderDbId);
+                
+                if (updateError) {
+                    throw new Error('Failed to verify payment: ' + updateError.message);
+                }
+                
+                // 2. Send webhook notification to n8n
+                try {
+                    const webhookResponse = await fetch(N8N_ADMIN_VERIFICATION_WEBHOOK, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'verify',
+                            orderId: orderId,
+                            adminId: currentUserDetails?.id || 'admin123',
+                            paymentMethod: paymentMethod,
+                            referenceNumber: referenceNumber,
+                            notes: notes,
+                            timestamp: new Date().toISOString(),
+                            _metadata: {
+                                source: 'admin_verification',
+                                admin_name: currentUserDetails ? `${currentUserDetails.first_name} ${currentUserDetails.last_name}` : 'Admin User'
+                            }
+                        })
+                    });
+                    
+                    const webhookResult = await webhookResponse.json().catch(() => ({}));
+                    
+                    if (!webhookResponse.ok) {
+                        console.warn('Webhook notification failed, but database update succeeded');
+                    }
+                } catch (webhookError) {
+                    console.warn('Webhook error (non-critical):', webhookError);
+                    // Don't throw - database update succeeded
+                }
+                
+                // 3. Update UI
+                showSuccessNotification('✅ Payment verified successfully! Customer has been notified.');
+                
+                // Hide verification form and show verified badge
+                updateOrderStatusUI(orderDbId, 'verified');
+                
+                // 4. Refresh data
+                await loadPaymentSubmittedOrders();
+                await loadAdminApprovalOrders();
+                await loadAllOrderCounts();
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error verifying payment:', error);
+                showErrorMessage('❌ Error verifying payment: ' + error.message);
+                
+                // Reset button state
+                verifyBtn.disabled = false;
+                rejectBtn.disabled = false;
+                verifyBtn.innerHTML = originalText;
+                
+                return false;
+            }
+        }
+
+        // Enhanced reject payment function with webhook integration
+        async function rejectPaymentWithWebhook(orderId, orderDbId) {
+            const form = document.querySelector(`[data-order-id="${orderId}"]`);
+            const notes = form.querySelector(`#verification-notes-${orderId}`).value;
+            
+            // Confirm rejection
+            if (!confirm('Are you sure you want to reject this payment? The customer will be notified.')) {
+                return false;
+            }
+            
+            // Show loading state
+            const verifyBtn = form.querySelector('.btn-verify');
+            const rejectBtn = form.querySelector('.btn-reject');
+            const originalText = rejectBtn.innerHTML;
+            
+            verifyBtn.disabled = true;
+            rejectBtn.disabled = true;
+            rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting...';
+            
+            try {
+                // 1. Update database first
+                const { error: updateError } = await supabase
+                    .from('orders')
+                    .update({
+                        status: 'pending_payment',
+                        admin_notes: `Payment rejected by admin: ${notes}`,
+                        payment_verified_at: null,
+                        payment_verified_by: null
+                    })
+                    .eq('id', orderDbId);
+                
+                if (updateError) {
+                    throw new Error('Failed to reject payment: ' + updateError.message);
+                }
+                
+                // 2. Send webhook notification to n8n
+                try {
+                    const webhookResponse = await fetch(N8N_ADMIN_VERIFICATION_WEBHOOK, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'reject',
+                            orderId: orderId,
+                            adminId: currentUserDetails?.id || 'admin123',
+                            notes: notes,
+                            timestamp: new Date().toISOString(),
+                            _metadata: {
+                                source: 'admin_verification',
+                                admin_name: currentUserDetails ? `${currentUserDetails.first_name} ${currentUserDetails.last_name}` : 'Admin User'
+                            }
+                        })
+                    });
+                    
+                    if (!webhookResponse.ok) {
+                        console.warn('Webhook notification failed, but database update succeeded');
+                    }
+                } catch (webhookError) {
+                    console.warn('Webhook error (non-critical):', webhookError);
+                }
+                
+                // 3. Update UI
+                showWarningMessage('❌ Payment rejected. Customer has been notified.');
+                
+                updateOrderStatusUI(orderDbId, 'rejected');
+                
+                // 4. Refresh data  
+                await loadPaymentSubmittedOrders();
+                await loadConfirmedOrders();
+                await loadAllOrderCounts();
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error rejecting payment:', error);
+                showErrorMessage('❌ Error rejecting payment: ' + error.message);
+                
+                // Reset button state
+                verifyBtn.disabled = false;
+                rejectBtn.disabled = false;
+                rejectBtn.innerHTML = originalText;
+                
+                return false;
+            }
+        }
+
+        // Handle form submission (only for order approval now)
+        document.addEventListener('submit', async (e) => {
 
             // Handle order approval form submission (existing functionality)
             if (e.target.classList.contains('approval-form-content')) {
@@ -1512,40 +1749,7 @@
             }
         });
 
-        // NEW: Reject payment function
-        async function rejectPayment(orderId, orderDbId) {
-            if (!confirm('Are you sure you want to reject this payment? This action cannot be undone.')) {
-                return;
-            }
 
-            try {
-                const rejectionReason = prompt('Please provide a reason for payment rejection:');
-                if (!rejectionReason) return;
-
-                const { error } = await supabase
-                    .from('orders')
-                    .update({
-                        status: 'pending_payment',
-                        admin_notes: `Payment rejected by admin: ${rejectionReason}`,
-                        payment_verified_at: null,
-                        payment_verified_by: null
-                    })
-                    .eq('id', orderDbId);
-
-                if (error) {
-                    throw new Error('Failed to reject payment: ' + error.message);
-                }
-
-                showSuccessNotification('Payment has been rejected. Order moved back to pending payment.');
-                await loadPaymentSubmittedOrders();
-                await loadConfirmedOrders();
-                await loadAllOrderCounts();
-
-            } catch (error) {
-                console.error('Error rejecting payment:', error);
-                alert('Error rejecting payment: ' + error.message);
-            }
-        }
 
         // Create simple order card for display-only tabs
         function createSimpleOrderCard(order, type) {
@@ -2305,7 +2509,8 @@ Thank you for choosing AutoLab! 🚗✨
 
         // Make functions globally accessible
         window.rejectOrder = rejectOrder;
-        window.rejectPayment = rejectPayment;
+        window.rejectPaymentWithWebhook = rejectPaymentWithWebhook;
+        window.verifyPaymentWithWebhook = verifyPaymentWithWebhook;
         window.toggleOrderDetails = toggleOrderDetails;
         window.deleteOrder = deleteOrder;
     </script>
