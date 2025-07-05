@@ -1158,7 +1158,7 @@
                     .from('orders')
                     .select('*, customers(name)')
                     .eq('status', 'payment_submitted')
-                    .order('payment_done_at', { ascending: false });
+                    .order('payment_verified_at', { ascending: false });
 
                 if (error) throw error;
 
@@ -1266,7 +1266,7 @@
         // NEW: Create payment verification card
         function createPaymentVerificationCard(order) {
             const customerName = order.customers ? order.customers.name : 'Unknown Customer';
-            const paymentDate = order.payment_done_at ? new Date(order.payment_done_at).toLocaleDateString('en-US', {
+            const paymentDate = order.payment_verified_at ? new Date(order.payment_verified_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
@@ -1274,8 +1274,8 @@
                 minute: '2-digit'
             }) : 'Just submitted';
 
-            const hoursWaiting = order.payment_done_at ? 
-                Math.round((new Date() - new Date(order.payment_done_at)) / (1000 * 60 * 60)) : 0;
+            const hoursWaiting = order.payment_verified_at ? 
+                Math.round((new Date() - new Date(order.payment_verified_at)) / (1000 * 60 * 60)) : 0;
 
             return `
                 <div class="order-card" id="order-card-${order.id}">
