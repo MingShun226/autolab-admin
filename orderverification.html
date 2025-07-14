@@ -2361,55 +2361,66 @@ Thank you for choosing AutoLab! 🚗✨
         }
 
         // Fetch and render order items
-        async function fetchOrderItems(orderId) {
-            const itemsContainer = document.getElementById(`product-details-container-${orderId}`);
-            try {
-                const { data: orderItems, error } = await supabase
-                    .from('order_products')
-                    .select('*, products(name, category)')
-                    .eq('order_id', orderId);
+        // Fetch and render order items
+async function fetchOrderItems(orderId) {
+    const itemsContainer = document.getElementById(`product-details-container-${orderId}`);
+    try {
+        console.log('🔍 Fetching order items for order UUID:', orderId);
+        
+        const { data: orderItems, error } = await supabase
+            .from('order_products')
+            .select('*, products(name, category)')
+            .eq('order_id', orderId);  // This should be the UUID from orders.id
 
-                if (error) throw error;
+        console.log('📦 Order items found:', orderItems);
 
-                if (!orderItems || orderItems.length === 0) {
-                    itemsContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 10px;">No products found for this order.</p>';
-                    return;
-                }
-
-                let html = `
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Category</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                orderItems.forEach(item => {
-                    html += `
-                        <tr>
-                            <td>${item.products?.name || 'Unknown Product'}</td>
-                            <td>${item.products?.category || 'N/A'}</td>
-                            <td>${item.quantity}</td>
-                            <td>RM ${parseFloat(item.unit_price || 0).toFixed(2)}</td>
-                            <td>RM ${(item.quantity * item.unit_price).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-
-                html += '</tbody></table>';
-                itemsContainer.innerHTML = html;
-
-            } catch (error) {
-                console.error('Error fetching order items:', error);
-                itemsContainer.innerHTML = `<p style="color: var(--error-color); text-align: center; padding: 10px;">Error loading products.</p>`;
-            }
+        if (error) {
+            console.error('❌ Error fetching order items:', error);
+            throw error;
         }
+
+        if (!orderItems || orderItems.length === 0) {
+            console.log('⚠️ No order items found for order UUID:', orderId);
+            itemsContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 10px;">No products found for this order.</p>';
+            return;
+        }
+
+        console.log('✅ Found', orderItems.length, 'order items');
+
+        let html = `
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        orderItems.forEach(item => {
+            html += `
+                <tr>
+                    <td>${item.products?.name || 'Unknown Product'}</td>
+                    <td>${item.products?.category || 'N/A'}</td>
+                    <td>${item.quantity}</td>
+                    <td>RM ${parseFloat(item.unit_price || 0).toFixed(2)}</td>
+                    <td>RM ${(item.quantity * item.unit_price).toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        itemsContainer.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error fetching order items:', error);
+        itemsContainer.innerHTML = `<p style="color: var(--error-color); text-align: center; padding: 10px;">Error loading products: ${error.message}</p>`;
+    }
+}
 
         // Delete order function
         async function deleteOrder(event, orderDbId, orderId) {
