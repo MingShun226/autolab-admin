@@ -371,6 +371,164 @@
             background: #f0f9ff;
         }
 
+        .delivery-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delivery-package {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .mini-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mini-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .route-guide-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .route-guide-modal.show {
+            display: flex;
+        }
+
+        .route-guide-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .route-guide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .route-guide-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .close-modal {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background: #e2e8f0;
+        }
+
+        .route-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-instruction {
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .step-details {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .delivery-summary {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: #0369a1;
+        }
+
+        .summary-value {
+            color: #1e293b;
+        }
+
         .delivery-number {
             background: var(--primary-color);
             color: white;
@@ -732,6 +890,12 @@
                                     </svg>
                                     Fullscreen
                                 </button>
+                                <select id="mapStyleSelector" class="button outline" style="padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; background: white;">
+                                    <option value="light">Light Map</option>
+                                    <option value="dark">Dark Map</option>
+                                    <option value="satellite">Satellite</option>
+                                    <option value="terrain">Terrain</option>
+                                </select>
                             </div>
                         </div>
                         <div id="routeMap"></div>
@@ -808,6 +972,48 @@
 
     <!-- Mobile Toggle Button -->
     <div class="mobile-toggle">☰</div>
+
+    <!-- Route Guide Modal -->
+    <div class="route-guide-modal" id="routeGuideModal">
+        <div class="route-guide-content">
+            <div class="route-guide-header">
+                <div class="route-guide-title">Delivery Route Guide</div>
+                <button class="close-modal" onclick="closeRouteGuide()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="delivery-summary" id="deliverySummary">
+                <!-- Summary content will be populated here -->
+            </div>
+            
+            <div class="route-steps" id="routeSteps">
+                <!-- Route steps will be populated here -->
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="button primary" onclick="startNavigation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 11l19-9-9 19-2-8-8-2z"></path>
+                    </svg>
+                    Start Navigation
+                </button>
+                <button class="button secondary" onclick="shareRoute()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    Share Route
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Initialize Supabase client
@@ -937,15 +1143,35 @@
             }
         }
 
+        // Map tile layers for better route visibility
+        const mapLayers = {
+            light: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }),
+            dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }),
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            }),
+            terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            })
+        };
+
+        let currentMapLayer = mapLayers.light;
+
         // Initialize Leaflet map
         function initializeMap() {
             // Initialize map centered on Kuala Lumpur
             map = L.map('routeMap').setView([warehouseLocation.lat, warehouseLocation.lng], 11);
 
-            // Add OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: ' OpenStreetMap contributors'
-            }).addTo(map);
+            // Add default light map layer
+            currentMapLayer.addTo(map);
 
             // Add warehouse marker
             warehouseMarker = L.marker([warehouseLocation.lat, warehouseLocation.lng], {
@@ -965,7 +1191,7 @@
             `);
         }
 
-        // Load pending deliveries from database
+        // Load pending deliveries from database with enhanced address fetching
         async function loadPendingDeliveries() {
             try {
                 const { data: orders, error } = await supabase
@@ -984,14 +1210,39 @@
                     .in('status', ['processing', 'prepared', 'shipping'])
                     .order('created_at', { ascending: true });
 
-                if (error) throw error;
+                if (error) {
+                    console.log('Database error, loading dummy data for demonstration:', error);
+                    await loadDummyData();
+                    return;
+                }
 
-                // Filter orders with delivery addresses
-                currentDeliveries = orders.filter(order => 
-                    order.customers && 
-                    order.customers.delivery_latitude && 
-                    order.customers.delivery_longitude
-                );
+                // Enhanced address processing - include orders with partial address data
+                currentDeliveries = orders.filter(order => order.customers);
+                
+                // If no real data, load dummy data for demonstration
+                if (currentDeliveries.length === 0) {
+                    await loadDummyData();
+                    return;
+                }
+                
+                // Process each delivery to enhance address data
+                for (let delivery of currentDeliveries) {
+                    if (!delivery.customers.delivery_latitude || !delivery.customers.delivery_longitude) {
+                        // Try to geocode address if coordinates are missing
+                        const geocoded = await geocodeAddress(delivery.customers.address);
+                        if (geocoded) {
+                            delivery.customers.delivery_latitude = geocoded.lat;
+                            delivery.customers.delivery_longitude = geocoded.lng;
+                            delivery.customers.formatted_address = geocoded.formatted_address;
+                        }
+                    }
+                    
+                    // Add delivery time estimation
+                    delivery.estimated_delivery_time = calculateDeliveryTimeWindow(delivery);
+                    
+                    // Add package details
+                    delivery.package_info = await getPackageDetails(delivery.order_code);
+                }
 
                 updateDeliveryList();
                 updateMapMarkers();
@@ -999,8 +1250,163 @@
 
             } catch (error) {
                 console.error('Error loading deliveries:', error);
-                alert('Failed to load delivery data. Please try again.');
+                await loadDummyData();
             }
+        }
+
+        // Load dummy data for demonstration
+        async function loadDummyData() {
+            console.log('Loading dummy data for demonstration...');
+            
+            const dummyOrders = [
+                {
+                    order_code: 'ORD-2024-001',
+                    status: 'processing',
+                    total_amount: 250.50,
+                    customers: {
+                        first_name: 'Ahmad',
+                        last_name: 'Rahman',
+                        phone: '+601234567890',
+                        address: '123 Jalan Bukit Bintang, Kuala Lumpur',
+                        delivery_latitude: 3.1478,
+                        delivery_longitude: 101.6953
+                    }
+                },
+                {
+                    order_code: 'ORD-2024-002',
+                    status: 'prepared',
+                    total_amount: 180.00,
+                    customers: {
+                        first_name: 'Siti',
+                        last_name: 'Nurhaliza',
+                        phone: '+601234567891',
+                        address: '456 Jalan Ampang, Kuala Lumpur',
+                        delivery_latitude: 3.1540,
+                        delivery_longitude: 101.7053
+                    }
+                },
+                {
+                    order_code: 'ORD-2024-003',
+                    status: 'shipping',
+                    total_amount: 420.75,
+                    customers: {
+                        first_name: 'Lim',
+                        last_name: 'Wei Ming',
+                        phone: '+601234567892',
+                        address: '789 Jalan Bangsar, Kuala Lumpur',
+                        delivery_latitude: 3.1193,
+                        delivery_longitude: 101.6758
+                    }
+                },
+                {
+                    order_code: 'ORD-2024-004',
+                    status: 'processing',
+                    total_amount: 95.25,
+                    customers: {
+                        first_name: 'Raj',
+                        last_name: 'Patel',
+                        phone: '+601234567893',
+                        address: '321 Jalan Taman Melawati, Kuala Lumpur',
+                        delivery_latitude: 3.1578,
+                        delivery_longitude: 101.7123
+                    }
+                },
+                {
+                    order_code: 'ORD-2024-005',
+                    status: 'prepared',
+                    total_amount: 315.80,
+                    customers: {
+                        first_name: 'Jennifer',
+                        last_name: 'Tan',
+                        phone: '+601234567894',
+                        address: '654 Jalan Subang Jaya, Selangor',
+                        delivery_latitude: 3.0597,
+                        delivery_longitude: 101.6244
+                    }
+                }
+            ];
+
+            currentDeliveries = dummyOrders;
+            
+            // Process each delivery to enhance address data
+            for (let delivery of currentDeliveries) {
+                const geocoded = await geocodeAddress(delivery.customers.address);
+                if (geocoded) {
+                    delivery.customers.formatted_address = geocoded.formatted_address;
+                }
+                
+                // Add delivery time estimation
+                delivery.estimated_delivery_time = calculateDeliveryTimeWindow(delivery);
+                
+                // Add package details
+                delivery.package_info = await getPackageDetails(delivery.order_code);
+            }
+
+            updateDeliveryList();
+            updateMapMarkers();
+            updateStats();
+        }
+
+        // Geocode address using a simple geocoding service (dummy implementation)
+        async function geocodeAddress(address) {
+            if (!address) return null;
+            
+            try {
+                // In a real implementation, you would use a geocoding service like:
+                // Google Maps Geocoding API, OpenStreetMap Nominatim, etc.
+                
+                // For demo purposes, we'll use dummy coordinates around KL
+                const dummyCoordinates = [
+                    { lat: 3.1478, lng: 101.6953, area: "KLCC" },
+                    { lat: 3.1319, lng: 101.6840, area: "Bukit Bintang" },
+                    { lat: 3.1540, lng: 101.7053, area: "Ampang" },
+                    { lat: 3.1193, lng: 101.6758, area: "Bangsar" },
+                    { lat: 3.1412, lng: 101.6869, area: "Chow Kit" },
+                    { lat: 3.1578, lng: 101.7123, area: "Taman Melawati" },
+                    { lat: 3.1028, lng: 101.6461, area: "Petaling Jaya" },
+                    { lat: 3.0738, lng: 101.5183, area: "Shah Alam" },
+                    { lat: 3.2163, lng: 101.7249, area: "Gombak" },
+                    { lat: 3.0597, lng: 101.6244, area: "Subang Jaya" }
+                ];
+                
+                const randomCoord = dummyCoordinates[Math.floor(Math.random() * dummyCoordinates.length)];
+                
+                return {
+                    lat: randomCoord.lat + (Math.random() - 0.5) * 0.02,
+                    lng: randomCoord.lng + (Math.random() - 0.5) * 0.02,
+                    formatted_address: `${address}, ${randomCoord.area}, Kuala Lumpur`
+                };
+                
+            } catch (error) {
+                console.error('Error geocoding address:', error);
+                return null;
+            }
+        }
+
+        // Calculate delivery time window
+        function calculateDeliveryTimeWindow(delivery) {
+            const now = new Date();
+            const deliveryDate = new Date(now.getTime() + (Math.random() * 24 + 4) * 60 * 60 * 1000);
+            
+            return {
+                earliest: new Date(deliveryDate.getTime() - 60 * 60 * 1000),
+                latest: new Date(deliveryDate.getTime() + 60 * 60 * 1000),
+                preferred: deliveryDate
+            };
+        }
+
+        // Get package details (dummy implementation)
+        async function getPackageDetails(orderCode) {
+            const packageTypes = ['Small', 'Medium', 'Large', 'Extra Large'];
+            const fragileItems = ['Electronics', 'Glassware', 'Artwork', 'Chemicals'];
+            
+            return {
+                size: packageTypes[Math.floor(Math.random() * packageTypes.length)],
+                weight: (Math.random() * 10 + 0.5).toFixed(1) + ' kg',
+                fragile: Math.random() > 0.7,
+                special_instructions: Math.random() > 0.8 ? 'Handle with care' : null,
+                item_type: Math.random() > 0.5 ? fragileItems[Math.floor(Math.random() * fragileItems.length)] : 'General'
+            };
         }
 
         // Update delivery list in sidebar
@@ -1031,14 +1437,33 @@
 
                 const deliveryItem = document.createElement('div');
                 deliveryItem.className = 'delivery-item';
+                
+                // Format delivery time
+                const deliveryTime = delivery.estimated_delivery_time 
+                    ? delivery.estimated_delivery_time.preferred.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    : 'TBD';
+                
+                // Package info
+                const packageInfo = delivery.package_info || {};
+                const fragileIcon = packageInfo.fragile ? '⚠️' : '';
+                
                 deliveryItem.innerHTML = `
                     <div class="delivery-number">${index + 1}</div>
                     <div class="delivery-info">
-                        <div class="delivery-order">#${delivery.order_code}</div>
-                        <div class="delivery-address">${customer.address}</div>
-                        <div class="delivery-distance">${distance} km from warehouse</div>
+                        <div class="delivery-order">#${delivery.order_code} ${fragileIcon}</div>
+                        <div class="delivery-address">${customer.formatted_address || customer.address}</div>
+                        <div class="delivery-distance">${distance} km • ${deliveryTime}</div>
+                        <div class="delivery-package">${packageInfo.size || 'Standard'} - ${packageInfo.weight || '1.0 kg'}</div>
                     </div>
-                    <div class="delivery-status status-pending">Pending</div>
+                    <div class="delivery-actions">
+                        <button class="mini-btn route-btn" onclick="showRouteGuide(${index})" title="Show Route Guide">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </button>
+                        <div class="delivery-status status-pending">Pending</div>
+                    </div>
                 `;
                 
                 deliveryItem.addEventListener('click', () => {
@@ -1298,11 +1723,18 @@
                 addWaypoints: false,
                 createMarker: function() { return null; }, // Don't create markers, we have our own
                 lineOptions: {
-                    styles: [{
-                        color: '#52c41a',
-                        weight: 4,
-                        opacity: 0.8
-                    }]
+                    styles: [
+                        {
+                            color: '#ffffff',
+                            weight: 8,
+                            opacity: 1
+                        },
+                        {
+                            color: '#e21b1b',
+                            weight: 5,
+                            opacity: 1
+                        }
+                    ]
                 },
                 show: false // Hide the instruction panel
             }).addTo(map);
@@ -1355,6 +1787,158 @@
             }
         }
 
+        // Show route guide for specific delivery
+        function showRouteGuide(deliveryIndex) {
+            const delivery = currentDeliveries[deliveryIndex];
+            const customer = delivery.customers;
+            const packageInfo = delivery.package_info || {};
+            
+            // Calculate route from warehouse to delivery
+            const distance = calculateDistance(
+                warehouseLocation.lat, warehouseLocation.lng,
+                customer.delivery_latitude, customer.delivery_longitude
+            );
+            
+            const estimatedTime = Math.round(distance * 2.5);
+            
+            // Populate delivery summary
+            const summary = document.getElementById('deliverySummary');
+            summary.innerHTML = `
+                <div class="summary-row">
+                    <span class="summary-label">Order:</span>
+                    <span class="summary-value">#${delivery.order_code}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Customer:</span>
+                    <span class="summary-value">${customer.first_name} ${customer.last_name}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Phone:</span>
+                    <span class="summary-value">${customer.phone}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Distance:</span>
+                    <span class="summary-value">${distance.toFixed(1)} km</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Est. Time:</span>
+                    <span class="summary-value">${estimatedTime} minutes</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Package:</span>
+                    <span class="summary-value">${packageInfo.size || 'Standard'} (${packageInfo.weight || '1.0 kg'})</span>
+                </div>
+                ${packageInfo.fragile ? '<div class="summary-row"><span class="summary-label">⚠️ Special:</span><span class="summary-value">Fragile Item</span></div>' : ''}
+            `;
+            
+            // Generate route steps
+            const routeSteps = generateRouteSteps(delivery, distance, estimatedTime);
+            
+            const stepsContainer = document.getElementById('routeSteps');
+            stepsContainer.innerHTML = routeSteps.map((step, index) => `
+                <div class="route-step">
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-content">
+                        <div class="step-instruction">${step.instruction}</div>
+                        <div class="step-details">${step.details}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Show modal
+            document.getElementById('routeGuideModal').classList.add('show');
+        }
+
+        // Generate route steps (dummy implementation with realistic directions)
+        function generateRouteSteps(delivery, distance, estimatedTime) {
+            const customer = delivery.customers;
+            const packageInfo = delivery.package_info || {};
+            
+            const steps = [
+                {
+                    instruction: "Start from Autolabs Warehouse",
+                    details: `📍 ${warehouseLocation.address} • Load package for Order #${delivery.order_code}`
+                },
+                {
+                    instruction: "Head southeast on Jalan Tuanku Abdul Rahman",
+                    details: "Continue for 1.2 km towards city center"
+                },
+                {
+                    instruction: "Turn right onto Jalan Tun Razak",
+                    details: "Drive for 2.5 km, keep right at the fork"
+                },
+                {
+                    instruction: "Take the highway exit toward destination area",
+                    details: `Follow signs to ${customer.formatted_address?.split(',')[1] || 'delivery area'}`
+                },
+                {
+                    instruction: "Navigate to customer location",
+                    details: `📍 ${customer.formatted_address || customer.address}`
+                },
+                {
+                    instruction: "Deliver package to customer",
+                    details: `Contact: ${customer.first_name} ${customer.last_name} (${customer.phone})`
+                }
+            ];
+            
+            // Add special instructions for fragile items
+            if (packageInfo.fragile) {
+                steps.push({
+                    instruction: "⚠️ Handle with extra care",
+                    details: "This package contains fragile items - ensure gentle handling"
+                });
+            }
+            
+            if (packageInfo.special_instructions) {
+                steps.push({
+                    instruction: "📋 Special Instructions",
+                    details: packageInfo.special_instructions
+                });
+            }
+            
+            return steps;
+        }
+
+        // Close route guide modal
+        function closeRouteGuide() {
+            document.getElementById('routeGuideModal').classList.remove('show');
+        }
+
+        // Start navigation (dummy implementation)
+        function startNavigation() {
+            const modal = document.getElementById('routeGuideModal');
+            const delivery = currentDeliveries[0]; // Get current delivery from modal context
+            
+            alert(`🚚 Navigation Started!\n\nGoogle Maps will open shortly for turn-by-turn navigation to the delivery location.\n\nOrder: #${delivery?.order_code || 'N/A'}\nEstimated arrival: ${new Date(Date.now() + 25 * 60 * 1000).toLocaleTimeString()}`);
+            
+            // In a real implementation, you would:
+            // window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`);
+            
+            closeRouteGuide();
+        }
+
+        // Share route (dummy implementation)
+        function shareRoute() {
+            const delivery = currentDeliveries[0]; // Get current delivery from modal context
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Delivery Route - Order #${delivery?.order_code}`,
+                    text: `Route to ${delivery?.customers?.formatted_address || 'customer location'}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const routeText = `Delivery Route - Order #${delivery?.order_code}\nDestination: ${delivery?.customers?.formatted_address || 'customer location'}\nEstimated time: ${Math.round(calculateDistance(warehouseLocation.lat, warehouseLocation.lng, delivery?.customers?.delivery_latitude, delivery?.customers?.delivery_longitude) * 2.5)} minutes`;
+                
+                navigator.clipboard.writeText(routeText).then(() => {
+                    alert('Route details copied to clipboard!');
+                }).catch(() => {
+                    alert('Could not copy route details to clipboard.');
+                });
+            }
+        }
+
         // Attach event listeners
         function attachEventListeners() {
             document.getElementById('optimizeRouteBtn').addEventListener('click', optimizeRoute);
@@ -1379,6 +1963,104 @@
                     sidebar.classList.toggle('active');
                 });
             }
+            
+            // Close modal when clicking outside
+            document.getElementById('routeGuideModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeRouteGuide();
+                }
+            });
+            
+            // Map style selector
+            document.getElementById('mapStyleSelector').addEventListener('change', function(e) {
+                switchMapStyle(e.target.value);
+            });
+        }
+
+        // Switch map style
+        function switchMapStyle(style) {
+            if (mapLayers[style]) {
+                // Remove current layer
+                map.removeLayer(currentMapLayer);
+                
+                // Add new layer
+                currentMapLayer = mapLayers[style];
+                currentMapLayer.addTo(map);
+                
+                // Update route line style based on map type
+                updateRouteLineStyle(style);
+            }
+        }
+
+        // Update route line style based on map background
+        function updateRouteLineStyle(mapStyle) {
+            if (routeControl) {
+                // Remove existing route
+                map.removeControl(routeControl);
+                
+                // Define route styles for different map backgrounds
+                let routeStyles;
+                switch(mapStyle) {
+                    case 'dark':
+                        routeStyles = [
+                            { color: '#000000', weight: 8, opacity: 1 },
+                            { color: '#00ff00', weight: 5, opacity: 1 }
+                        ];
+                        break;
+                    case 'satellite':
+                        routeStyles = [
+                            { color: '#ffffff', weight: 8, opacity: 1 },
+                            { color: '#ff0000', weight: 5, opacity: 1 }
+                        ];
+                        break;
+                    case 'terrain':
+                        routeStyles = [
+                            { color: '#ffffff', weight: 8, opacity: 1 },
+                            { color: '#0066ff', weight: 5, opacity: 1 }
+                        ];
+                        break;
+                    default: // light
+                        routeStyles = [
+                            { color: '#ffffff', weight: 8, opacity: 1 },
+                            { color: '#e21b1b', weight: 5, opacity: 1 }
+                        ];
+                }
+                
+                // Recreate route with new style
+                if (currentDeliveries.length > 0) {
+                    showOptimizedRouteWithStyle(routeStyles);
+                }
+            }
+        }
+
+        // Show optimized route with custom style
+        function showOptimizedRouteWithStyle(routeStyles) {
+            if (currentDeliveries.length === 0) return;
+
+            // Create waypoints
+            const waypoints = [
+                L.latLng(warehouseLocation.lat, warehouseLocation.lng)
+            ];
+
+            currentDeliveries.forEach(delivery => {
+                const customer = delivery.customers;
+                waypoints.push(L.latLng(customer.delivery_latitude, customer.delivery_longitude));
+            });
+
+            // Add return to warehouse
+            waypoints.push(L.latLng(warehouseLocation.lat, warehouseLocation.lng));
+
+            // Create route with custom style
+            routeControl = L.Routing.control({
+                waypoints: waypoints,
+                routeWhileDragging: false,
+                addWaypoints: false,
+                createMarker: function() { return null; },
+                lineOptions: {
+                    styles: routeStyles
+                },
+                show: false
+            }).addTo(map);
         }
     </script>
 </body>

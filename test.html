@@ -3,580 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Table with Expandable Rows</title>
+    <title>🚀 Auto-Migrate Images: Google Drive → Supabase</title>
     <style>
-        :root {
-            --primary-color: #52c41a;
-            --secondary-color: #1890ff;
-            --tertiary-color: #fa8c16;
-            --success-color: #52c41a;
-            --warning-color: #faad14;
-            --error-color: #f5222d;
-            --info-color: #1890ff;
-            --background-color: #f0f2f5;
-            --text-color: #333;
-            --text-light: #666;
-            --border-radius: 4px;
-            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
         body {
-            background-color: var(--background-color);
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
             margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--box-shadow);
             padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
-        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
         h1 {
-            margin-bottom: 20px;
-            color: var(--text-color);
-        }
-        
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-        }
-        
-        .order-table th {
-            background-color: #f0f0f0;
-            text-align: left;
-            padding: 12px 16px;
-            font-weight: 500;
-            color: var(--text-color);
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .order-table td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e8e8e8;
-            vertical-align: middle;
-        }
-        
-        .order-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .customer-row {
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .customer-row:hover {
-            background-color: rgba(0, 0, 0, 0.02);
-        }
-        
-        .customer-row.expanded {
-            background-color: #f6ffed;
-        }
-        
-        .customer-name {
-            font-weight: 500;
-            color: var(--secondary-color);
-        }
-        
-        .address-cell {
-            max-width: 250px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .expand-button {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
+            color: #333;
             text-align: center;
-            line-height: 24px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            color: var(--text-color);
-            cursor: pointer;
-            margin-right: 12px;
-            font-size: 12px;
-            transition: all 0.3s;
+            margin-bottom: 30px;
+            font-size: 2.5em;
         }
-        
-        .expanded .expand-button {
-            background-color: var(--primary-color);
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transform: rotate(180deg);
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .status-new {
-            background-color: #e6f7ff;
-            color: #1890ff;
-        }
-        
-        .status-active {
-            background-color: #f6ffed;
-            color: #52c41a;
-        }
-        
-        .status-vip {
-            background-color: #fff2e8;
-            color: #fa541c;
-        }
-        
-        .status-inactive {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
-        
-        .action-button {
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-right: 5px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
         }
-        
-        .action-button.edit {
-            background-color: #f5f5f5;
-            color: #555;
-            border: none;
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
-        
-        .action-button.delete {
-            background-color: #fff1f0;
-            color: #f5222d;
-            border: none;
+        .button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
-        
-        .action-button.edit:hover {
-            background-color: #e5e5e5;
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 20px 0;
         }
-        
-        .action-button.delete:hover {
-            background-color: #ffccc7;
+        .progress {
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
         }
-        
-        .action-buttons {
+        .progress-bar {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
             display: flex;
-            gap: 4px;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
         }
-        
-        /* Customer Detail Section */
-        .customer-detail-section {
-            display: none;
-            padding: 0;
-            border-bottom: 1px solid #f0f0f0;
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
         }
-        
-        .customer-detail-section.visible {
-            display: table-row;
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
         }
-        
-        .customer-detail-content {
-            padding: 24px;
-            background-color: #f9f9f9;
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
-        
-        .order-history-heading {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .inner-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        .inner-table th {
-            background-color: #f0f0f0;
-            text-align: left;
-            padding: 12px 16px;
-            font-weight: 500;
-            color: var(--text-color);
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .inner-table td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e8e8e8;
-        }
-        
-        .inner-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .inner-table .status-badge {
-            margin-right: 0;
-        }
-
-        .product-details-table {
-            margin-left: 20px;
-            width: calc(100% - 20px);
-            border-collapse: collapse;
-        }
-
-        .product-details-table td {
-            padding: 8px 12px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .product-details-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .entity-link {
-            color: var(--secondary-color);
-            text-decoration: none;
-            position: relative;
-            z-index: 5;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .entity-link:hover {
-            text-decoration: underline;
-            color: #096dd9;
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Customer Information</h1>
-        
-        <table class="order-table" id="customer-table">
-            <thead>
-                <tr>
-                    <th style="width: 40px;"></th>
-                    <th>Customer Name</th>
-                    <th>Contact</th>
-                    <th>Address</th>
-                    <th>Join Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Customer 1 -->
-                <tr class="customer-row" data-customer="CS-2023-001">
-                    <td>
-                        <span class="expand-button">▼</span>
-                    </td>
-                    <td class="customer-name">John Smith</td>
-                    <td>+1 212-555-1234<br>john.smith@example.com</td>
-                    <td class="address-cell">123 Main St, New York, NY 10001</td>
-                    <td>2023-01-15</td>
-                    <td><span class="status-badge status-active">Active</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="#" class="action-button edit" onclick="event.stopPropagation()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                Edit
-                            </a>
-                            <a href="#" class="action-button delete" onclick="event.stopPropagation()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                                Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <!-- Customer 1's Order History (Expanded Section) -->
-                <tr class="customer-detail-section" id="detail-CS-2023-001">
-                    <td colspan="7">
-                        <div class="customer-detail-content">
-                            <!-- Order History Section -->
-                            <div class="order-history-heading">Order History</div>
-                            <table class="inner-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order Code</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><a href="#" class="entity-link">ORD-2023-1242</a></td>
-                                        <td>2023-04-15</td>
-                                        <td><span class="status-badge shipped">Shipped</span></td>
-                                        <td>RM450.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <table class="product-details-table">
-                                                <tbody>
-                                                    <tr>
-                                                        <td><a href="#" class="entity-link">PROD-A567</a></td>
-                                                        <td>NinjaShades PLUS <strong>PROTON S70</strong> 2023-2025 [6PCS/SET] Magnetic Car Sunshades PREMIUM Quality</td>
-                                                        <td>2 x RM225.00</td>
-                                                        <td>RM450.00</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><a href="#" class="entity-link">ORD-2023-1056</a></td>
-                                        <td>2023-03-22</td>
-                                        <td><span class="status-badge delivered">Delivered</span></td>
-                                        <td>RM250.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <table class="product-details-table">
-                                                <tbody>
-                                                    <tr>
-                                                        <td><a href="#" class="entity-link">PROD-B789</a></td>
-                                                        <td><strong>Honda Civic FB</strong> 2012-2015 - 9 inch Casing Android with Power Socket Canbus</td>
-                                                        <td>1 x RM250.00</td>
-                                                        <td>RM250.00</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
+        <h1>🚀 Auto-Migrate Images</h1>
+        <p style="text-align: center; font-size: 1.2em; color: #666;">
+            Automatically download images from Google Drive and upload to Supabase Storage
+        </p>
 
-                <!-- Customer 2 -->
-                <tr class="customer-row" data-customer="CS-2023-002">
-                    <td>
-                        <span class="expand-button">▼</span>
-                    </td>
-                    <td class="customer-name">Sarah Johnson</td>
-                    <td>+1 312-555-6789<br>sarah.j@example.com</td>
-                    <td class="address-cell">456 Oak Ave, Chicago, IL 60007</td>
-                    <td>2023-02-10</td>
-                    <td><span class="status-badge status-new">New</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="#" class="action-button edit" onclick="event.stopPropagation()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                Edit
-                            </a>
-                            <a href="#" class="action-button delete" onclick="event.stopPropagation()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                                Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <!-- Customer 2's Order History (Expanded Section) -->
-                <tr class="customer-detail-section" id="detail-CS-2023-002">
-                    <td colspan="7">
-                        <div class="customer-detail-content">
-                            <!-- Order History Section -->
-                            <div class="order-history-heading">Order History</div>
-                            <table class="inner-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order Code</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><a href="#" class="entity-link">ORD-2023-1241</a></td>
-                                        <td>2023-04-10</td>
-                                        <td><span class="status-badge processing">Processing</span></td>
-                                        <td>RM215.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <table class="product-details-table">
-                                                <tbody>
-                                                    <tr>
-                                                        <td><a href="#" class="entity-link">PROD-B892</a></td>
-                                                        <td>NinjaShades PLUS <strong>HONDA CIVIC FB</strong> 2012-2015 [4PCS/SET] Magnetic Car Sunshades PREMIUM Quality</td>
-                                                        <td>1 x RM125.00</td>
-                                                        <td>RM125.00</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><a href="#" class="entity-link">PROD-C234</a></td>
-                                                        <td><strong>Honda Civic FB</strong> 2012-2015 - 9 inch Casing Android with Power Socket Canbus</td>
-                                                        <td>1 x RM90.00</td>
-                                                        <td>RM90.00</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
+        <div class="step">
+            <h3>📊 Migration Statistics</h3>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">Total Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="migratedCount">0</div>
+                    <div class="stat-label">Migrated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="failedCount">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="remainingCount">0</div>
+                    <div class="stat-label">Remaining</div>
+                </div>
+            </div>
+        </div>
 
-                <!-- Customer 3 -->
-                <tr class="customer-row" data-customer="CS-2023-003">
-                    <td>
-                        <span class="expand-button">▼</span>
-                    </td>
-                    <td class="customer-name">Wong Xin Jie</td>
-                    <td>+65 9555-8765<br>wong.xj@example.com</td>
-                    <td class="address-cell">789 Supply Chain Rd, #10-04, Singapore 345678</td>
-                    <td>2023-03-05</td>
-                    <td><span class="status-badge status-vip">VIP</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="#" class="action-button edit" onclick="event.stopPropagation()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                Edit
-                            </a>
-                            <a href="#" class="action-button delete" onclick="event.stopPropagation()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                                Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <!-- Customer 3's Order History (Expanded Section) -->
-                <tr class="customer-detail-section" id="detail-CS-2023-003">
-                    <td colspan="7">
-                        <div class="customer-detail-content">
-                            <!-- Order History Section -->
-                            <div class="order-history-heading">Order History</div>
-                            <table class="inner-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order Code</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><a href="#" class="entity-link">ORD-2023-1240</a></td>
-                                        <td>2023-04-05</td>
-                                        <td><span class="status-badge prepared">Prepared</span></td>
-                                        <td>RM150.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <table class="product-details-table">
-                                                <tbody>
-                                                    <tr>
-                                                        <td><a href="#" class="entity-link">PROD-C321</a></td>
-                                                        <td>All-New <strong>Toyota Vios</strong> 2023-Present- 12.3 inch BBA Casing Android with Socket Canbus</td>
-                                                        <td>1 x RM150.00</td>
-                                                        <td>RM150.00</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="step">
+            <h3>🎯 Migration Controls</h3>
+            <button id="fetchProducts" class="button">1. Fetch Products with Google Drive Images</button>
+            <button id="startMigration" class="button" disabled>2. Start Auto-Migration</button>
+            <button id="updateDatabase" class="button" disabled>3. Update Database URLs</button>
+            <button id="testImages" class="button" disabled>4. Test All Images</button>
+        </div>
+
+        <div class="step">
+            <h3>📈 Progress</h3>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>📋 Migration Log</h3>
+            <div id="log" class="log"></div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Toggle customer row expansion
-            const customerRows = document.querySelectorAll('.customer-row');
+        // Supabase configuration
+        const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Migration state
+        let products = [];
+        let migratedProducts = [];
+        let failedProducts = [];
+        
+        // DOM elements
+        const log = document.getElementById('log');
+        const progressBar = document.getElementById('progressBar');
+        const totalProductsEl = document.getElementById('totalProducts');
+        const migratedCountEl = document.getElementById('migratedCount');
+        const failedCountEl = document.getElementById('failedCount');
+        const remainingCountEl = document.getElementById('remainingCount');
+
+        // Logging function
+        function logMessage(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = type;
+            logEntry.innerHTML = `<span style="opacity: 0.7;">[${timestamp}]</span> ${message}`;
+            log.appendChild(logEntry);
+            log.scrollTop = log.scrollHeight;
+            console.log(`[${type}] ${message}`);
+        }
+
+        // Update statistics
+        function updateStats() {
+            totalProductsEl.textContent = products.length;
+            migratedCountEl.textContent = migratedProducts.length;
+            failedCountEl.textContent = failedProducts.length;
+            remainingCountEl.textContent = products.length - migratedProducts.length - failedProducts.length;
             
-            customerRows.forEach(row => {
-                row.addEventListener('click', function() {
-                    const customerId = this.getAttribute('data-customer');
-                    const detailSection = document.getElementById('detail-' + customerId);
-                    
-                    // Toggle expanded class
-                    this.classList.toggle('expanded');
-                    
-                    // Toggle visibility of the detail section
-                    if (detailSection) {
-                        detailSection.classList.toggle('visible');
-                    }
-                    
-                    // Update the expand button appearance
-                    const expandButton = this.querySelector('.expand-button');
-                    if (this.classList.contains('expanded')) {
-                        expandButton.style.transform = 'rotate(180deg)';
-                        expandButton.style.backgroundColor = 'var(--primary-color)';
-                        expandButton.style.color = 'white';
-                    } else {
-                        expandButton.style.transform = 'rotate(0deg)';
-                        expandButton.style.backgroundColor = '#f0f0f0';
-                        expandButton.style.color = 'var(--text-color)';
-                    }
-                });
-            });
+            const progress = products.length > 0 ? 
+                ((migratedProducts.length + failedProducts.length) / products.length * 100).toFixed(1) : 0;
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+        }
+
+        // Extract Google Drive file ID
+        function extractGoogleDriveId(url) {
+            if (!url) return null;
+            const patterns = [
+                /\/file\/d\/([a-zA-Z0-9_-]+)/,
+                /[?&]id=([^&]+)/,
+                /uc\?.*id=([^&]+)/
+            ];
             
-            // Expand button click handler - to ensure clicking the button specifically works well
-            const expandButtons = document.querySelectorAll('.expand-button');
-            expandButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent row click event from also firing
-                    
-                    const row = this.closest('.customer-row');
-                    row.click(); // Manually trigger the row click event
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        // Convert image to blob
+        async function downloadImageFromGoogleDrive(imageUrl) {
+            try {
+                const fileId = extractGoogleDriveId(imageUrl);
+                if (!fileId) throw new Error('Could not extract file ID');
+                
+                const downloadUrl = `https://drive.google.com/uc?id=${fileId}`;
+                const response = await fetch(downloadUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const blob = await response.blob();
+                return blob;
+            } catch (error) {
+                throw new Error(`Download failed: ${error.message}`);
+            }
+        }
+
+        // Upload to Supabase Storage
+        async function uploadToSupabaseStorage(blob, filename) {
+            try {
+                const { data, error } = await supabase.storage
+                    .from('product-images')
+                    .upload(filename, blob, {
+                        cacheControl: '3600',
+                        upsert: true,
+                        contentType: blob.type
+                    });
+                
+                if (error) throw error;
+                
+                const { data: urlData } = supabase.storage
+                    .from('product-images')
+                    .getPublicUrl(filename);
+                
+                return urlData.publicUrl;
+            } catch (error) {
+                throw new Error(`Upload failed: ${error.message}`);
+            }
+        }
+
+        // Update database with new URL
+        async function updateProductImageUrl(productId, newUrl, originalUrl) {
+            try {
+                const { error } = await supabase
+                    .from('products')
+                    .update({ 
+                        image_url: newUrl,
+                        source_image_url: originalUrl
+                    })
+                    .eq('id', productId);
+                
+                if (error) throw error;
+                return true;
+            } catch (error) {
+                throw new Error(`Database update failed: ${error.message}`);
+            }
+        }
+
+        // Fetch products with Google Drive images
+        document.getElementById('fetchProducts').addEventListener('click', async function() {
+            this.disabled = true;
+            logMessage('🔍 Fetching products with Google Drive images...', 'info');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('id, product_id, name, image_url')
+                    .like('image_url', '%drive.google.com%');
+                
+                if (error) throw error;
+                
+                products = data || [];
+                logMessage(`✅ Found ${products.length} products with Google Drive images`, 'success');
+                
+                // Show sample of products
+                products.slice(0, 5).forEach(product => {
+                    logMessage(`📦 ${product.name} (${product.product_id})`, 'info');
                 });
-            });
+                
+                if (products.length > 5) {
+                    logMessage(`... and ${products.length - 5} more products`, 'info');
+                }
+                
+                updateStats();
+                document.getElementById('startMigration').disabled = false;
+                
+            } catch (error) {
+                logMessage(`❌ Error fetching products: ${error.message}`, 'error');
+            }
+            
+            this.disabled = false;
         });
+
+        // Start migration
+        document.getElementById('startMigration').addEventListener('click', async function() {
+            if (products.length === 0) {
+                logMessage('❌ No products to migrate. Fetch products first.', 'error');
+                return;
+            }
+            
+            this.disabled = true;
+            logMessage(`🚀 Starting migration of ${products.length} products...`, 'info');
+            
+            for (let i = 0; i < products.length; i++) {
+                const product = products[i];
+                
+                try {
+                    logMessage(`📥 [${i+1}/${products.length}] Processing: ${product.name}`, 'info');
+                    
+                    // Download from Google Drive
+                    const imageBlob = await downloadImageFromGoogleDrive(product.image_url);
+                    
+                    // Generate filename
+                    const extension = imageBlob.type.includes('png') ? 'png' : 'jpg';
+                    const filename = `${product.product_id}.${extension}`;
+                    
+                    // Upload to Supabase Storage
+                    const supabaseUrl = await uploadToSupabaseStorage(imageBlob, filename);
+                    
+                    // Update database
+                    await updateProductImageUrl(product.id, supabaseUrl, product.image_url);
+                    
+                    migratedProducts.push({
+                        ...product,
+                        newUrl: supabaseUrl,
+                        filename: filename
+                    });
+                    
+                    logMessage(`✅ Successfully migrated: ${product.name}`, 'success');
+                    logMessage(`🔗 New URL: ${supabaseUrl}`, 'info');
+                    
+                } catch (error) {
+                    failedProducts.push({
+                        ...product,
+                        error: error.message
+                    });
+                    logMessage(`❌ Failed to migrate ${product.name}: ${error.message}`, 'error');
+                }
+                
+                updateStats();
+                
+                // Small delay to avoid rate limits
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            logMessage(`🎉 Migration completed!`, 'success');
+            logMessage(`✅ Successfully migrated: ${migratedProducts.length}`, 'success');
+            logMessage(`❌ Failed migrations: ${failedProducts.length}`, failedProducts.length > 0 ? 'warning' : 'success');
+            
+            document.getElementById('updateDatabase').disabled = false;
+            document.getElementById('testImages').disabled = false;
+            this.disabled = false;
+        });
+
+        // Test all migrated images
+        document.getElementById('testImages').addEventListener('click', async function() {
+            logMessage('🧪 Testing all migrated images...', 'info');
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const product of migratedProducts) {
+                try {
+                    const response = await fetch(product.newUrl, { method: 'HEAD' });
+                    if (response.ok) {
+                        successCount++;
+                        logMessage(`✅ ${product.name}: Image loads correctly`, 'success');
+                    } else {
+                        failCount++;
+                        logMessage(`❌ ${product.name}: HTTP ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    failCount++;
+                    logMessage(`❌ ${product.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            logMessage(`🧪 Test complete: ${successCount} working, ${failCount} failed`, 
+                failCount === 0 ? 'success' : 'warning');
+        });
+
+        // Initial setup
+        logMessage('🔧 Auto-Migration Tool Ready', 'success');
+        logMessage('📌 Click "Fetch Products" to start the migration process', 'info');
+        updateStats();
     </script>
 </body>
 </html>
