@@ -640,6 +640,19 @@
                     <div class="nav-text">Route Management</div>
                 </a>
                 
+                <a href="debt-management.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <path d="M7 8h10M7 12h10"></path>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Merchant Debt Management</div>
+                </a>
+                
                 <a href="customer.html" class="nav-item">
                     <div class="nav-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1130,17 +1143,49 @@
         document.addEventListener('DOMContentLoaded', initCharts);
         const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                storage: window.localStorage,
+                autoRefreshToken: true,
+                detectSessionInUrl: false
+            }
+        });
 
         // Check if user is authenticated
         async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                // Redirect to login if not authenticated
-                window.location.href = 'admin-login.html';
+            try {
+                // First check localStorage for existing user data
+                const userStr = localStorage.getItem('currentUser');
+                if (userStr) {
+                    const storedUser = JSON.parse(userStr);
+                    console.log('✅ Found user in localStorage:', storedUser.email || storedUser.phone);
+                    // Continue with page execution
+                    return storedUser;
+                } else {
+                    // If no localStorage, try Supabase auth
+                    console.log('🔍 No localStorage found, checking Supabase auth...');
+                    const { data: { user }, error } = await supabase.auth.getUser();
+                    
+                    if (error) {
+                        console.log('⚠️ Supabase auth error:', error.message);
+                        // Don't immediately redirect on auth error, could be temporary
+                        return null;
+                    }
+                    
+                    if (!user) {
+                        console.log('❌ No user found in Supabase auth, redirecting to login');
+                        window.location.href = 'admin-login.html';
+                        return null;
+                    }
+                    
+                    console.log('✅ User found in Supabase auth, should refresh localStorage');
+                    return user;
+                }
+            } catch (err) {
+                console.error('Authentication check failed:', err);
                 return null;
             }
-            return user;
         }
 
         // Get user details from database
@@ -1179,8 +1224,8 @@
                 console.error('Error signing out:', error);
                 alert('Error signing out. Please try again.');
             } else {
-                // Clear session storage
-                sessionStorage.removeItem('currentUser');
+                // Clear local storage
+                localStorage.removeItem('currentUser');
 
                 // Redirect to login page
                 window.location.href = 'admin-login.html';

@@ -235,7 +235,14 @@
         // Initialize Supabase client
 const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+    auth: {
+        persistSession: true,
+        storage: window.localStorage,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
+    }
+});
 
 // Check if user is already logged in
 window.addEventListener('load', async function () {
@@ -249,8 +256,8 @@ window.addEventListener('load', async function () {
             .single();
 
         if (staffData) {
-            // Store staff info in session with consistent structure
-            sessionStorage.setItem('currentUser', JSON.stringify({
+            // Store staff info in localStorage with consistent structure
+            localStorage.setItem('currentUser', JSON.stringify({
                 id: user.id,
                 phone: staffData.phone,
                 email: staffData.email,  // Now properly available from database
@@ -335,8 +342,8 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                     .update({ is_online: true })
                     .eq('id', user.id);
 
-                // Store staff info in session with consistent structure
-                sessionStorage.setItem('currentUser', JSON.stringify({
+                // Store staff info in localStorage with consistent structure
+                localStorage.setItem('currentUser', JSON.stringify({
                     id: user.id,
                     phone: staffData.phone,
                     email: staffData.email,  // Now properly available from database

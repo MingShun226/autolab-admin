@@ -660,8 +660,9 @@
 
 <body>
     <div class="layout">
-        <!-- Sidebar Menu -->
-        <div class="sidebar">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <!-- Logo -->
             <div class="logo-container">
                 <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -681,8 +682,9 @@
                             <rect x="3" y="14" width="7" height="7"></rect>
                         </svg>
                     </div>
-                    <div class="nav-text">Admin Dashboard</div>
+                    <div class="nav-text">Dashboard</div>
                 </a>
+
                 <a href="order.html" class="nav-item">
                     <div class="nav-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -691,9 +693,10 @@
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                         </svg>
                     </div>
-                    <div class="nav-text">Order Page</div>
+                    <div class="nav-text">Order Management</div>
                 </a>
-                <a href="orderverification.html" class="nav-item sub-item">
+
+                <a href="orderverification.html" class="nav-item">
                     <div class="nav-icon sub-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -701,19 +704,20 @@
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
                         </svg>
                     </div>
-                    <div class="nav-text">Orders Verification</div>
+                    <div class="nav-text">Order Verification</div>
                 </a>
-                <a href="orderwarehouse.html" class="nav-item sub-item active">
+
+                <a href="orderwarehouse.html" class="nav-item active">
                     <div class="nav-icon sub-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 12h-6l-2 3h-4l-2-3H2"></path>
                             <path
-                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z">
+                                d="m1.02 9.7c1.4-2.29 3.33-4.08 5.5-5.05C8.41 3.77 10.44 3.4 12.5 3.4c2.12 0 4.16.4 6.02 1.26 2.17.97 4.1 2.76 5.5 5.05">
                             </path>
                         </svg>
                     </div>
-                    <div class="nav-text">Warehouse Operations</div>
+                    <div class="nav-text">Order Warehouse</div>
                 </a>
 
                 <a href="stock.html" class="nav-item">
@@ -723,11 +727,11 @@
                             <path
                                 d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
                             </path>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
                             <line x1="12" y1="22.08" x2="12" y2="12"></line>
                         </svg>
                     </div>
-                    <div class="nav-text">Inventory Page</div>
+                    <div class="nav-text">Inventory Stock</div>
                 </a>
 
                 <a href="routemanagement.html" class="nav-item">
@@ -741,16 +745,27 @@
                     <div class="nav-text">Route Management</div>
                 </a>
 
+                <a href="debt-management.html" class="nav-item">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <path d="M7 8h10M7 12h10"></path>
+                        </svg>
+                    </div>
+                    <div class="nav-text">Debt Management</div>
+                </a>
+
                 <a href="customer.html" class="nav-item">
                     <div class="nav-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
-                            </path>
-                            <circle cx="12" cy="7" r="4"></circle>
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <div class="nav-text">Customer Page</div>
+                    <div class="nav-text">Customer</div>
                 </a>
 
                 <a href="staff.html" class="nav-item">
@@ -761,7 +776,7 @@
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </div>
-                    <div class="nav-text">Staff Page</div>
+                    <div class="nav-text">Staff</div>
                 </a>
 
                 <a href="reports.html" class="nav-item">
@@ -773,34 +788,10 @@
                             <line x1="6" y1="20" x2="6" y2="14"></line>
                         </svg>
                     </div>
-                    <div class="nav-text">Reports Page</div>
-                </a>
-                <a href="communication center page.html" class="nav-item">
-                    <div class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="nav-text">Communication Center</div>
-                </a>
-
-                <a href="#" class="nav-item">
-                    <div class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path
-                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="nav-text">Settings Page</div>
+                    <div class="nav-text">Reports</div>
                 </a>
             </div>
-        </div>
+        </nav>
 
         <div class="main-content">
             <!-- Header -->
@@ -879,7 +870,14 @@
         // Supabase Configuration
         const supabaseUrl = 'https://bbwimjvqpyxwhovihtfm.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid2ltanZxcHl4d2hvdmlodGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjAwMDksImV4cCI6MjA2MDk5NjAwOX0._D3wackPNKg-IbiswH7M-3wqeQRP6ujMmcJ9bb7_1z0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                storage: window.localStorage,
+                autoRefreshToken: true,
+                detectSessionInUrl: false
+            }
+        });
 
         // Global variables
         let processingOrders = [];
@@ -888,12 +886,38 @@
 
         // Check if user is authenticated
         async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                window.location.href = 'admin-login.html';
+            try {
+                // First check localStorage for existing user data
+                const userStr = localStorage.getItem('currentUser');
+                if (userStr) {
+                    const storedUser = JSON.parse(userStr);
+                    console.log('✅ Found user in localStorage:', storedUser.email || storedUser.phone);
+                    // Continue with page execution
+                    return storedUser;
+                } else {
+                    // If no localStorage, try Supabase auth
+                    console.log('🔍 No localStorage found, checking Supabase auth...');
+                    const { data: { user }, error } = await supabase.auth.getUser();
+                    
+                    if (error) {
+                        console.log('⚠️ Supabase auth error:', error.message);
+                        // Don't immediately redirect on auth error, could be temporary
+                        return null;
+                    }
+                    
+                    if (!user) {
+                        console.log('❌ No user found in Supabase auth, redirecting to login');
+                        window.location.href = 'admin-login.html';
+                        return null;
+                    }
+                    
+                    console.log('✅ User found in Supabase auth, should refresh localStorage');
+                    return user;
+                }
+            } catch (err) {
+                console.error('Authentication check failed:', err);
                 return null;
             }
-            return user;
         }
 
         // Get user details from staff_members table
