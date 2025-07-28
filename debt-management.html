@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <title>Merchant Debt Management - AutoLab Admin</title>
+    <title>Merchant Debt Management - Autolabs Admin</title>
     <style>
         :root {
             --primary-color: #52c41a;
@@ -129,11 +129,18 @@
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             padding: 0 24px;
             position: sticky;
             top: 0;
             z-index: 99;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
         }
 
         .user-avatar {
@@ -149,15 +156,54 @@
             color: white;
         }
 
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: -60px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 8px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            display: block;
+            color: var(--text-color);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 8px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #e21b1b;
+            cursor: pointer;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: #f8f8f8;
+        }
+
         .content {
             padding: 24px;
         }
 
         .page-title {
             font-size: 24px;
-            font-weight: 600;
-            color: var(--text-color);
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .page-subtitle {
@@ -169,7 +215,7 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 24px;
         }
 
@@ -178,7 +224,6 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--box-shadow);
-            border-left: 4px solid var(--debt-color);
         }
 
         .stat-header {
@@ -208,7 +253,7 @@
 
         .stat-value {
             font-size: 28px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-color);
             margin-bottom: 8px;
         }
@@ -216,6 +261,8 @@
         .stat-change {
             font-size: 12px;
             font-weight: 500;
+            display: flex;
+            align-items: center;
         }
 
         .stat-change.positive {
@@ -226,30 +273,60 @@
             color: var(--error-color);
         }
 
-        /* Action Bar */
-        .action-bar {
-            background: white;
+        /* Panel Styles */
+        .panel {
+            background-color: white;
             border-radius: var(--border-radius);
-            padding: 16px 24px;
             box-shadow: var(--box-shadow);
             margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
         }
 
-        .action-left {
+        .panel-content {
+            padding: 20px;
+        }
+
+        /* Filter and Search Styles */
+        .filters-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
             display: flex;
             align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            min-width: 160px;
         }
 
         .search-box {
+            flex: 1;
+            max-width: 400px;
             position: relative;
-            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
         }
 
         .search-icon {
@@ -260,23 +337,6 @@
             color: var(--text-light);
         }
 
-        .search-input {
-            width: 100%;
-            padding: 8px 12px 8px 40px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 14px;
-        }
-
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 14px;
-            background: white;
-            min-width: 120px;
-        }
-
         .button {
             padding: 8px 16px;
             border-radius: var(--border-radius);
@@ -284,50 +344,53 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
         }
+
         .button.primary {
             background-color: var(--primary-color);
             color: white;
         }
+
         .button.primary:hover {
             background-color: #3fa00c;
         }
+
         .button.secondary {
             background-color: var(--secondary-color);
             color: white;
         }
+
         .button.secondary:hover {
             background-color: #096dd9;
         }
-        .button.tertiary {
-            background-color: var(--tertiary-color);
+
+        .button.warning {
+            background-color: var(--warning-color);
             color: white;
         }
-        .button.tertiary:hover {
-            background-color: #d87205;
+
+        .button.warning:hover {
+            background-color: #d48806;
         }
+
         .button.outline {
             background-color: white;
             color: var(--text-color);
             border: 1px solid #d9d9d9;
         }
+
         .button.outline:hover {
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
-        .button .icon {
-            margin-right: 8px;
-        }
 
         /* Data Table */
         .data-table-container {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
+            overflow-x: auto;
         }
 
         .data-table {
@@ -356,6 +419,56 @@
             background-color: #fafafa;
         }
 
+        .customer-row {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .customer-row.expanded {
+            background-color: #f6ffed;
+        }
+
+        .expand-button {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: var(--text-color);
+            cursor: pointer;
+            margin-right: 12px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .expanded .expand-button {
+            background-color: var(--primary-color);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .debt-detail-section {
+            display: none;
+            padding: 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .debt-detail-section.visible {
+            display: table-row;
+        }
+
+        .debt-detail-content {
+            padding: 24px;
+            background-color: #f9f9f9;
+        }
+
+        .customer-name {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
         .debt-amount {
             font-weight: 600;
             color: var(--debt-color);
@@ -377,6 +490,11 @@
         .debt-status.paid {
             background: #f6ffed;
             color: #389e0d;
+        }
+
+        .debt-status.partial {
+            background: #e6f7ff;
+            color: #1890ff;
         }
 
         .debt-status.overdue {
@@ -407,7 +525,7 @@
             color: var(--secondary-color);
         }
 
-        .action-button.settle {
+        .action-button.payment {
             background: #f6ffed;
             color: var(--success-color);
         }
@@ -422,13 +540,100 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
+        /* Payment History */
+        .payment-history {
+            margin-top: 20px;
+        }
+
+        .payment-history-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-table th {
+            background-color: #f0f0f0;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .payment-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .payment-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Outstanding Summary */
+        .outstanding-summary {
+            background: linear-gradient(135deg, #fff2e8 0%, #ffe7d0 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .outstanding-summary.no-debt {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+        }
+
+        .outstanding-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+
+        .outstanding-item {
+            text-align: center;
+        }
+
+        .outstanding-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #92400e;
+        }
+
+        .outstanding-value.no-debt {
+            color: #065f46;
+        }
+
+        .outstanding-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
         /* Pagination */
-        .pagination {
+        .table-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
-            background: white;
+            padding: 12px 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .page-info {
@@ -436,29 +641,44 @@
             font-size: 14px;
         }
 
-        .pagination-controls {
+        .page-button {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius);
             display: flex;
-            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background-color: white;
+            transition: all 0.3s;
+            margin: 0 2px;
         }
 
-        .page-button {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            background: white;
-            color: var(--text-color);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 14px;
+        .page-button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
         .page-button.active {
-            background: var(--primary-color);
+            background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
 
-        .page-button:hover:not(.active) {
-            background: #f0f0f0;
+        .prev-page-button,
+        .next-page-button {
+            padding: 5px 10px;
+            background-color: white;
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .prev-page-button.disabled,
+        .next-page-button.disabled {
+            color: #d9d9d9;
+            cursor: not-allowed;
         }
 
         /* Loading */
@@ -546,7 +766,8 @@
             color: var(--text-color);
         }
 
-        .form-input {
+        .form-input,
+        .form-select {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid #ddd;
@@ -554,7 +775,8 @@
             font-size: 14px;
         }
 
-        .form-input:focus {
+        .form-input:focus,
+        .form-select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
@@ -565,6 +787,17 @@
             gap: 12px;
             justify-content: flex-end;
             margin-top: 24px;
+        }
+
+        /* Entity links */
+        .entity-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .entity-link:hover {
+            text-decoration: underline;
         }
 
         /* Responsive */
@@ -581,13 +814,13 @@
                 grid-template-columns: 1fr;
             }
 
-            .action-bar {
+            .filters-container {
                 flex-direction: column;
                 align-items: stretch;
             }
 
             .search-box {
-                width: 100%;
+                max-width: 100%;
             }
 
             .data-table-container {
@@ -735,16 +968,36 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <h1>Merchant Debt Management</h1>
-                <div style="display: flex; align-items: center;">
-                    <div class="user-avatar">A</div>
-                    <span>Admin</span>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">AD</div>
+                    <div>
+                        <div style="font-weight: 500;" id="userName">Admin User</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Administrator</div>
+                    </div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-item" id="userFullName">Admin User</div>
+                        <div class="dropdown-item" id="userStaffId">Staff ID: 8888</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item logout" id="logoutButton">Logout</div>
+                    </div>
                 </div>
             </header>
 
             <div class="content">
-                <div class="page-title">💎 Merchant Debt Management</div>
-                <div class="page-subtitle">Manage Merchant customer debt accounts and payment schedules</div>
+                <div class="page-title">
+                    <span>💎 Merchant Debt Management</span>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="button warning" id="sendReminders">
+                            <span>📧</span>
+                            <span>Send Reminders</span>
+                        </button>
+                        <button class="button secondary" id="exportDebts">
+                            <span>📊</span>
+                            <span>Export Report</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="page-subtitle">Manage merchant customer debt accounts and payment schedules</div>
 
                 <!-- Stats Cards -->
                 <div class="stats-grid">
@@ -793,65 +1046,72 @@
                     </div>
                 </div>
 
-                <!-- Action Bar -->
-                <div class="action-bar">
-                    <div class="action-left">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" class="search-input" id="debtSearch" placeholder="Search by customer name, phone...">
+                <!-- Debt Management Panel -->
+                <div class="panel">
+                    <div class="panel-content">
+                        <!-- Filter Section -->
+                        <div class="filters-container">
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" class="search-input" id="debtSearch" placeholder="Search by customer name, phone, order ID...">
+                            </div>
+                            <div class="filter-group">
+                                <span class="filter-label">Status:</span>
+                                <select class="filter-select" id="statusFilter">
+                                    <option value="all">All Statuses</option>
+                                    <option value="unpaid">Unpaid</option>
+                                    <option value="partial">Partial Payment</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="overdue">Overdue</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <span class="filter-label">Customer:</span>
+                                <select class="filter-select" id="customerFilter">
+                                    <option value="all">All Customers</option>
+                                </select>
+                            </div>
                         </div>
-                        <select class="filter-select" id="statusFilter">
-                            <option value="all">All Statuses</option>
-                            <option value="unpaid">Unpaid</option>
-                            <option value="paid">Paid</option>
-                            <option value="overdue">Overdue</option>
-                        </select>
-                        <select class="filter-select" id="customerFilter">
-                            <option value="all">All Customers</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="button warning" id="sendReminders">
-                            <span>📧</span>
-                            <span>Send Reminders</span>
-                        </button>
-                        <button class="button secondary" id="exportDebts">
-                            <span>📊</span>
-                            <span>Export Report</span>
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Debt Table -->
-                <div class="data-table-container">
-                    <table class="data-table" id="debts-table">
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Order ID</th>
-                                <th>Amount</th>
-                                <th>Created Date</th>
-                                <th>Days Outstanding</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="debts-table-body">
-                            <tr>
-                                <td colspan="7">
-                                    <div class="loading">
-                                        <div class="loading-spinner"></div>
-                                        <span>Loading debt records...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <!-- Debt Table -->
+                        <div class="data-table-container">
+                            <table class="data-table" id="debts-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;"></th>
+                                        <th>Customer</th>
+                                        <th>Order ID</th>
+                                        <th>Original Amount</th>
+                                        <th>Outstanding</th>
+                                        <th>Created Date</th>
+                                        <th>Days Outstanding</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="debts-table-body">
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="loading">
+                                                <div class="loading-spinner"></div>
+                                                <span>Loading debt records...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="pagination">
-                        <span class="page-info" id="page-info">Showing 0-0 of 0 debt records</span>
-                        <div class="pagination-controls" id="pagination-controls">
-                            <!-- Pagination buttons will be added here -->
+                        <!-- Table Pagination -->
+                        <div class="table-footer">
+                            <span class="page-info" id="page-info">Showing 0-0 of 0 debt records</span>
+                            <div class="pagination" id="pagination">
+                                <button class="prev-page-button" id="prev-page">◀</button>
+                                <div id="page-buttons">
+                                    <!-- Page buttons will be generated dynamically -->
+                                </div>
+                                <button class="next-page-button" id="next-page">▶</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -859,29 +1119,40 @@
         </main>
     </div>
 
-    <!-- Settlement Modal -->
-    <div id="settlementModal" class="modal">
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Settle Debt Payment</h3>
-                <button class="close-modal" onclick="closeSettlementModal()">&times;</button>
+                <h3 class="modal-title">Make Payment</h3>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
             </div>
-            <form id="settlementForm">
+            <form id="paymentForm">
                 <div class="form-group">
                     <label class="form-label">Customer Name</label>
-                    <input type="text" class="form-input" id="settlementCustomer" readonly>
+                    <input type="text" class="form-input" id="paymentCustomer" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Order ID</label>
-                    <input type="text" class="form-input" id="settlementOrderId" readonly>
+                    <input type="text" class="form-input" id="paymentOrderId" readonly>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Debt Amount</label>
-                    <input type="text" class="form-input" id="settlementAmount" readonly>
+                    <label class="form-label">Total Debt Amount</label>
+                    <input type="text" class="form-input" id="paymentTotalAmount" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Outstanding Amount</label>
+                    <input type="text" class="form-input" id="paymentOutstandingAmount" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Payment Amount</label>
+                    <input type="number" class="form-input" id="paymentAmount" step="0.01" min="0.01" required>
+                    <small style="color: var(--text-light); margin-top: 4px; display: block;">
+                        Enter amount to pay (partial payment allowed)
+                    </small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Payment Method</label>
-                    <select class="form-input" id="settlementMethod" required>
+                    <select class="form-select" id="paymentMethod" required>
                         <option value="">Select payment method</option>
                         <option value="cash">Cash</option>
                         <option value="bank_transfer">Bank Transfer</option>
@@ -893,15 +1164,15 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Payment Reference</label>
-                    <input type="text" class="form-input" id="settlementReference" placeholder="Transaction ID, cheque number, etc.">
+                    <input type="text" class="form-input" id="paymentReference" placeholder="Transaction ID, cheque number, etc.">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Notes</label>
-                    <textarea class="form-input" id="settlementNotes" rows="3" placeholder="Additional notes about the payment..."></textarea>
+                    <textarea class="form-input" id="paymentNotes" rows="3" placeholder="Additional notes about the payment..."></textarea>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="button" onclick="closeSettlementModal()">Cancel</button>
-                    <button type="submit" class="button primary">Confirm Settlement</button>
+                    <button type="button" class="button outline" onclick="closePaymentModal()">Cancel</button>
+                    <button type="submit" class="button primary">Confirm Payment</button>
                 </div>
             </form>
         </div>
@@ -926,21 +1197,67 @@
         let currentPage = 1;
         const debtsPerPage = 10;
         let currentDebtId = null;
+        let paymentHistory = {};
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadDebtData();
-            setupEventListeners();
-        });
+        // Check if user is authenticated
+        async function checkAuth() {
+            try {
+                const userStr = localStorage.getItem('currentUser');
+                if (userStr) {
+                    const storedUser = JSON.parse(userStr);
+                    console.log('✅ Found user in localStorage:', storedUser.email || storedUser.phone);
+                    return storedUser;
+                } else {
+                    console.log('❌ No user found, redirecting to login');
+                    window.location.href = 'admin-login.html';
+                    return null;
+                }
+            } catch (err) {
+                console.error('Authentication check failed:', err);
+                return null;
+            }
+        }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            document.getElementById('debtSearch').addEventListener('input', filterDebts);
-            document.getElementById('statusFilter').addEventListener('change', filterDebts);
-            document.getElementById('customerFilter').addEventListener('change', filterDebts);
-            document.getElementById('sendReminders').addEventListener('click', sendReminders);
-            document.getElementById('exportDebts').addEventListener('click', exportDebts);
-            document.getElementById('settlementForm').addEventListener('submit', handleSettlement);
+        // Get user details from database
+        async function getUserDetails(userId) {
+            const { data, error } = await supabase
+                .from('staff_members')
+                .select('*')
+                .eq('id', userId)
+                .single();
+
+            if (error) {
+                console.error('Error fetching user details:', error);
+                return null;
+            }
+            return data;
+        }
+
+        // Update user interface with user details
+        function updateUserInterface(userData) {
+            const initials = userData.first_name.charAt(0) + userData.last_name.charAt(0);
+            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('userName').textContent = `${userData.first_name} ${userData.last_name}`;
+            document.getElementById('userFullName').textContent = `${userData.first_name} ${userData.last_name}`;
+            document.getElementById('userStaffId').textContent = `Staff ID: ${userData.staff_id}`;
+        }
+
+        // Handle logout
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Error signing out:', error);
+                alert('Error signing out. Please try again.');
+            } else {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        // Toggle dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
         }
 
         // Load debt data
@@ -962,6 +1279,55 @@
                     throw debtError;
                 }
 
+                // Load payment history for all debts
+                const { data: payments, error: paymentError } = await supabase
+                    .from('debt_payments')
+                    .select('*')
+                    .order('payment_date', { ascending: false });
+
+                if (!paymentError && payments) {
+                    // Group payments by debt_id
+                    paymentHistory = {};
+                    payments.forEach(payment => {
+                        if (!paymentHistory[payment.debt_id]) {
+                            paymentHistory[payment.debt_id] = [];
+                        }
+                        paymentHistory[payment.debt_id].push(payment);
+                    });
+                }
+
+                // Calculate outstanding amounts
+                allDebts = (debts || []).map(debt => {
+                    const debtPayments = paymentHistory[debt.id] || [];
+                    const totalPaid = debtPayments.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
+                    const outstanding = parseFloat(debt.amount) - totalPaid;
+                    
+                    // Update status based on outstanding amount
+                    let status = debt.status;
+                    if (outstanding <= 0) {
+                        status = 'paid';
+                    } else if (totalPaid > 0 && outstanding > 0) {
+                        status = 'partial';
+                    } else {
+                        const thirtyDaysAgo = new Date();
+                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                        if (new Date(debt.created_at) < thirtyDaysAgo) {
+                            status = 'overdue';
+                        } else {
+                            status = 'unpaid';
+                        }
+                    }
+                    
+                    return {
+                        ...debt,
+                        outstanding,
+                        totalPaid,
+                        calculatedStatus: status
+                    };
+                });
+
+                filteredDebts = [...allDebts];
+                
                 // Load Merchant customers for filter dropdown
                 const { data: merchantCustomers, error: customerError } = await supabase
                     .from('customers')
@@ -972,9 +1338,6 @@
                 if (!customerError && merchantCustomers) {
                     populateCustomerFilter(merchantCustomers);
                 }
-
-                allDebts = debts || [];
-                filteredDebts = [...allDebts];
                 
                 updateStats();
                 displayDebts();
@@ -983,7 +1346,7 @@
                 console.error('Error loading debt data:', error);
                 document.getElementById('debts-table-body').innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--error-color); padding: 40px;">
+                        <td colspan="9" style="text-align: center; color: var(--error-color); padding: 40px;">
                             Error loading debt records. Please try again.
                         </td>
                     </tr>
@@ -1005,29 +1368,32 @@
         // Update statistics
         function updateStats() {
             const totalDebt = allDebts.reduce((sum, debt) => {
-                return debt.status === 'unpaid' ? sum + parseFloat(debt.amount) : sum;
+                return debt.outstanding > 0 ? sum + debt.outstanding : sum;
             }, 0);
 
-            const merchantWithDebt = new Set(allDebts.filter(debt => debt.status === 'unpaid').map(debt => debt.customer_id)).size;
+            const merchantWithDebt = new Set(allDebts.filter(debt => debt.outstanding > 0).map(debt => debt.customer_id)).size;
             
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
             
             const overduePayments = allDebts.filter(debt => {
-                return debt.status === 'unpaid' && new Date(debt.created_at) < thirtyDaysAgo;
+                return debt.outstanding > 0 && new Date(debt.created_at) < thirtyDaysAgo;
             }).length;
 
             const thisMonth = new Date();
             thisMonth.setDate(1);
             thisMonth.setHours(0, 0, 0, 0);
             
-            const monthlyCollections = allDebts.reduce((sum, debt) => {
-                const settledDate = debt.settled_at ? new Date(debt.settled_at) : null;
-                if (debt.status === 'paid' && settledDate && settledDate >= thisMonth) {
-                    return sum + parseFloat(debt.amount);
-                }
-                return sum;
-            }, 0);
+            // Calculate monthly collections from payments
+            let monthlyCollections = 0;
+            Object.values(paymentHistory).forEach(payments => {
+                payments.forEach(payment => {
+                    const paymentDate = new Date(payment.payment_date);
+                    if (paymentDate >= thisMonth) {
+                        monthlyCollections += parseFloat(payment.amount);
+                    }
+                });
+            });
 
             document.getElementById('totalDebt').textContent = `RM ${totalDebt.toFixed(2)}`;
             document.getElementById('merchantWithDebt').textContent = merchantWithDebt;
@@ -1065,7 +1431,7 @@
 
                 // Status filter
                 if (statusFilter && statusFilter !== 'all') {
-                    matches = matches && debt.status === statusFilter;
+                    matches = matches && debt.calculatedStatus === statusFilter;
                 }
 
                 // Customer filter
@@ -1100,11 +1466,12 @@
             if (debtsToShow.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
                             No debt records found.
                         </td>
                     </tr>
                 `;
+                updatePaginationButtons(0);
                 return;
             }
 
@@ -1115,30 +1482,30 @@
                 const createdDate = new Date(debt.created_at).toLocaleDateString();
                 const daysOutstanding = Math.floor((new Date() - new Date(debt.created_at)) / (1000 * 60 * 60 * 24));
                 
-                let statusClass = debt.status;
-                if (debt.status === 'unpaid' && daysOutstanding > 30) {
-                    statusClass = 'overdue';
-                }
-
+                // Create main debt row
                 const row = document.createElement('tr');
+                row.className = 'customer-row';
+                row.setAttribute('data-debt', debt.id);
+
                 row.innerHTML = `
                     <td>
-                        <div style="font-weight: 500;">${customerName}</div>
+                        <span class="expand-button">▼</span>
+                    </td>
+                    <td>
+                        <div class="customer-name"><a href="customer.html?customer=${debt.customer_id}" class="entity-link">${customerName}</a></div>
                         <div style="font-size: 12px; color: var(--text-light);">${customerPhone}</div>
                     </td>
-                    <td>#${debt.order_id || 'N/A'}</td>
+                    <td><a href="order.html?order=${debt.order_id}" class="entity-link">#${debt.order_reference || debt.order_id || 'N/A'}</a></td>
                     <td class="debt-amount">RM ${parseFloat(debt.amount).toFixed(2)}</td>
+                    <td class="debt-amount">RM ${debt.outstanding.toFixed(2)}</td>
                     <td>${createdDate}</td>
                     <td>${daysOutstanding} days</td>
-                    <td><span class="debt-status ${statusClass}">${statusClass.replace('_', ' ')}</span></td>
+                    <td><span class="debt-status ${debt.calculatedStatus}">${debt.calculatedStatus.replace('_', ' ')}</span></td>
                     <td>
                         <div class="action-buttons">
-                            <button class="action-button view" onclick="viewDebt(${debt.id})">
-                                <span>👁️</span> View
-                            </button>
-                            ${debt.status === 'unpaid' ? `
-                                <button class="action-button settle" onclick="openSettlementModal(${debt.id})">
-                                    <span>✅</span> Settle
+                            ${debt.outstanding > 0 ? `
+                                <button class="action-button payment" onclick="openPaymentModal(${debt.id})">
+                                    <span>💳</span> Payment
                                 </button>
                                 <button class="action-button reminder" onclick="sendReminderToCustomer(${debt.id})">
                                     <span>📧</span> Remind
@@ -1148,120 +1515,312 @@
                     </td>
                 `;
                 tableBody.appendChild(row);
+
+                // Create detail row (initially hidden)
+                const detailRow = document.createElement('tr');
+                detailRow.className = 'debt-detail-section';
+                detailRow.id = `detail-${debt.id}`;
+                detailRow.innerHTML = `
+                    <td colspan="9">
+                        <div class="debt-detail-content">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading payment history...</span>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(detailRow);
             });
 
             // Update pagination
-            updatePagination(totalPages);
+            updatePaginationButtons(totalPages);
+            
+            // Add event listeners
+            attachEventListeners();
         }
 
-        // Update pagination
-        function updatePagination(totalPages) {
-            const paginationControls = document.getElementById('pagination-controls');
-            paginationControls.innerHTML = '';
+        // Attach event listeners to rows
+        function attachEventListeners() {
+            // Customer row click event (expand/collapse)
+            document.querySelectorAll('.customer-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const debtId = this.getAttribute('data-debt');
+                    const detailSection = document.getElementById(`detail-${debtId}`);
+                    
+                    // Toggle expanded class on row
+                    this.classList.toggle('expanded');
+                    
+                    // Toggle visibility of detail section
+                    if (detailSection) {
+                        const isVisible = detailSection.classList.toggle('visible');
+                        
+                        // Load payment history if becoming visible
+                        if (isVisible) {
+                            const detailContent = detailSection.querySelector('.debt-detail-content');
+                            if (detailContent.innerHTML.includes('Loading payment history')) {
+                                loadDebtDetails(debtId);
+                            }
+                        }
+                    }
+                });
+            });
 
-            if (totalPages <= 1) return;
+            // Expand button click event
+            document.querySelectorAll('.expand-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.closest('.customer-row').click();
+                });
+            });
+        }
 
-            // Previous button
-            if (currentPage > 1) {
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'page-button';
-                prevBtn.textContent = '◀';
-                prevBtn.onclick = () => changePage(currentPage - 1);
-                paginationControls.appendChild(prevBtn);
+        // Load debt details
+        async function loadDebtDetails(debtId) {
+            try {
+                const detailSection = document.getElementById(`detail-${debtId}`);
+                if (!detailSection) return;
+
+                const detailContent = detailSection.querySelector('.debt-detail-content');
+                const debt = allDebts.find(d => d.id === debtId);
+                if (!debt) return;
+
+                // Get payment history for this debt
+                const debtPayments = paymentHistory[debtId] || [];
+                
+                // Build detail HTML
+                let detailHtml = `
+                    <div class="outstanding-summary ${debt.outstanding <= 0 ? 'no-debt' : ''}">
+                        <div class="outstanding-info">
+                            <div class="outstanding-item">
+                                <div class="outstanding-value ${debt.outstanding <= 0 ? 'no-debt' : ''}">RM ${parseFloat(debt.amount).toFixed(2)}</div>
+                                <div class="outstanding-label">Original Amount</div>
+                            </div>
+                            <div class="outstanding-item">
+                                <div class="outstanding-value ${debt.outstanding <= 0 ? 'no-debt' : ''}">RM ${debt.totalPaid.toFixed(2)}</div>
+                                <div class="outstanding-label">Total Paid</div>
+                            </div>
+                            <div class="outstanding-item">
+                                <div class="outstanding-value ${debt.outstanding <= 0 ? 'no-debt' : ''}">RM ${debt.outstanding.toFixed(2)}</div>
+                                <div class="outstanding-label">Outstanding</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add payment history
+                if (debtPayments.length > 0) {
+                    detailHtml += `
+                        <div class="payment-history">
+                            <div class="payment-history-header">Payment History</div>
+                            <table class="payment-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Reference</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    debtPayments.forEach(payment => {
+                        const paymentDate = new Date(payment.payment_date).toLocaleDateString();
+                        detailHtml += `
+                            <tr>
+                                <td>${paymentDate}</td>
+                                <td>RM ${parseFloat(payment.amount).toFixed(2)}</td>
+                                <td>${payment.payment_method || 'N/A'}</td>
+                                <td>${payment.payment_reference || 'N/A'}</td>
+                                <td>${payment.notes || '-'}</td>
+                            </tr>
+                        `;
+                    });
+
+                    detailHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    detailHtml += `
+                        <div class="payment-history">
+                            <div class="payment-history-header">Payment History</div>
+                            <p style="padding: 20px; text-align: center; color: var(--text-light);">No payments recorded yet.</p>
+                        </div>
+                    `;
+                }
+
+                // Add description if exists
+                if (debt.description) {
+                    detailHtml += `
+                        <div style="margin-top: 20px; padding: 16px; background: #f5f5f5; border-radius: 4px;">
+                            <strong>Description:</strong> ${debt.description}
+                        </div>
+                    `;
+                }
+
+                detailContent.innerHTML = detailHtml;
+
+            } catch (error) {
+                console.error('Error loading debt details:', error);
+                const detailContent = document.getElementById(`detail-${debtId}`)?.querySelector('.debt-detail-content');
+                if (detailContent) {
+                    detailContent.innerHTML = `
+                        <p style="padding: 20px; text-align: center; color: var(--error-color);">
+                            Error loading payment history. Please try again.
+                        </p>
+                    `;
+                }
             }
+        }
 
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                    const pageBtn = document.createElement('button');
-                    pageBtn.className = `page-button ${i === currentPage ? 'active' : ''}`;
-                    pageBtn.textContent = i;
-                    pageBtn.onclick = () => changePage(i);
-                    paginationControls.appendChild(pageBtn);
-                } else if (i === currentPage - 2 || i === currentPage + 2) {
-                    const ellipsis = document.createElement('span');
-                    ellipsis.textContent = '...';
-                    ellipsis.style.padding = '6px 12px';
-                    paginationControls.appendChild(ellipsis);
+        // Update pagination buttons
+        function updatePaginationButtons(totalPages) {
+            const pageButtonsContainer = document.getElementById('page-buttons');
+            pageButtonsContainer.innerHTML = '';
+
+            // Update prev/next button states
+            document.getElementById('prev-page').classList.toggle('disabled', currentPage === 1);
+            document.getElementById('next-page').classList.toggle('disabled', currentPage === totalPages || totalPages === 0);
+
+            if (totalPages === 0) return;
+
+            // Always show first, last and some pages around current page
+            let pages = [];
+
+            // Add page 1
+            pages.push(1);
+
+            // Add pages around current page
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                if (pages.indexOf(i) === -1) {
+                    pages.push(i);
                 }
             }
 
-            // Next button
-            if (currentPage < totalPages) {
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'page-button';
-                nextBtn.textContent = '▶';
-                nextBtn.onclick = () => changePage(currentPage + 1);
-                paginationControls.appendChild(nextBtn);
+            // Add last page if there are more than 1 page
+            if (totalPages > 1) {
+                pages.push(totalPages);
+            }
+
+            // Sort pages
+            pages.sort((a, b) => a - b);
+
+            // Create page buttons with ellipsis where needed
+            let prevPage = 0;
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+
+                // Add ellipsis if there's a gap
+                if (page - prevPage > 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.style.margin = '0 5px';
+                    pageButtonsContainer.appendChild(ellipsis);
+                }
+
+                // Add page button
+                const pageButton = document.createElement('button');
+                pageButton.className = `page-button ${page === currentPage ? 'active' : ''}`;
+                pageButton.textContent = page;
+                pageButton.addEventListener('click', () => {
+                    if (page !== currentPage) {
+                        currentPage = page;
+                        displayDebts();
+                    }
+                });
+
+                pageButtonsContainer.appendChild(pageButton);
+                prevPage = page;
             }
         }
 
-        // Change page
-        function changePage(page) {
-            currentPage = page;
-            displayDebts();
-        }
-
-        // View debt details
-        function viewDebt(debtId) {
-            const debt = allDebts.find(d => d.id === debtId);
-            if (!debt) return;
-
-            alert(`Debt Details:\n\nCustomer: ${debt.customers?.name || 'Unknown'}\nOrder ID: ${debt.order_id}\nAmount: RM ${debt.amount}\nStatus: ${debt.status}\nCreated: ${new Date(debt.created_at).toLocaleDateString()}\nDescription: ${debt.description || 'N/A'}`);
-        }
-
-        // Open settlement modal
-        function openSettlementModal(debtId) {
+        // Open payment modal
+        function openPaymentModal(debtId) {
             const debt = allDebts.find(d => d.id === debtId);
             if (!debt) return;
 
             currentDebtId = debtId;
             
-            document.getElementById('settlementCustomer').value = debt.customers?.name || 'Unknown Customer';
-            document.getElementById('settlementOrderId').value = debt.order_id || 'N/A';
-            document.getElementById('settlementAmount').value = `RM ${parseFloat(debt.amount).toFixed(2)}`;
+            document.getElementById('paymentCustomer').value = debt.customers?.name || 'Unknown Customer';
+            document.getElementById('paymentOrderId').value = debt.order_reference || debt.order_id || 'N/A';
+            document.getElementById('paymentTotalAmount').value = `RM ${parseFloat(debt.amount).toFixed(2)}`;
+            document.getElementById('paymentOutstandingAmount').value = `RM ${debt.outstanding.toFixed(2)}`;
+            document.getElementById('paymentAmount').value = '';
+            document.getElementById('paymentAmount').max = debt.outstanding;
             
-            document.getElementById('settlementModal').classList.add('active');
+            document.getElementById('paymentModal').classList.add('active');
         }
 
-        // Close settlement modal
-        function closeSettlementModal() {
-            document.getElementById('settlementModal').classList.remove('active');
-            document.getElementById('settlementForm').reset();
+        // Close payment modal
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.getElementById('paymentForm').reset();
             currentDebtId = null;
         }
 
-        // Handle settlement
-        async function handleSettlement(e) {
+        // Handle payment submission
+        async function handlePayment(e) {
             e.preventDefault();
             
             if (!currentDebtId) return;
 
-            const method = document.getElementById('settlementMethod').value;
-            const reference = document.getElementById('settlementReference').value;
-            const notes = document.getElementById('settlementNotes').value;
+            const debt = allDebts.find(d => d.id === currentDebtId);
+            if (!debt) return;
+
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const method = document.getElementById('paymentMethod').value;
+            const reference = document.getElementById('paymentReference').value;
+            const notes = document.getElementById('paymentNotes').value;
+
+            if (amount > debt.outstanding) {
+                alert('Payment amount cannot exceed outstanding amount!');
+                return;
+            }
 
             try {
-                const { error } = await supabase
-                    .from('customer_debts')
-                    .update({
-                        status: 'paid',
-                        settled_at: new Date().toISOString(),
+                // Create payment record
+                const { data: payment, error: paymentError } = await supabase
+                    .from('debt_payments')
+                    .insert([{
+                        debt_id: currentDebtId,
+                        amount: amount,
                         payment_method: method,
                         payment_reference: reference,
-                        settlement_notes: notes
-                    })
-                    .eq('id', currentDebtId);
+                        notes: notes,
+                        payment_date: new Date().toISOString(),
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
 
-                if (error) throw error;
+                if (paymentError) throw paymentError;
 
-                alert('Debt settled successfully!');
-                closeSettlementModal();
+                // Update debt status if fully paid
+                const newOutstanding = debt.outstanding - amount;
+                if (newOutstanding <= 0) {
+                    const { error: updateError } = await supabase
+                        .from('customer_debts')
+                        .update({
+                            status: 'paid',
+                            settled_at: new Date().toISOString()
+                        })
+                        .eq('id', currentDebtId);
+
+                    if (updateError) throw updateError;
+                }
+
+                alert(`Payment of RM ${amount.toFixed(2)} recorded successfully!`);
+                closePaymentModal();
                 loadDebtData(); // Reload data
 
             } catch (error) {
-                console.error('Error settling debt:', error);
-                alert('Error settling debt: ' + error.message);
+                console.error('Error recording payment:', error);
+                alert('Error recording payment: ' + error.message);
             }
         }
 
@@ -1281,7 +1840,7 @@
             const overdueDebts = filteredDebts.filter(debt => {
                 const thirtyDaysAgo = new Date();
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                return debt.status === 'unpaid' && new Date(debt.created_at) < thirtyDaysAgo;
+                return debt.outstanding > 0 && new Date(debt.created_at) < thirtyDaysAgo;
             });
 
             if (overdueDebts.length === 0) {
@@ -1301,12 +1860,116 @@
             alert('Export functionality will be implemented soon.');
         }
 
-        // Close modal when clicking outside
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal')) {
-                closeSettlementModal();
+        // Initialize page
+        async function initializePage() {
+            try {
+                // Check authentication
+                const user = await checkAuth();
+                if (!user) return;
+
+                // Get user details
+                const userDetails = await getUserDetails(user.id);
+                if (!userDetails) {
+                    console.error('Unable to load user details');
+                    logout();
+                    return;
+                }
+
+                // Update UI with user details
+                updateUserInterface(userDetails);
+
+                // Create debt_payments table if it doesn't exist
+                await createDebtPaymentsTable();
+
+                // Load debt data
+                loadDebtData();
+
+                // Set up event listeners
+                setupEventListeners();
+
+            } catch (err) {
+                console.error('Error initializing page:', err);
+                alert('Error loading page. Please try again.');
             }
+        }
+
+        // Create debt_payments table if it doesn't exist
+        async function createDebtPaymentsTable() {
+            // This is just a placeholder - the table should be created in your Supabase dashboard
+            // Here's the SQL to create the table:
+            /*
+            CREATE TABLE IF NOT EXISTS debt_payments (
+                id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                debt_id UUID REFERENCES customer_debts(id) ON DELETE CASCADE,
+                amount DECIMAL(10, 2) NOT NULL,
+                payment_method VARCHAR(50),
+                payment_reference VARCHAR(255),
+                notes TEXT,
+                payment_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+            */
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // User avatar click
+            document.getElementById('userAvatar').addEventListener('click', toggleDropdown);
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                const dropdown = document.getElementById('userDropdown');
+                const avatar = document.getElementById('userAvatar');
+
+                if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            // Logout button
+            document.getElementById('logoutButton').addEventListener('click', logout);
+
+            // Search and filter inputs
+            document.getElementById('debtSearch').addEventListener('input', filterDebts);
+            document.getElementById('statusFilter').addEventListener('change', filterDebts);
+            document.getElementById('customerFilter').addEventListener('change', filterDebts);
+
+            // Pagination buttons
+            document.getElementById('prev-page').addEventListener('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayDebts();
+                }
+            });
+
+            document.getElementById('next-page').addEventListener('click', function () {
+                const totalPages = Math.ceil(filteredDebts.length / debtsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayDebts();
+                }
+            });
+
+            // Action buttons
+            document.getElementById('sendReminders').addEventListener('click', sendReminders);
+            document.getElementById('exportDebts').addEventListener('click', exportDebts);
+
+            // Form submission
+            document.getElementById('paymentForm').addEventListener('submit', handlePayment);
+
+            // Close modal when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    closePaymentModal();
+                }
+            });
+        }
+
+        // Start the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePage();
         });
     </script>
 </body>
+
 </html>
