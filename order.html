@@ -430,15 +430,6 @@
             color: #f5222d;
         }
 
-        .status-badge.paid {
-            background-color: #f6ffed;
-            color: #52c41a;
-        }
-
-        .status-badge.unpaid {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
 
         .status-badge.urgent {
             background-color: #fff2e8;
@@ -1424,13 +1415,6 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="editPaymentStatus">Payment Status</label>
-                    <select class="form-control" id="editPaymentStatus">
-                        <option value="paid">Paid</option>
-                        <option value="unpaid">Unpaid</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label for="editDriver">Delivery Method</label>
                     <select class="form-control" id="editDriver">
                         <option value="">-- Select Method --</option>
@@ -1922,7 +1906,6 @@
                 const amount = parseFloat(order.amount || 0).toFixed(2);
                 const customerName = order.customer_name || 'Unknown Customer';
                 const statusInfo = getOrderStatusDisplay(order);
-                const paymentStatus = order.payment_status || 'unpaid';
                 const isUrgent = order.is_urgent || false;
 
                 row.innerHTML = `
@@ -1938,7 +1921,6 @@
                         <div class="status-badges-container">
                             <div class="visual-badges">
                                 <span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>
-                                <span class="status-badge ${paymentStatus}">${paymentStatus}</span>
                                 ${isUrgent ? '<span class="status-badge urgent">Urgent</span>' : ''}
                             </div>
                         </div>
@@ -2177,7 +2159,6 @@
                 metaHtml += `<div class="meta-item" style="grid-column: span 2;"><div class="meta-label">Address</div><div class="meta-value">${order.address || 'N/A'}</div></div>`;
                 metaHtml += `<div class="meta-item"><div class="meta-label">Order Date</div><div class="meta-value">${formatDate(order.order_date)}</div></div>`;
                 metaHtml += `<div class="meta-item"><div class="meta-label">Status</div><div class="meta-value">${getOrderStatusDisplay(order).text}</div></div>`;
-                metaHtml += `<div class="meta-item"><div class="meta-label">Payment</div><div class="meta-value">${order.payment_status || 'unpaid'}</div></div>`;
                 metaHtml += `<div class="meta-item"><div class="meta-label">Delivery Method</div><div class="meta-value">${order.driver || 'Unassigned'}</div></div>`;
                 metaHtml += '</div>';
 
@@ -2259,7 +2240,6 @@
                 // Populate form fields
                 document.getElementById('editOrderId').value = order.id;
                 document.getElementById('editOrderStatus').value = order.status || 'processing';
-                document.getElementById('editPaymentStatus').value = order.payment_status || 'unpaid';
                 document.getElementById('editDriver').value = order.driver || '';
                 document.getElementById('editIsUrgent').checked = order.is_urgent || false;
 
@@ -2284,13 +2264,11 @@
             try {
                 const orderId = document.getElementById('editOrderId').value;
                 const status = document.getElementById('editOrderStatus').value;
-                const paymentStatus = document.getElementById('editPaymentStatus').value;
                 const driver = document.getElementById('editDriver').value;
                 const isUrgent = document.getElementById('editIsUrgent').checked;
 
                 const orderData = {
                     status,
-                    payment_status: paymentStatus,
                     driver,
                     is_urgent: isUrgent
                 };
