@@ -1320,7 +1320,7 @@
                     
                     return {
                         ...debt,
-                        outstanding,
+                        outstanding: Math.max(0, outstanding), // Ensure non-negative
                         totalPaid,
                         calculatedStatus: status
                     };
@@ -1368,16 +1368,21 @@
         // Update statistics
         function updateStats() {
             const totalDebt = allDebts.reduce((sum, debt) => {
-                return debt.outstanding > 0 ? sum + debt.outstanding : sum;
+                const outstanding = debt.outstanding || parseFloat(debt.amount);
+                return outstanding > 0 ? sum + outstanding : sum;
             }, 0);
 
-            const merchantWithDebt = new Set(allDebts.filter(debt => debt.outstanding > 0).map(debt => debt.customer_id)).size;
+            const merchantWithDebt = new Set(allDebts.filter(debt => {
+                const outstanding = debt.outstanding || parseFloat(debt.amount);
+                return outstanding > 0;
+            }).map(debt => debt.customer_id)).size;
             
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
             
             const overduePayments = allDebts.filter(debt => {
-                return debt.outstanding > 0 && new Date(debt.created_at) < thirtyDaysAgo;
+                const outstanding = debt.outstanding || parseFloat(debt.amount);
+                return outstanding > 0 && new Date(debt.created_at) < thirtyDaysAgo;
             }).length;
 
             const thisMonth = new Date();
@@ -1497,7 +1502,7 @@
                     </td>
                     <td><a href="order.html?order=${debt.order_id}" class="entity-link">#${debt.order_reference || debt.order_id || 'N/A'}</a></td>
                     <td class="debt-amount">RM ${parseFloat(debt.amount).toFixed(2)}</td>
-                    <td class="debt-amount">RM ${debt.outstanding.toFixed(2)}</td>
+                    <td class="debt-amount">RM ${(debt.outstanding || parseFloat(debt.amount)).toFixed(2)}</td>
                     <td>${createdDate}</td>
                     <td>${daysOutstanding} days</td>
                     <td><span class="debt-status ${debt.calculatedStatus}">${debt.calculatedStatus.replace('_', ' ')}</span></td>
@@ -1582,26 +1587,39 @@
                 if (!detailSection) return;
 
                 const detailContent = detailSection.querySelector('.debt-detail-content');
-                const debt = allDebts.find(d => d.id === debtId);
-                if (!debt) return;
+                const debt = allDebts.find(d => d.id == debtId);
+                if (!debt) {
+                    console.error('Debt not found:', debtId);
+                    detailContent.innerHTML = `
+                        <p style="padding: 20px; text-align: center; color: var(--error-color);">
+                            Error: Debt record not found.
+                        </p>
+                    `;
+                    return;
+                }
 
                 // Get payment history for this debt
                 const debtPayments = paymentHistory[debtId] || [];
                 
+                // Calculate values safely
+                const originalAmount = parseFloat(debt.amount) || 0;
+                const totalPaid = debt.totalPaid || 0;
+                const outstanding = debt.outstanding || originalAmount;
+                
                 // Build detail HTML
                 let detailHtml = `
-                    <div class="outstanding-summary ${debt.outstanding <= 0 ? 'no-debt' : ''}">
+                    <div class="outstanding-summary ${outstanding <= 0 ? 'no-debt' : ''}">
                         <div class="outstanding-info">
                             <div class="outstanding-item">
-                                <div class="outstanding-value ${debt.outstanding <= 0 ? 'no-debt' : ''}">RM ${parseFloat(debt.amount).toFixed(2)}</div>
+                                <div class="outstanding-value ${outstanding <= 0 ? 'no-debt' : ''}">RM ${originalAmount.toFixed(2)}</div>
                                 <div class="outstanding-label">Original Amount</div>
                             </div>
                             <div class="outstanding-item">
-                                <div class="outstanding-value ${debt.outstanding <= 0 ? 'no-debt' : ''}">RM ${debt.totalPaid.toFixed(2)}</div>
+                                <div class="outstanding-value ${outstanding <= 0 ? 'no-debt' : ''}">RM ${totalPaid.toFixed(2)}</div>
                                 <div class="outstanding-label">Total Paid</div>
                             </div>
                             <div class="outstanding-item">
-                                <div class="outstanding-value ${debt.outstanding <= 0 ? 'no-debt' : ''}">RM ${debt.outstanding.toFixed(2)}</div>
+                                <div class="outstanding-value ${outstanding <= 0 ? 'no-debt' : ''}">RM ${outstanding.toFixed(2)}</div>
                                 <div class="outstanding-label">Outstanding</div>
                             </div>
                         </div>
@@ -1666,13 +1684,16 @@
 
             } catch (error) {
                 console.error('Error loading debt details:', error);
-                const detailContent = document.getElementById(`detail-${debtId}`)?.querySelector('.debt-detail-content');
-                if (detailContent) {
-                    detailContent.innerHTML = `
-                        <p style="padding: 20px; text-align: center; color: var(--error-color);">
-                            Error loading payment history. Please try again.
-                        </p>
-                    `;
+                const detailSection = document.getElementById(`detail-${debtId}`);
+                if (detailSection) {
+                    const detailContent = detailSection.querySelector('.debt-detail-content');
+                    if (detailContent) {
+                        detailContent.innerHTML = `
+                            <p style="padding: 20px; text-align: center; color: var(--error-color);">
+                                Error loading payment history. Please try again.
+                            </p>
+                        `;
+                    }
                 }
             }
         }
@@ -1741,7 +1762,7 @@
 
         // Open payment modal
         function openPaymentModal(debtId) {
-            const debt = allDebts.find(d => d.id === debtId);
+            const debt = allDebts.find(d => d.id == debtId);
             if (!debt) return;
 
             currentDebtId = debtId;
@@ -1749,9 +1770,9 @@
             document.getElementById('paymentCustomer').value = debt.customers?.name || 'Unknown Customer';
             document.getElementById('paymentOrderId').value = debt.order_reference || debt.order_id || 'N/A';
             document.getElementById('paymentTotalAmount').value = `RM ${parseFloat(debt.amount).toFixed(2)}`;
-            document.getElementById('paymentOutstandingAmount').value = `RM ${debt.outstanding.toFixed(2)}`;
+            document.getElementById('paymentOutstandingAmount').value = `RM ${(debt.outstanding || parseFloat(debt.amount)).toFixed(2)}`;
             document.getElementById('paymentAmount').value = '';
-            document.getElementById('paymentAmount').max = debt.outstanding;
+            document.getElementById('paymentAmount').max = debt.outstanding || parseFloat(debt.amount);
             
             document.getElementById('paymentModal').classList.add('active');
         }
@@ -1769,7 +1790,7 @@
             
             if (!currentDebtId) return;
 
-            const debt = allDebts.find(d => d.id === currentDebtId);
+            const debt = allDebts.find(d => d.id == currentDebtId);
             if (!debt) return;
 
             const amount = parseFloat(document.getElementById('paymentAmount').value);
@@ -1777,7 +1798,8 @@
             const reference = document.getElementById('paymentReference').value;
             const notes = document.getElementById('paymentNotes').value;
 
-            if (amount > debt.outstanding) {
+            const outstanding = debt.outstanding || parseFloat(debt.amount);
+            if (amount > outstanding) {
                 alert('Payment amount cannot exceed outstanding amount!');
                 return;
             }
@@ -1787,7 +1809,7 @@
                 const { data: payment, error: paymentError } = await supabase
                     .from('debt_payments')
                     .insert([{
-                        debt_id: currentDebtId,
+                        debt_id: parseInt(currentDebtId),
                         amount: amount,
                         payment_method: method,
                         payment_reference: reference,
@@ -1801,7 +1823,7 @@
                 if (paymentError) throw paymentError;
 
                 // Update debt status if fully paid
-                const newOutstanding = debt.outstanding - amount;
+                const newOutstanding = outstanding - amount;
                 if (newOutstanding <= 0) {
                     const { error: updateError } = await supabase
                         .from('customer_debts')
@@ -1809,7 +1831,7 @@
                             status: 'paid',
                             settled_at: new Date().toISOString()
                         })
-                        .eq('id', currentDebtId);
+                        .eq('id', parseInt(currentDebtId));
 
                     if (updateError) throw updateError;
                 }
@@ -1826,7 +1848,7 @@
 
         // Send reminder to specific customer
         async function sendReminderToCustomer(debtId) {
-            const debt = allDebts.find(d => d.id === debtId);
+            const debt = allDebts.find(d => d.id == debtId);
             if (!debt) return;
 
             if (confirm(`Send payment reminder to ${debt.customers?.name || 'this customer'}?`)) {
