@@ -2137,13 +2137,85 @@
                 // Fetch order items
                 const { data: orderProducts, error: itemsError } = await supabase
                     .from('order_products')
-                    .select('*, products(name, category)')
+                    .select('*')
                     .eq('order_id', orderId);
 
                 if (itemsError) {
                     console.error('Error fetching order items:', itemsError);
                     detailContent.innerHTML = `<p>Error loading order items: ${itemsError.message || "Unknown error"}</p>`;
                     return;
+                }
+
+                // Fetch product details for the order items
+                if (orderProducts && orderProducts.length > 0) {
+                    const productIds = [...new Set(orderProducts.map(item => item.product_id).filter(id => id))];
+                    const variantIds = [...new Set(orderProducts.map(item => item.variant_id).filter(id => id))];
+
+                    // Fetch products
+                    const { data: products } = await supabase
+                        .from('products')
+                        .select('id, name, category, brand, model')
+                        .in('id', productIds);
+
+                    // Fetch variants with components
+                    const { data: variants } = await supabase
+                        .from('product_variants')
+                        .select('id, variant_name, variant_sku')
+                        .in('id', variantIds);
+
+                    // Fetch variant components
+                    const { data: variantComponents } = await supabase
+                        .from('variant_components')
+                        .select('variant_id, component_id, quantity')
+                        .in('variant_id', variantIds);
+
+                    // Get component IDs
+                    const componentIds = [...new Set((variantComponents || []).map(vc => vc.component_id))];
+                    
+                    // Fetch components
+                    const { data: components } = await supabase
+                        .from('components')
+                        .select('id, sku, name, type')
+                        .in('id', componentIds);
+
+                    // Create lookup maps
+                    const productsMap = {};
+                    (products || []).forEach(product => {
+                        productsMap[product.id] = product;
+                    });
+
+                    const variantsMap = {};
+                    (variants || []).forEach(variant => {
+                        variantsMap[variant.id] = variant;
+                    });
+
+                    // Create components lookup
+                    const componentsMap = {};
+                    (components || []).forEach(component => {
+                        componentsMap[component.id] = component;
+                    });
+
+                    // Create variant components lookup
+                    const variantComponentsMap = {};
+                    (variantComponents || []).forEach(vc => {
+                        if (!variantComponentsMap[vc.variant_id]) {
+                            variantComponentsMap[vc.variant_id] = [];
+                        }
+                        variantComponentsMap[vc.variant_id].push({
+                            quantity: vc.quantity,
+                            components: componentsMap[vc.component_id]
+                        });
+                    });
+
+                    // Enhance order products with related data
+                    orderProducts.forEach(item => {
+                        item.products = productsMap[item.product_id] || null;
+                        const variant = variantsMap[item.variant_id] || null;
+                        if (variant) {
+                            variant.variant_components = variantComponentsMap[variant.id] || [];
+                        }
+                        item.product_variants = variant;
+                    });
                 }
 
                 const formatDate = (dateString) => {
@@ -2172,7 +2244,7 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Category</th>
+                                    <th>Component SKUs</th>
                                     <th>Quantity</th>
                                     <th>Unit Price</th>
                                     <th>Total</th>
@@ -2184,7 +2256,31 @@
                     let orderTotal = 0;
                     orderProducts.forEach(item => {
                         const productName = item.products?.name || 'Unknown Product';
-                        const category = item.products?.category || 'N/A';
+                        const variantName = item.product_variants?.variant_name || 'Standard';
+                        
+                        // Format package display with components
+                        let itemDisplay = '';
+                        let componentInfo = '';
+                        
+                        if (item.product_variants?.variant_components && item.product_variants.variant_components.length > 0) {
+                            // This is a package - show package name and components
+                            itemDisplay = `<strong>${variantName}</strong><br><small style="color: #666;">Package from ${productName}</small>`;
+                            
+                            const componentDetails = item.product_variants.variant_components
+                                .map(vc => {
+                                    const sku = vc.components?.sku || 'N/A';
+                                    const name = vc.components?.name || 'Unknown';
+                                    const qty = vc.quantity || 1;
+                                    return `${qty}x ${sku} (${name})`;
+                                })
+                                .join('<br>');
+                            componentInfo = componentDetails || 'No components';
+                        } else {
+                            // Single product - show product and variant
+                            itemDisplay = `${productName}${variantName !== 'Standard' ? ` - ${variantName}` : ''}`;
+                            componentInfo = item.product_variants?.variant_sku || 'No SKU';
+                        }
+                        
                         const unitPrice = parseFloat(item.unit_price || 0);
                         const quantity = parseInt(item.quantity || 0);
                         const total = unitPrice * quantity;
@@ -2192,8 +2288,8 @@
 
                         productsHtml += `
                             <tr>
-                                <td>${productName}</td>
-                                <td>${category}</td>
+                                <td>${itemDisplay}</td>
+                                <td style="font-size: 12px;">${componentInfo}</td>
                                 <td>${quantity}</td>
                                 <td>RM ${unitPrice.toFixed(2)}</td>
                                 <td>RM ${total.toFixed(2)}</td>
@@ -2480,10 +2576,82 @@
 
                 const { data: orderItems, error: itemsError } = await supabase
                     .from('order_products')
-                    .select('*, products(name, product_id)')
+                    .select('*')
                     .eq('order_id', orderId);
 
                 if (itemsError) throw itemsError;
+
+                // Fetch product details for the order items
+                if (orderItems && orderItems.length > 0) {
+                    const productIds = [...new Set(orderItems.map(item => item.product_id).filter(id => id))];
+                    const variantIds = [...new Set(orderItems.map(item => item.variant_id).filter(id => id))];
+
+                    // Fetch products
+                    const { data: products } = await supabase
+                        .from('products')
+                        .select('id, name, product_id, brand, model')
+                        .in('id', productIds);
+
+                    // Fetch variants with components
+                    const { data: variants } = await supabase
+                        .from('product_variants')
+                        .select('id, variant_name, variant_sku')
+                        .in('id', variantIds);
+
+                    // Fetch variant components
+                    const { data: variantComponents } = await supabase
+                        .from('variant_components')
+                        .select('variant_id, component_id, quantity')
+                        .in('variant_id', variantIds);
+
+                    // Get component IDs
+                    const componentIds = [...new Set((variantComponents || []).map(vc => vc.component_id))];
+                    
+                    // Fetch components
+                    const { data: components } = await supabase
+                        .from('components')
+                        .select('id, sku, name, type')
+                        .in('id', componentIds);
+
+                    // Create lookup maps
+                    const productsMap = {};
+                    (products || []).forEach(product => {
+                        productsMap[product.id] = product;
+                    });
+
+                    const variantsMap = {};
+                    (variants || []).forEach(variant => {
+                        variantsMap[variant.id] = variant;
+                    });
+
+                    // Create components lookup
+                    const componentsMap = {};
+                    (components || []).forEach(component => {
+                        componentsMap[component.id] = component;
+                    });
+
+                    // Create variant components lookup
+                    const variantComponentsMap = {};
+                    (variantComponents || []).forEach(vc => {
+                        if (!variantComponentsMap[vc.variant_id]) {
+                            variantComponentsMap[vc.variant_id] = [];
+                        }
+                        variantComponentsMap[vc.variant_id].push({
+                            quantity: vc.quantity,
+                            components: componentsMap[vc.component_id]
+                        });
+                    });
+
+                    // Enhance order items with related data
+                    orderItems.forEach(item => {
+                        item.products = productsMap[item.product_id] || null;
+                        const variant = variantsMap[item.variant_id] || null;
+                        if (variant) {
+                            variant.variant_components = variantComponentsMap[variant.id] || [];
+                        }
+                        item.product_variants = variant;
+                    });
+                }
 
                 const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
                     year: 'numeric', month: 'long', day: 'numeric'
@@ -2499,20 +2667,42 @@
 
                 orderItems.forEach(item => {
                     const productName = item.products ? item.products.name : 'Unknown Product';
-                    const productId = item.products ? item.products.product_id : 'Unknown ID';
+                    const variantName = item.product_variants?.variant_name || 'Standard';
+                    
+                    // Format package display with components
+                    let itemDescription = '';
+                    let componentSkus = '';
+                    
+                    if (item.product_variants?.variant_components && item.product_variants.variant_components.length > 0) {
+                        // This is a package - show package name and components
+                        itemDescription = `${variantName} (Package from ${productName})`;
+                        
+                        const skuList = item.product_variants.variant_components
+                            .map(vc => {
+                                const sku = vc.components?.sku || 'N/A';
+                                const qty = vc.quantity || 1;
+                                return `${qty}x ${sku}`;
+                            })
+                            .join(', ');
+                        componentSkus = skuList || 'No components';
+                    } else {
+                        // Single product - show product and variant
+                        itemDescription = `${productName}${variantName !== 'Standard' ? ` - ${variantName}` : ''}`;
+                        componentSkus = item.product_variants?.variant_sku || 'No SKU';
+                    }
+                    
                     const unitPrice = item.unit_price || 0;
                     const quantity = item.quantity || 0;
                     const itemTotal = unitPrice * quantity;
                     orderTotal += itemTotal;
-                    const variations = 'N/A';
 
                     itemsHtml += `
                         <tr>
                             <td style="font-size: 9px; padding: 2px 3px;">${counter}</td>
-                            <td style="font-size: 9px; padding: 2px 3px;">${productId}</td>
-                            <td style="font-size: 9px; padding: 2px 3px;">${productName}</td>
+                            <td style="font-size: 9px; padding: 2px 3px;">${componentSkus}</td>
+                            <td style="font-size: 9px; padding: 2px 3px;">${itemDescription}</td>
                             <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${quantity}</td>
-                            <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${variations}</td>
+                            <td style="font-size: 9px; text-align: center; padding: 2px 3px;">${variantName}</td>
                             <td style="font-size: 9px; text-align: right; padding: 2px 3px;">RM ${unitPrice.toFixed(2)}</td>
                             <td style="font-size: 9px; text-align: center; padding: 2px 3px;"></td>
                             <td style="font-size: 9px; text-align: right; padding: 2px 3px;">RM ${itemTotal.toFixed(2)}</td>

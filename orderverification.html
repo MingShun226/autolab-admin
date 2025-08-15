@@ -388,11 +388,15 @@
         }
 
         .order-card {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #f0f0f0;
+            background: white;
+            border: 1px solid #e9ecef;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        .order-card:hover {
+            border-color: #007bff;
         }
 
         .order-header {
@@ -400,44 +404,57 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f3f4;
+            background: #fafbfc;
         }
 
         .order-id {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
+            color: #333;
         }
 
         .order-status {
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
+            font-weight: 500;
+            background: white;
+            border: 1px solid currentColor;
         }
 
         .order-details {
             display: none;
-            margin-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 15px;
+            padding: 20px;
+            background: white;
         }
 
         .order-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
             margin-bottom: 16px;
         }
 
+        .meta-item {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 2px solid #007bff;
+        }
+
         .meta-item .meta-label {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 4px;
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 2px;
+            font-weight: 500;
         }
 
         .meta-item .meta-value {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 500;
+            color: #212529;
         }
 
         .status-processing {
@@ -542,13 +559,23 @@
 
         .empty-state {
             text-align: center;
-            color: #6c757d;
-            padding: 60px 20px;
+            color: #666;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
         }
 
         .empty-state i {
             font-size: 48px;
             margin-bottom: 15px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin: 0;
         }
 
         .priority-indicator {
@@ -587,23 +614,23 @@
 
         .btn-delete-small {
             background-color: transparent;
-            color: var(--error-color);
-            border: 1px solid var(--error-color);
-            border-radius: 50%;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
             width: 32px;
             height: 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: all 0.2s;
             padding: 0;
             flex-shrink: 0;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .btn-delete-small:hover {
-            background-color: var(--error-color);
+            background-color: #dc3545;
             color: white;
         }
 
@@ -654,9 +681,10 @@
         }
 
         .toggle-indicator {
-            font-size: 12px;
+            font-size: 14px;
             margin-left: 8px;
-            transition: transform 0.3s;
+            transition: transform 0.2s;
+            color: #666;
         }
 
         .order-header.expanded .toggle-indicator {
@@ -665,29 +693,45 @@
 
         .order-product-details {
             margin-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .order-product-details h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 16px;
+            margin-top: 10px;
+            background: white;
+            border: 1px solid #ddd;
         }
 
         .items-table th {
             text-align: left;
-            padding: 10px;
-            background-color: #f7f7f7;
-            border-bottom: 1px solid #e9ecef;
-            font-weight: 500;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            font-weight: 600;
             font-size: 13px;
+            color: #333;
         }
 
         .items-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e9ecef;
-            font-size: 14px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
         }
 
         .payment-info {
@@ -1839,10 +1883,6 @@
                     <div class="order-details" id="details-${order.id}" style="display: none;">
                         <div class="order-meta">
                              <div class="meta-item">
-                                <div class="meta-label">Placed</div>
-                                <div class="meta-value">${orderDate}</div>
-                            </div>
-                            <div class="meta-item">
                                 <div class="meta-label">Customer</div>
                                 <div class="meta-value">${customerName}</div>
                             </div>
@@ -1851,16 +1891,12 @@
                                 <div class="meta-value">${order.customer_phone || 'N/A'}</div>
                             </div>
                             <div class="meta-item">
-                                <div class="meta-label">Address</div>
-                                <div class="meta-value">${order.address || 'Address not provided'}</div>
-                            </div>
-                            <div class="meta-item">
                                 <div class="meta-label">Amount</div>
                                 <div class="meta-value">RM ${parseFloat(order.amount || 0).toFixed(2)}</div>
                             </div>
                             <div class="meta-item">
-                                <div class="meta-label">Delivery Method</div>
-                                <div class="meta-value">${order.driver || 'Not specified'}</div>
+                                <div class="meta-label">Date</div>
+                                <div class="meta-value">${new Date(order.order_date).toLocaleDateString()}</div>
                             </div>
                         </div>
                         <div id="product-details-container-${order.id}" style="margin-top: 15px;"></div>
@@ -2449,39 +2485,20 @@ async function fetchOrderItems(orderId) {
                 product_id,
                 model,
                 year_range,
-                screen_size,
-                category_id,
-                brand_id,
-                description,
-                brands!products_brand_id_fkey (name),
-                categories!products_category_id_fkey (name)
+                category,
+                brand,
+                description
             `)
             .in('id', productIds);
 
-        let enhancedProducts = [];
-
         if (productsError) {
-            console.warn('⚠️ Error fetching product details with relations, trying fallback:', productsError);
-            
-            // Fallback: fetch products without foreign key relations
-            const { data: fallbackProducts, error: fallbackError } = await supabase
-                .from('products')
-                .select('id, name, product_id, model, year_range, screen_size, category_id, brand_id, description')
-                .in('id', productIds);
-
-            if (fallbackError) {
-                console.error('❌ Fallback product query also failed:', fallbackError);
-                throw fallbackError;
-            }
-
-            enhancedProducts = await enhanceProductsWithBrandsAndCategories(fallbackProducts);
-        } else {
-            enhancedProducts = products;
+            console.error('❌ Error fetching product details:', productsError);
+            throw productsError;
         }
 
         // Now fetch variant information for products that have variants
         console.log('🎯 Fetching variant information...');
-        const productsWithVariants = await fetchVariantInformation(enhancedProducts);
+        const productsWithVariants = await fetchVariantInformation(products);
 
         // Render the enhanced order items table
         renderEnhancedOrderItemsTable(orderItems, productsWithVariants, itemsContainer);
@@ -2601,29 +2618,29 @@ async function enhanceProductsWithBrandsAndCategories(products) {
     }
 }
 
-// Enhanced function to render detailed order items table
+// Simplified function to render order items table with components summary
 function renderEnhancedOrderItemsTable(orderItems, products, itemsContainer) {
     const productsLookup = {};
     products.forEach(product => {
         productsLookup[product.id] = product;
     });
 
-    console.log('✅ Rendering enhanced order items for', orderItems.length, 'items');
+    // Track all components for summary
+    const componentsSummary = {};
 
     let html = `
-        <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; border: 1px solid #e9ecef;">
-            <h4 style="margin-bottom: 16px; color: #495057; display: flex; align-items: center;">
-                <i class="fas fa-box-open" style="margin-right: 8px; color: #007bff;"></i>
-                Order Items Details
+        <div style="background: white; border: 1px solid #e9ecef; border-radius: 6px;">
+            <h4 style="margin: 0; padding: 12px 16px; color: #495057; font-size: 14px; border-bottom: 1px solid #e9ecef; background: #f8f9fa;">
+                Order Items
             </h4>
-            <div style="overflow-x: auto;">
-                <table class="items-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="padding: 16px;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background: #007bff; color: white;">
-                            <th style="padding: 12px 8px; text-align: left; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Product Details</th>
-                            <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Qty</th>
-                            <th style="padding: 12px 8px; text-align: right; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Unit Price</th>
-                            <th style="padding: 12px 8px; text-align: right; font-weight: 600;">Total</th>
+                        <tr>
+                            <th style="padding: 8px; text-align: left; font-size: 12px; color: #6c757d; border-bottom: 1px solid #e9ecef;">Item & Components</th>
+                            <th style="padding: 8px; text-align: center; font-size: 12px; color: #6c757d; border-bottom: 1px solid #e9ecef;">Qty</th>
+                            <th style="padding: 8px; text-align: right; font-size: 12px; color: #6c757d; border-bottom: 1px solid #e9ecef;">Price</th>
+                            <th style="padding: 8px; text-align: right; font-size: 12px; color: #6c757d; border-bottom: 1px solid #e9ecef;">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -2636,121 +2653,64 @@ function renderEnhancedOrderItemsTable(orderItems, products, itemsContainer) {
         const itemTotal = item.quantity * (item.unit_price || 0);
         grandTotal += itemTotal;
 
-        // Determine which variant was ordered (from the variations field or by matching price)
-        let selectedVariant = null;
-        let variantInfo = '';
+        // Find variant from the enhanced data
+        let variantName = 'Standard Item';
         let componentsList = '';
 
         if (product && product.variants && product.variants.length > 0) {
-            // Try to match variant by name from variations field first
-            if (item.variations) {
-                selectedVariant = product.variants.find(v => 
-                    v.variant_name === item.variations ||
-                    v.variant_sku === item.variations
-                );
-            }
-            
-            // If no match by name, try to match by price
-            if (!selectedVariant) {
-                selectedVariant = product.variants.find(v => 
-                    Math.abs(v.retail_price - item.unit_price) < 0.01 ||
-                    Math.abs((v.wholesale_price || 0) - item.unit_price) < 0.01
-                );
-            }
-            
-            // If still no match, use first variant as fallback
-            if (!selectedVariant && product.variants.length > 0) {
-                selectedVariant = product.variants[0];
-            }
-        }
+            let selectedVariant = product.variants.find(v => 
+                v.variant_name === item.variations ||
+                v.variant_sku === item.variations ||
+                Math.abs(v.retail_price - item.unit_price) < 0.01 ||
+                Math.abs((v.wholesale_price || 0) - item.unit_price) < 0.01
+            ) || product.variants[0];
 
-        // Build variant information
-        if (selectedVariant) {
-            variantInfo = `
-                <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-top: 6px; border-left: 3px solid #2196f3;">
-                    <div style="font-weight: 600; color: #1976d2; font-size: 13px;">
-                        📦 ${selectedVariant.variant_name}
-                    </div>
-                    <div style="font-size: 12px; color: #666; margin-top: 2px;">
-                        SKU: ${selectedVariant.variant_sku || 'N/A'}
-                    </div>
-                </div>
-            `;
-
-            // Build components list if available
-            if (selectedVariant.variant_components && selectedVariant.variant_components.length > 0) {
-                const components = selectedVariant.variant_components
-                    .map(vc => vc.components?.name || vc.component_sku)
-                    .filter(Boolean)
-                    .join(', ');
+            if (selectedVariant) {
+                variantName = selectedVariant.variant_name;
                 
-                if (components) {
-                    componentsList = `
-                        <div style="background: #fff3e0; padding: 6px; border-radius: 4px; margin-top: 4px; border-left: 3px solid #ff9800;">
-                            <div style="font-size: 11px; color: #e65100; font-weight: 500;">
-                                🔧 Components: ${components}
-                            </div>
-                        </div>
-                    `;
+                // Build components list and add to summary
+                if (selectedVariant.variant_components && selectedVariant.variant_components.length > 0) {
+                    const components = selectedVariant.variant_components
+                        .map(vc => {
+                            const sku = vc.components?.sku || 'Unknown';
+                            const qty = vc.quantity || 1;
+                            const totalQtyNeeded = qty * item.quantity; // Multiply by order quantity
+                            
+                            // Add to summary
+                            if (componentsSummary[sku]) {
+                                componentsSummary[sku] += totalQtyNeeded;
+                            } else {
+                                componentsSummary[sku] = totalQtyNeeded;
+                            }
+                            
+                            return `${qty}× ${sku}`;
+                        })
+                        .join(', ');
+                    componentsList = `<div style="font-size: 11px; color: #666; margin-top: 4px;">Components: ${components}</div>`;
                 }
             }
         }
-
-        // Build product specifications
-        const productSpecs = [];
-        if (product?.model) productSpecs.push(`Model: ${product.model}`);
-        if (product?.year_range) productSpecs.push(`Year: ${product.year_range}`);
-        if (product?.screen_size) productSpecs.push(`Screen: ${product.screen_size}`);
-        
-        const specsHtml = productSpecs.length > 0 ? `
-            <div style="font-size: 11px; color: #666; margin-top: 4px; padding: 4px 6px; background: #f8f9fa; border-radius: 3px;">
-                ${productSpecs.join(' • ')}
-            </div>
-        ` : '';
-
-        const rowBg = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
         
         html += `
-            <tr style="background: ${rowBg}; border-bottom: 1px solid #e9ecef;">
-                <td style="padding: 16px 12px; vertical-align: top; border-right: 1px solid #e9ecef;">
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <div style="font-weight: 600; color: #212529; font-size: 14px;">
-                            ${product?.name || 'Unknown Product'}
-                        </div>
-                        <div style="font-size: 12px; color: #6c757d;">
-                            <span style="display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="fas fa-tag" style="font-size: 10px;"></i>
-                                ${product?.brands?.name || 'Unknown Brand'}
-                            </span>
-                            <span style="margin-left: 12px; display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="fas fa-folder" style="font-size: 10px;"></i>
-                                ${product?.categories?.name || 'N/A'}
-                            </span>
-                        </div>
-                        ${specsHtml}
-                        ${variantInfo}
-                        ${componentsList}
-                        ${item.variations && !selectedVariant ? `
-                            <div style="background: #fff2cc; padding: 6px; border-radius: 4px; margin-top: 4px; border-left: 3px solid #ffa000;">
-                                <div style="font-size: 12px; color: #e65100;">
-                                    ℹ️ Ordered: ${item.variations}
-                                </div>
-                            </div>
-                        ` : ''}
+            <tr style="border-bottom: 1px solid #e9ecef;">
+                <td style="padding: 12px 8px;">
+                    <div style="font-weight: 600; color: #212529; font-size: 14px; margin-bottom: 4px;">
+                        ${variantName}
                     </div>
+                    ${componentsList}
                 </td>
-                <td style="padding: 16px 12px; text-align: center; vertical-align: middle; border-right: 1px solid #e9ecef;">
-                    <span style="font-weight: 600; font-size: 16px; color: #495057;">
+                <td style="padding: 12px 8px; text-align: center;">
+                    <span style="font-weight: 600; color: #495057;">
                         ${item.quantity}
                     </span>
                 </td>
-                <td style="padding: 16px 12px; text-align: right; vertical-align: middle; border-right: 1px solid #e9ecef;">
-                    <span style="font-weight: 500; color: #495057;">
+                <td style="padding: 12px 8px; text-align: right;">
+                    <span style="color: #495057;">
                         RM ${parseFloat(item.unit_price || 0).toFixed(2)}
                     </span>
                 </td>
-                <td style="padding: 16px 12px; text-align: right; vertical-align: middle;">
-                    <span style="font-weight: 600; color: #007bff; font-size: 16px;">
+                <td style="padding: 12px 8px; text-align: right;">
+                    <span style="font-weight: 600; color: #007bff;">
                         RM ${itemTotal.toFixed(2)}
                     </span>
                 </td>
@@ -2759,22 +2719,43 @@ function renderEnhancedOrderItemsTable(orderItems, products, itemsContainer) {
     });
 
     html += `
-                </tbody>
-                <tfoot>
-                    <tr style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                        <td colspan="3" style="padding: 16px 12px; text-align: right; font-weight: 600; font-size: 16px;">
-                            <i class="fas fa-calculator" style="margin-right: 8px;"></i>
-                            Grand Total:
-                        </td>
-                        <td style="padding: 16px 12px; text-align: right; font-weight: 700; font-size: 18px;">
-                            RM ${grandTotal.toFixed(2)}
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
+                    </tbody>
+                </table>
+                <div style="margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 4px; text-align: right;">
+                    <span style="font-weight: 600; color: #495057;">Total: RM ${grandTotal.toFixed(2)}</span>
+                </div>
+            </div>
         </div>
-    </div>
     `;
+
+    // Add components summary section
+    if (Object.keys(componentsSummary).length > 0) {
+        html += `
+            <div style="background: white; border: 1px solid #e9ecef; border-radius: 6px; margin-top: 15px;">
+                <h4 style="margin: 0; padding: 12px 16px; color: #495057; font-size: 14px; border-bottom: 1px solid #e9ecef; background: #fff3cd;">
+                    📦 Total Components Required
+                </h4>
+                <div style="padding: 16px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+        `;
+        
+        Object.entries(componentsSummary)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .forEach(([sku, quantity]) => {
+                html += `
+                    <div style="padding: 8px 12px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #28a745;">
+                        <span style="font-weight: 600; color: #28a745;">${quantity}×</span>
+                        <span style="margin-left: 8px; color: #495057;">${sku}</span>
+                    </div>
+                `;
+            });
+        
+        html += `
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 
     itemsContainer.innerHTML = html;
 }
